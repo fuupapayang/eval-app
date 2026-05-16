@@ -15,6 +15,7 @@ export interface Staff {
   roleTitle: string;
   createdAt: string;
   password?: string;
+  order?: number;
 }
 
 export interface EvaluationItem {

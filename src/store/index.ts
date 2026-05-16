@@ -24,6 +24,7 @@ interface AppState {
   addMasterItem: (item: EvaluationItem) => Promise<void>;
   updateMasterItem: (item: EvaluationItem) => Promise<void>;
   deleteMasterItem: (id: string) => Promise<void>;
+  reorderStaff: (newStaffList: Staff[]) => Promise<void>;
 }
 
 export const useStore = create<AppState>()((set, get) => ({
@@ -54,6 +55,12 @@ export const useStore = create<AppState>()((set, get) => ({
     // Set up real-time listeners
     onSnapshot(collection(db, 'staff'), (snapshot) => {
       const staffList = snapshot.docs.map(doc => doc.data() as Staff);
+      // Sort by order field, fallback to putting those without order at the end
+      staffList.sort((a, b) => {
+        const orderA = a.order !== undefined ? a.order : 9999;
+        const orderB = b.order !== undefined ? b.order : 9999;
+        return orderA - orderB;
+      });
       set({ staffList });
     });
 
@@ -104,5 +111,18 @@ export const useStore = create<AppState>()((set, get) => ({
 
   deleteMasterItem: async (id) => {
     await deleteDoc(doc(db, 'masterItems', id));
+  },
+
+  reorderStaff: async (newStaffList) => {
+    // Update local state immediately for snappy UI
+    set({ staffList: newStaffList });
+    
+    // Batch update Firestore with new order values
+    const batch = writeBatch(db);
+    newStaffList.forEach((staff, index) => {
+      const updatedStaff = { ...staff, order: index };
+      batch.set(doc(db, 'staff', staff.id), updatedStaff);
+    });
+    await batch.commit();
   }
 }));
