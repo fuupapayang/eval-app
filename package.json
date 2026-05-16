@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://blackmac.github.io/eval-app/",
+  "homepage": "https://fuupapayang.github.io/eval-app/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
