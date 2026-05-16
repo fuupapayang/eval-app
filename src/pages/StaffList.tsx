@@ -186,11 +186,24 @@ export const StaffList: React.FC = () => {
                           </select>
                         </td>
                         <td>
-                          <div style={{display: 'flex', flexDirection: 'column', gap: '4px'}}>
-                            <input className="form-input" value={editForm.roleTitle} onChange={e => setEditForm({...editForm, roleTitle: e.target.value})} placeholder="一般/リーダー" />
-                            <label style={{fontSize: '0.75rem'}}><input type="checkbox" checked={editForm.isLeader} onChange={e => setEditForm({...editForm, isLeader: e.target.checked})} /> リーダー</label>
-                            <label style={{fontSize: '0.75rem'}}><input type="checkbox" checked={editForm.isSubLeader} onChange={e => setEditForm({...editForm, isSubLeader: e.target.checked})} /> サブリーダー</label>
-                          </div>
+                          <select 
+                            className="form-select" 
+                            value={editForm.roleTitle || '一般'} 
+                            onChange={e => {
+                              const newRoleTitle = e.target.value;
+                              setEditForm({
+                                ...editForm, 
+                                roleTitle: newRoleTitle,
+                                isLeader: newRoleTitle === 'リーダー',
+                                isSubLeader: newRoleTitle === 'サブリーダー'
+                              });
+                            }}
+                          >
+                            <option value="リーダー">リーダー</option>
+                            <option value="サブリーダー">サブリーダー</option>
+                            <option value="一般">一般</option>
+                            <option value="新人">新人</option>
+                          </select>
                         </td>
                         <td>
                           <input 
@@ -262,11 +275,24 @@ export const StaffList: React.FC = () => {
                       </select>
                     </td>
                     <td>
-                      <div style={{display: 'flex', flexDirection: 'column', gap: '4px'}}>
-                        <input className="form-input" value={editForm.roleTitle} onChange={e => setEditForm({...editForm, roleTitle: e.target.value})} placeholder="一般/リーダー" />
-                        <label style={{fontSize: '0.75rem'}}><input type="checkbox" checked={editForm.isLeader} onChange={e => setEditForm({...editForm, isLeader: e.target.checked})} /> リーダー</label>
-                        <label style={{fontSize: '0.75rem'}}><input type="checkbox" checked={editForm.isSubLeader} onChange={e => setEditForm({...editForm, isSubLeader: e.target.checked})} /> サブリーダー</label>
-                      </div>
+                      <select 
+                        className="form-select" 
+                        value={editForm.roleTitle || '一般'} 
+                        onChange={e => {
+                          const newRoleTitle = e.target.value;
+                          setEditForm({
+                            ...editForm, 
+                            roleTitle: newRoleTitle,
+                            isLeader: newRoleTitle === 'リーダー',
+                            isSubLeader: newRoleTitle === 'サブリーダー'
+                          });
+                        }}
+                      >
+                        <option value="リーダー">リーダー</option>
+                        <option value="サブリーダー">サブリーダー</option>
+                        <option value="一般">一般</option>
+                        <option value="新人">新人</option>
+                      </select>
                     </td>
                     <td>
                       <input 

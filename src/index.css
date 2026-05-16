@@ -143,6 +143,43 @@ input, select, textarea {
   outline: none;
 }
 
+/* Print Styles */
+@media print {
+  .sidebar {
+    display: none !important;
+  }
+  .main-content {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .glass-panel {
+    background: transparent !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .table {
+    color: black !important;
+  }
+  .table th {
+    background: #f0f0f0 !important;
+    color: black !important;
+    border-bottom: 2px solid #ccc !important;
+  }
+  .table td {
+    border-bottom: 1px solid #eee !important;
+  }
+  .badge {
+    border: 1px solid #ccc !important;
+  }
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
