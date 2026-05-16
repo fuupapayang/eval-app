@@ -1,0 +1,59 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Layout } from './components/Layout';
+import { StaffList } from './pages/StaffList';
+import { EvaluationForm } from './pages/EvaluationForm';
+import { Dashboard } from './pages/Dashboard';
+import { MasterSettings } from './pages/MasterSettings';
+import { Login } from './pages/Login';
+import { MyPage } from './pages/MyPage';
+import { useStore } from './store';
+import { EVALUATION_MASTER } from './store/initialData';
+
+const ProtectedRoute = ({ children, requireMaster = false }: { children: React.ReactNode, requireMaster?: boolean }) => {
+  const currentUser = useStore(state => state.currentUser);
+  
+  if (!currentUser) return <Navigate to="/login" replace />;
+  if (requireMaster && currentUser.type !== 'MASTER') return <Navigate to="/mypage" replace />;
+  if (!requireMaster && currentUser.type === 'MASTER') return <Navigate to="/" replace />; // Master doesn't use mypage
+  
+  return <>{children}</>;
+};
+
+function App() {
+  const masterItems = useStore(state => state.masterItems);
+  const addMasterItem = useStore(state => state.addMasterItem);
+  const currentUser = useStore(state => state.currentUser);
+
+  React.useEffect(() => {
+    // Migration: Add missing センターバックタイプ if it doesn't exist in the persisted store
+    const hasCenterBack = masterItems.some(i => i.type === 'センターバックタイプ');
+    if (!hasCenterBack) {
+      const cbItems = EVALUATION_MASTER.filter(i => i.type === 'センターバックタイプ');
+      cbItems.forEach(item => {
+        addMasterItem(item);
+      });
+    }
+  }, [masterItems, addMasterItem]);
+
+  return (
+    <BrowserRouter basename="/eval-app/">
+      <Routes>
+        <Route path="/login" element={currentUser ? <Navigate to={currentUser.type === 'MASTER' ? "/" : "/mypage"} replace /> : <Login />} />
+        
+        <Route path="/" element={<Layout />}>
+          <Route index element={<ProtectedRoute requireMaster><StaffList /></ProtectedRoute>} />
+          <Route path="evaluate" element={<ProtectedRoute requireMaster><EvaluationForm /></ProtectedRoute>} />
+          <Route path="dashboard" element={<ProtectedRoute requireMaster><Dashboard /></ProtectedRoute>} />
+          <Route path="master" element={<ProtectedRoute requireMaster><MasterSettings /></ProtectedRoute>} />
+          
+          <Route path="mypage" element={<ProtectedRoute><MyPage /></ProtectedRoute>} />
+          
+          <Route path="*" element={<Navigate to={currentUser?.type === 'MASTER' ? "/" : "/mypage"} replace />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
