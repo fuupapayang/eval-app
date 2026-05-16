@@ -39,7 +39,7 @@ export const Login: React.FC = () => {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
       <div className="glass-panel" style={{ padding: 'var(--spacing-8)', width: '100%', maxWidth: '400px' }}>
-        <h1 style={{ textAlign: 'center', marginBottom: 'var(--spacing-6)', background: 'var(--gradient-primary)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+        <h1 className="gradient-text" style={{ textAlign: 'center', marginBottom: 'var(--spacing-6)', fontSize: '2rem' }}>
           Evaluation System
         </h1>
         
