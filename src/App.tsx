@@ -8,7 +8,6 @@ import { MasterSettings } from './pages/MasterSettings';
 import { Login } from './pages/Login';
 import { MyPage } from './pages/MyPage';
 import { useStore } from './store';
-import { EVALUATION_MASTER } from './store/initialData';
 
 const ProtectedRoute = ({ children, requireMaster = false }: { children: React.ReactNode, requireMaster?: boolean }) => {
   const currentUser = useStore(state => state.currentUser);
@@ -21,20 +20,12 @@ const ProtectedRoute = ({ children, requireMaster = false }: { children: React.R
 };
 
 function App() {
-  const masterItems = useStore(state => state.masterItems);
-  const addMasterItem = useStore(state => state.addMasterItem);
   const currentUser = useStore(state => state.currentUser);
+  const initSync = useStore(state => state.initSync);
 
   React.useEffect(() => {
-    // Migration: Add missing センターバックタイプ if it doesn't exist in the persisted store
-    const hasCenterBack = masterItems.some(i => i.type === 'センターバックタイプ');
-    if (!hasCenterBack) {
-      const cbItems = EVALUATION_MASTER.filter(i => i.type === 'センターバックタイプ');
-      cbItems.forEach(item => {
-        addMasterItem(item);
-      });
-    }
-  }, [masterItems, addMasterItem]);
+    initSync();
+  }, [initSync]);
 
   return (
     <HashRouter>
