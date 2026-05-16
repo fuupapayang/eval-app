@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { StaffList } from './pages/StaffList';
 import { EvaluationForm } from './pages/EvaluationForm';
@@ -37,7 +37,7 @@ function App() {
   }, [masterItems, addMasterItem]);
 
   return (
-    <BrowserRouter basename="/eval-app/">
+    <HashRouter>
       <Routes>
         <Route path="/login" element={currentUser ? <Navigate to={currentUser.type === 'MASTER' ? "/" : "/mypage"} replace /> : <Login />} />
         
@@ -52,7 +52,7 @@ function App() {
           <Route path="*" element={<Navigate to={currentUser?.type === 'MASTER' ? "/" : "/mypage"} replace />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
