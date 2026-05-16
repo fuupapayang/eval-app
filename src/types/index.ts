@@ -56,6 +56,9 @@ export interface EvaluationForm {
   teamTexts?: [string, string, string];     // チーム目標の内容
   teamScore: number;        // チーム目標達成度 (Max 15)
   teamDetails: [number, number, number];
+  
+  selfComment?: string;     // スタッフ本人の自己評価コメント
+  
   commonScore: number;      // 共通評価 (Max 20)
   typeScore: number;        // 職種・タイプ別評価 (Max 20 or 30)
   leaderScore: number;      // リーダー評価 (Max 10)

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useStore } from '../store';
 import type { Period } from '../types';
+import { EvaluationDetailModal } from '../components/EvaluationDetailModal';
 
 export const MyPage: React.FC = () => {
   const currentUser = useStore(state => state.currentUser);
@@ -13,6 +14,9 @@ export const MyPage: React.FC = () => {
 
   const [themeTexts, setThemeTexts] = useState<[string, string, string]>(['', '', '']);
   const [teamTexts, setTeamTexts] = useState<[string, string, string]>(['', '', '']);
+  const [selfComment, setSelfComment] = useState<string>('');
+  
+  const [detailPeriodInfo, setDetailPeriodInfo] = useState<{year: number, period: '上期'|'下期'} | null>(null);
   
   // Password state
   const updateStaff = useStore(state => state.updateStaff);
@@ -35,9 +39,11 @@ export const MyPage: React.FC = () => {
     if (existing) {
       setThemeTexts(existing.themeTexts || ['', '', '']);
       setTeamTexts(existing.teamTexts || ['', '', '']);
+      setSelfComment(existing.selfComment || '');
     } else {
       setThemeTexts(['', '', '']);
       setTeamTexts(['', '', '']);
+      setSelfComment('');
     }
   }, [staff.id, period, year, getEvaluation]);
 
@@ -68,6 +74,7 @@ export const MyPage: React.FC = () => {
       ...evalData,
       themeTexts,
       teamTexts: isLeader ? teamTexts : evalData.teamTexts,
+      selfComment,
       updatedAt: new Date().toISOString()
     });
 
@@ -195,8 +202,21 @@ export const MyPage: React.FC = () => {
           </div>
         </div>
 
+        <div style={{ marginTop: 'var(--spacing-6)' }}>
+          <h3 style={{ marginBottom: 'var(--spacing-3)' }}>自己評価（期末振り返り用）</h3>
+          <div className="form-group">
+            <textarea 
+              className="form-input" 
+              value={selfComment} 
+              onChange={e => setSelfComment(e.target.value)}
+              placeholder="今期の目標に対する振り返りや、アピールポイントなどを入力してください"
+              rows={4}
+            />
+          </div>
+        </div>
+
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'var(--spacing-4)' }}>
-          <button className="btn btn-primary" onClick={handleSaveGoals}>目標を保存</button>
+          <button className="btn btn-primary" onClick={handleSaveGoals}>目標・自己評価を保存</button>
         </div>
       </div>
 
@@ -236,6 +256,7 @@ export const MyPage: React.FC = () => {
                   <th>総合点数</th>
                   <th>評価ランク</th>
                   <th>総合コメント</th>
+                  <th>詳細</th>
                 </tr>
               </thead>
               <tbody>
@@ -245,6 +266,15 @@ export const MyPage: React.FC = () => {
                     <td style={{ fontWeight: 'bold' }}>{ev.totalScore > 0 ? `${ev.totalScore} 点` : '-'}</td>
                     <td>{ev.totalScore > 0 ? getRank(ev.totalScore) : '-'}</td>
                     <td>{ev.generalComment || '-'}</td>
+                    <td>
+                      <button 
+                        className="btn btn-outline" 
+                        style={{ padding: '4px 8px', fontSize: '0.75rem' }} 
+                        onClick={() => setDetailPeriodInfo({ year: ev.year, period: ev.period })}
+                      >
+                        詳細
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -252,6 +282,16 @@ export const MyPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Detailed Modal */}
+      {detailPeriodInfo && (
+        <EvaluationDetailModal
+          staff={staff}
+          evaluations={myEvaluations.filter(e => e.year === detailPeriodInfo.year)}
+          initialPeriod={detailPeriodInfo.period}
+          onClose={() => setDetailPeriodInfo(null)}
+        />
+      )}
     </div>
   );
 };

@@ -20,6 +20,7 @@ export const EvaluationForm: React.FC = () => {
   const [themeTexts, setThemeTexts] = useState<[string, string, string]>(['', '', '']);
   const [teamDetails, setTeamDetails] = useState<[number, number, number]>([0, 0, 0]);
   const [teamTexts, setTeamTexts] = useState<[string, string, string]>(['', '', '']);
+  const [selfComment, setSelfComment] = useState<string>('');
   const [commonScores, setCommonScores] = useState<Record<string, number>>({});
   const [typeScores, setTypeScores] = useState<Record<string, number>>({});
   const [leaderScore, setLeaderScore] = useState<number>(0);
@@ -43,8 +44,8 @@ export const EvaluationForm: React.FC = () => {
         setThemeTexts(existing.themeTexts || ['', '', '']);
         setTeamDetails(existing.teamDetails || [0, 0, 0]);
         setTeamTexts(existing.teamTexts || ['', '', '']);
+        setSelfComment(existing.selfComment || '');
         // Also might want to set old totals if details aren't present (backward compatibility)
-        // For simplicity, we just use the new arrays.
         // For simplicity, we just use the new arrays.
         setLeaderScore(existing.leaderScore || 0);
         setLeaderComment(existing.leaderComment || '');
@@ -60,7 +61,7 @@ export const EvaluationForm: React.FC = () => {
         setThemeTexts(['', '', '']);
         setTeamDetails([0, 0, 0]);
         setTeamTexts(['', '', '']);
-        setTeamDetails([0, 0, 0]);
+        setSelfComment('');
         setLeaderScore(0);
         setLeaderComment('');
         setBonusScore(0);
@@ -103,6 +104,7 @@ export const EvaluationForm: React.FC = () => {
       teamScore,
       teamDetails,
       teamTexts,
+      selfComment,
       commonScore: Object.values(commonScores).reduce((a, b) => a + b, 0),
       typeScore: Object.values(typeScores).reduce((a, b) => a + b, 0),
       leaderScore,
@@ -176,6 +178,15 @@ export const EvaluationForm: React.FC = () => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-8)' }}>
             {/* Left Column */}
             <div>
+              {selfComment && (
+                <div style={{ marginBottom: 'var(--spacing-6)' }}>
+                  <h3 style={{ marginBottom: 'var(--spacing-3)' }}>スタッフからの自己評価コメント</h3>
+                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)', borderLeft: '4px solid var(--accent-primary)' }}>
+                    <p style={{ fontSize: '0.875rem', whiteSpace: 'pre-wrap', margin: 0 }}>{selfComment}</p>
+                  </div>
+                </div>
+              )}
+
               <h3 style={{ marginBottom: 'var(--spacing-3)' }}>① 業績・案件貢献（最大15点）</h3>
               <div style={{ background: 'rgba(0,0,0,0.1)', padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
                 <div className="form-group">

@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { useStore } from '../store';
 import type { Staff } from '../types';
-import { Download, Printer, X } from 'lucide-react';
+import { Download, Printer } from 'lucide-react';
+import { EvaluationDetailModal } from '../components/EvaluationDetailModal';
 
 export const Dashboard: React.FC = () => {
   const staffList = useStore(state => state.staffList);
@@ -9,6 +10,16 @@ export const Dashboard: React.FC = () => {
   
   const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
   const [detailPeriod, setDetailPeriod] = useState<'上期' | '下期'>('上期');
+
+  // Year filter state
+  const availableYears = useMemo(() => {
+    const years = new Set(evaluations.map(ev => ev.year));
+    // If no evaluations, add current year
+    if (years.size === 0) years.add(new Date().getFullYear());
+    return Array.from(years).sort((a, b) => b - a);
+  }, [evaluations]);
+
+  const [selectedYear, setSelectedYear] = useState<number>(availableYears[0]);
 
   const annualScores = useMemo(() => {
     const scores: Record<string, { staff: Staff; upper: number | null; lower: number | null; total: number | null }> = {};
@@ -18,7 +29,7 @@ export const Dashboard: React.FC = () => {
     });
 
     evaluations.forEach(ev => {
-      if (scores[ev.staffId]) {
+      if (ev.year === selectedYear && scores[ev.staffId]) {
         if (ev.period === '上期') scores[ev.staffId].upper = ev.totalScore;
         if (ev.period === '下期') scores[ev.staffId].lower = ev.totalScore;
       }
@@ -40,7 +51,7 @@ export const Dashboard: React.FC = () => {
        const orderB = b.staff.order !== undefined ? b.staff.order : 9999;
        return orderA - orderB;
     });
-  }, [staffList, evaluations]);
+  }, [staffList, evaluations, selectedYear]);
 
   const getRank = (score: number | null) => {
     if (score === null) return '-';
@@ -122,10 +133,6 @@ export const Dashboard: React.FC = () => {
     window.print();
   };
 
-  const getDetailEval = (staffId: string, period: string) => {
-    return evaluations.find(e => e.staffId === staffId && e.period === period);
-  };
-
   return (
     <div className="animate-fade-in">
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -133,7 +140,17 @@ export const Dashboard: React.FC = () => {
           <h1 className="page-title">評価集計・ログ</h1>
           <p className="page-subtitle">保存された評価ログと年間集計を確認します</p>
         </div>
-        <div className="no-print" style={{ display: 'flex', gap: '8px' }}>
+        <div className="no-print" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <select 
+            className="form-select" 
+            style={{ width: '120px' }}
+            value={selectedYear} 
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+          >
+            {availableYears.map(year => (
+              <option key={year} value={year}>{year}年度</option>
+            ))}
+          </select>
           <button className="btn btn-outline" onClick={handleDownloadCSV} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Download size={16} /> CSV出力
           </button>
@@ -144,7 +161,7 @@ export const Dashboard: React.FC = () => {
       </div>
 
       <div className="glass-panel" style={{ padding: 'var(--spacing-6)' }}>
-        <h2 style={{ marginBottom: 'var(--spacing-4)' }}>年間評価一覧</h2>
+        <h2 style={{ marginBottom: 'var(--spacing-4)' }}>{selectedYear}年度 評価一覧</h2>
         <div className="table-container">
           <table className="table">
             <thead>
@@ -188,137 +205,12 @@ export const Dashboard: React.FC = () => {
 
       {/* Detailed Modal */}
       {selectedStaff && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', 
-          backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, 
-          display: 'flex', justifyContent: 'center', alignItems: 'center',
-          padding: '20px'
-        }}>
-          <div className="glass-panel" style={{
-            width: '100%', maxWidth: '800px', maxHeight: '90vh', 
-            overflowY: 'auto', padding: 'var(--spacing-6)', position: 'relative',
-            background: 'var(--bg-card)'
-          }}>
-            <button 
-              className="btn" 
-              style={{ position: 'absolute', top: '16px', right: '16px', padding: '8px', background: 'transparent', border: 'none', color: 'var(--text-secondary)' }}
-              onClick={() => setSelectedStaff(null)}
-            >
-              <X size={24} />
-            </button>
-            
-            <h2 style={{ marginBottom: '8px' }}>{selectedStaff.name} の評価詳細</h2>
-            <div style={{ display: 'flex', gap: '8px', marginBottom: 'var(--spacing-6)' }}>
-              <span className="badge">{selectedStaff.role}</span>
-              <span className="badge">{selectedStaff.type}</span>
-              <span className="badge primary">{selectedStaff.roleTitle}</span>
-            </div>
-
-            <div style={{ display: 'flex', gap: '8px', marginBottom: 'var(--spacing-6)' }}>
-              <button 
-                className={`btn ${detailPeriod === '上期' ? 'btn-primary' : 'btn-outline'}`}
-                onClick={() => setDetailPeriod('上期')}
-              >
-                上期
-              </button>
-              <button 
-                className={`btn ${detailPeriod === '下期' ? 'btn-primary' : 'btn-outline'}`}
-                onClick={() => setDetailPeriod('下期')}
-              >
-                下期
-              </button>
-            </div>
-
-            {(() => {
-              const ev = getDetailEval(selectedStaff.id, detailPeriod);
-              if (!ev) return <p style={{ color: 'var(--text-secondary)' }}>この期の評価データはありません。</p>;
-
-              return (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)' }}>
-                  <div style={{ display: 'flex', gap: 'var(--spacing-4)' }}>
-                    <div className="stat-card" style={{ flex: 1, padding: '16px', background: 'var(--bg-surface)', borderRadius: '8px' }}>
-                      <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>総合点数</p>
-                      <h3 style={{ fontSize: '1.5rem', color: 'var(--accent-primary)' }}>{ev.totalScore} 点</h3>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', marginBottom: '16px' }}>1. 業績・案件貢献（{ev.performanceScore}点）</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', fontSize: '0.875rem' }}>
-                      <div>自己評価: {ev.performanceDetails[0]}</div>
-                      <div>1次評価: {ev.performanceDetails[1]}</div>
-                      <div style={{ fontWeight: 'bold' }}>最終確定: {ev.performanceDetails[2]}</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', marginBottom: '16px' }}>2. 個人テーマ（{ev.themeScore}点）</h3>
-                    <ul style={{ paddingLeft: '20px', marginBottom: '16px', fontSize: '0.875rem' }}>
-                      {ev.themeTexts?.map((t, i) => t ? <li key={i}>{t}</li> : null)}
-                    </ul>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', fontSize: '0.875rem' }}>
-                      <div>自己評価: {ev.themeDetails[0]}</div>
-                      <div>1次評価: {ev.themeDetails[1]}</div>
-                      <div style={{ fontWeight: 'bold' }}>最終確定: {ev.themeDetails[2]}</div>
-                    </div>
-                  </div>
-
-                  {(selectedStaff.isLeader || selectedStaff.isSubLeader) && (
-                    <div>
-                      <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', marginBottom: '16px' }}>3. チーム目標達成度（{ev.teamScore}点）</h3>
-                      <ul style={{ paddingLeft: '20px', marginBottom: '16px', fontSize: '0.875rem' }}>
-                        {ev.teamTexts?.map((t, i) => t ? <li key={i}>{t}</li> : null)}
-                      </ul>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', fontSize: '0.875rem' }}>
-                        <div>自己評価: {ev.teamDetails[0]}</div>
-                        <div>1次評価: {ev.teamDetails[1]}</div>
-                        <div style={{ fontWeight: 'bold' }}>最終確定: {ev.teamDetails[2]}</div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div>
-                    <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', marginBottom: '16px' }}>
-                      4. 詳細項目（共通: {ev.commonScore}点, 職種/タイプ: {ev.typeScore}点, リーダー: {ev.leaderScore}点）
-                    </h3>
-                    <table className="table" style={{ fontSize: '0.875rem' }}>
-                      <thead>
-                        <tr>
-                          <th>項目名</th>
-                          <th style={{ width: '60px', textAlign: 'center' }}>最終点</th>
-                          <th>コメント</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {ev.entries.filter(en => en.finalScore > 0 || en.comment).map((en) => (
-                          <tr key={en.itemId}>
-                            <td>{en.itemId.split('|')[1] || en.itemId}</td>
-                            <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{en.finalScore}</td>
-                            <td>{en.comment || '-'}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {(ev.bonusScore > 0 || ev.bonusComment) && (
-                    <div>
-                      <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', marginBottom: '16px' }}>加点評価（{ev.bonusScore}点）</h3>
-                      <p style={{ fontSize: '0.875rem' }}>{ev.bonusComment || '-'}</p>
-                    </div>
-                  )}
-
-                  <div>
-                    <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', marginBottom: '16px' }}>総合コメント</h3>
-                    <p style={{ fontSize: '0.875rem', whiteSpace: 'pre-wrap', background: 'var(--bg-surface)', padding: '16px', borderRadius: '8px' }}>
-                      {ev.generalComment || 'コメントなし'}
-                    </p>
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
-        </div>
+        <EvaluationDetailModal
+          staff={selectedStaff}
+          evaluations={evaluations.filter(e => e.year === selectedYear)}
+          initialPeriod={detailPeriod}
+          onClose={() => setSelectedStaff(null)}
+        />
       )}
     </div>
   );
