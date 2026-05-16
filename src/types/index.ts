@@ -14,6 +14,7 @@ export interface Staff {
   isSubLeader: boolean;
   roleTitle: string;
   createdAt: string;
+  password?: string;
 }
 
 export interface EvaluationItem {

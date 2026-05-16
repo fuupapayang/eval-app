@@ -81,6 +81,7 @@ export const StaffList: React.FC = () => {
               <th>職種</th>
               <th>タイプ</th>
               <th>役割</th>
+              <th>パスワード</th>
               <th>登録日</th>
               <th>操作</th>
             </tr>
@@ -115,6 +116,16 @@ export const StaffList: React.FC = () => {
                         <label style={{fontSize: '0.75rem'}}><input type="checkbox" checked={editForm.isSubLeader} onChange={e => setEditForm({...editForm, isSubLeader: e.target.checked})} /> サブリーダー</label>
                       </div>
                     </td>
+                    <td>
+                      <input 
+                        type="text" 
+                        className="form-input" 
+                        value={editForm.password || ''} 
+                        onChange={e => setEditForm({...editForm, password: e.target.value})} 
+                        placeholder={staff.id.replace('staff-', '').padStart(4, '0')} 
+                        style={{ width: '80px' }}
+                      />
+                    </td>
                     <td style={{fontSize: '0.875rem', color: 'var(--text-secondary)'}}>{formatDate(staff.createdAt)}</td>
                     <td>
                       <div style={{display: 'flex', gap: '8px'}}>
@@ -141,6 +152,9 @@ export const StaffList: React.FC = () => {
                       ) : (
                         <span className="badge">{staff.roleTitle}</span>
                       )}
+                    </td>
+                    <td style={{fontFamily: 'monospace', color: 'var(--text-secondary)'}}>
+                      {staff.password || <span style={{opacity: 0.5}}>{staff.id.replace('staff-', '').padStart(4, '0')} (初期)</span>}
                     </td>
                     <td style={{fontSize: '0.875rem', color: 'var(--text-secondary)'}}>{formatDate(staff.createdAt)}</td>
                     <td>

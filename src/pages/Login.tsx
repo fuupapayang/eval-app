@@ -25,8 +25,10 @@ export const Login: React.FC = () => {
     if (!selectedStaffId) return;
     const staff = staffList.find(s => s.id === selectedStaffId);
     if (staff) {
-      // Create expected password based on ID (staff-1 -> 0001)
-      const expectedPassword = staff.id.replace('staff-', '').padStart(4, '0');
+      // Use custom password if set, otherwise fallback to expected default (staff-1 -> 0001)
+      const defaultPassword = staff.id.replace('staff-', '').padStart(4, '0');
+      const expectedPassword = staff.password || defaultPassword;
+      
       if (staffPassword === expectedPassword) {
         login({ type: 'STAFF', staff });
         navigate('/mypage');
@@ -74,6 +76,9 @@ export const Login: React.FC = () => {
           >
             ログイン
           </button>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 'var(--spacing-3)', textAlign: 'center' }}>
+            ※パスワードを忘れた場合はMasterにご確認ください。
+          </p>
         </div>
 
         <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: 'var(--spacing-6)' }}>

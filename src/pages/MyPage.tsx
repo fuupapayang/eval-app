@@ -13,6 +13,14 @@ export const MyPage: React.FC = () => {
 
   const [themeTexts, setThemeTexts] = useState<[string, string, string]>(['', '', '']);
   const [teamTexts, setTeamTexts] = useState<[string, string, string]>(['', '', '']);
+  
+  // Password state
+  const updateStaff = useStore(state => state.updateStaff);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
 
   if (!currentUser || currentUser.type !== 'STAFF') {
     return <div>権限がありません</div>;
@@ -64,6 +72,43 @@ export const MyPage: React.FC = () => {
     });
 
     alert('目標を保存しました。');
+  };
+
+  const handleChangePassword = async () => {
+    setPasswordError('');
+    setPasswordSuccess('');
+    
+    // Check current password
+    const defaultPassword = staff.id.replace('staff-', '').padStart(4, '0');
+    const expectedCurrent = staff.password || defaultPassword;
+    
+    if (currentPassword !== expectedCurrent) {
+      setPasswordError('現在のパスワードが間違っています。');
+      return;
+    }
+    
+    if (newPassword.length < 4) {
+      setPasswordError('新しいパスワードは4文字以上で設定してください。');
+      return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+      setPasswordError('新しいパスワード（確認用）が一致しません。');
+      return;
+    }
+    
+    try {
+      await updateStaff({
+        ...staff,
+        password: newPassword
+      });
+      setPasswordSuccess('パスワードを変更しました。');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      setPasswordError('エラーが発生しました。');
+    }
   };
 
   const myEvaluations = useMemo(() => {
@@ -152,6 +197,29 @@ export const MyPage: React.FC = () => {
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'var(--spacing-4)' }}>
           <button className="btn btn-primary" onClick={handleSaveGoals}>目標を保存</button>
+        </div>
+      </div>
+
+      <div className="glass-panel" style={{ padding: 'var(--spacing-6)', marginBottom: 'var(--spacing-8)' }}>
+        <h2 style={{ marginBottom: 'var(--spacing-4)' }}>パスワード設定</h2>
+        {passwordError && <div style={{ color: 'var(--danger)', marginBottom: 'var(--spacing-4)', fontSize: '0.875rem' }}>{passwordError}</div>}
+        {passwordSuccess && <div style={{ color: 'var(--success)', marginBottom: 'var(--spacing-4)', fontSize: '0.875rem' }}>{passwordSuccess}</div>}
+        <div style={{ display: 'flex', gap: 'var(--spacing-4)', flexWrap: 'wrap' }}>
+          <div className="form-group" style={{ flex: 1, minWidth: '200px' }}>
+            <label className="form-label">現在のパスワード</label>
+            <input type="password" className="form-input" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
+          </div>
+          <div className="form-group" style={{ flex: 1, minWidth: '200px' }}>
+            <label className="form-label">新しいパスワード</label>
+            <input type="password" className="form-input" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+          </div>
+          <div className="form-group" style={{ flex: 1, minWidth: '200px' }}>
+            <label className="form-label">新しいパスワード（確認）</label>
+            <input type="password" className="form-input" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
+          </div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'var(--spacing-4)' }}>
+          <button className="btn btn-outline" onClick={handleChangePassword} disabled={!currentPassword || !newPassword || !confirmPassword}>パスワードを変更</button>
         </div>
       </div>
 
