@@ -204,6 +204,14 @@ export const StaffList: React.FC = () => {
                             <option value="一般">一般</option>
                             <option value="新人">新人</option>
                           </select>
+                          <label style={{ fontSize: '0.75rem', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <input 
+                              type="checkbox" 
+                              checked={!!editForm.canEditTeamGoals} 
+                              onChange={e => setEditForm({...editForm, canEditTeamGoals: e.target.checked})} 
+                            />
+                            チーム目標入力権限
+                          </label>
                         </td>
                         <td>
                           <input 
@@ -293,6 +301,14 @@ export const StaffList: React.FC = () => {
                         <option value="一般">一般</option>
                         <option value="新人">新人</option>
                       </select>
+                      <label style={{ fontSize: '0.75rem', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <input 
+                          type="checkbox" 
+                          checked={!!editForm.canEditTeamGoals} 
+                          onChange={e => setEditForm({...editForm, canEditTeamGoals: e.target.checked})} 
+                        />
+                        チーム目標入力権限
+                      </label>
                     </td>
                     <td>
                       <input 

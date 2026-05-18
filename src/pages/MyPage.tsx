@@ -31,7 +31,7 @@ export const MyPage: React.FC = () => {
   }
 
   const staff = currentUser.staff;
-  const isLeader = staff.isLeader || staff.isSubLeader;
+
 
   // Load goals when period/year changes
   React.useEffect(() => {
@@ -46,6 +46,8 @@ export const MyPage: React.FC = () => {
       setSelfComment('');
     }
   }, [staff.id, period, year, getEvaluation]);
+
+  const canEditTeam = staff.isLeader || staff.isSubLeader || staff.canEditTeamGoals;
 
   const handleSaveGoals = () => {
     const existing = getEvaluation(staff.id, period, year);
@@ -73,7 +75,7 @@ export const MyPage: React.FC = () => {
     saveEvaluation({
       ...evalData,
       themeTexts,
-      teamTexts: isLeader ? teamTexts : evalData.teamTexts,
+      teamTexts: canEditTeam ? teamTexts : evalData.teamTexts,
       selfComment,
       updatedAt: new Date().toISOString()
     });
@@ -192,12 +194,12 @@ export const MyPage: React.FC = () => {
                     setTeamTexts(newTexts);
                   }}
                   placeholder="チームとして達成したい目標"
-                  disabled={!isLeader}
+                  disabled={!canEditTeam}
                 />
               </div>
             ))}
-            {!isLeader && (
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '8px' }}>※チーム目標の入力はリーダーのみ可能です</p>
+            {!canEditTeam && (
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '8px' }}>※チーム目標の入力権限がありません</p>
             )}
           </div>
         </div>

@@ -12,6 +12,7 @@ export interface Staff {
   type: StaffType;
   isLeader: boolean;
   isSubLeader: boolean;
+  canEditTeamGoals?: boolean;
   roleTitle: string;
   createdAt: string;
   password?: string;

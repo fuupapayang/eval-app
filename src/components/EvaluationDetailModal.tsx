@@ -97,7 +97,7 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                 </div>
               </div>
 
-              {(staff.isLeader || staff.isSubLeader) && (
+              {(staff.isLeader || staff.isSubLeader || staff.canEditTeamGoals) && (
                 <div>
                   <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', marginBottom: '16px' }}>3. チーム目標達成度（{ev.teamScore}点）</h3>
                   <ul style={{ paddingLeft: '20px', marginBottom: '16px', fontSize: '0.875rem' }}>
