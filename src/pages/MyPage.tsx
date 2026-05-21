@@ -286,6 +286,16 @@ export const MyPage: React.FC = () => {
                   </div>
                 </div>
               )}
+
+              {/* Years of Service Panel */}
+              <div style={{ background: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--neu-shadow-inset)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+                <h4 style={{ textAlign: 'center', marginBottom: '16px', color: 'var(--text-secondary)' }}>勤続年数</h4>
+                <div style={{ fontSize: '76px', fontWeight: 'bold', lineHeight: 1, color: 'var(--accent-primary)', textShadow: '2px 2px 8px rgba(0,0,0,0.1)' }}>
+                  {staff.joinedAt ? getYearsOfService(staff.joinedAt) : '-'}<span style={{ fontSize: '24px', color: 'var(--text-secondary)', marginLeft: '4px' }}>年</span>
+                </div>
+                <p style={{ marginTop: '16px', color: 'var(--text-muted)' }}>入社日: {staff.joinedAt ? staff.joinedAt : '未設定'}</p>
+              </div>
+
             </div>
           </div>
 
@@ -308,14 +318,6 @@ export const MyPage: React.FC = () => {
                 />
               </div>
             ))}
-
-            <div style={{ marginTop: 'var(--spacing-8)', padding: 'var(--spacing-6)', background: 'var(--bg-surface)', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--neu-shadow-inset)', textAlign: 'center' }}>
-              <h3 style={{ color: 'var(--text-secondary)', marginBottom: '16px' }}>勤続年数</h3>
-              <div style={{ fontSize: '76px', fontWeight: 'bold', lineHeight: 1, color: 'var(--accent-primary)', textShadow: '2px 2px 8px rgba(0,0,0,0.1)' }}>
-                {staff.joinedAt ? getYearsOfService(staff.joinedAt) : '-'}<span style={{ fontSize: '24px', color: 'var(--text-secondary)', marginLeft: '4px' }}>年</span>
-              </div>
-              <p style={{ marginTop: '12px', color: 'var(--text-muted)' }}>入社日: {staff.joinedAt ? staff.joinedAt : '未設定'}</p>
-            </div>
           </div>
 
           <div>
