@@ -77,6 +77,8 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 1.05rem; /* Slightly larger base font */
+  line-height: 1.6;
 }
 
 /* Background gradient overlay (subtle) */
@@ -189,6 +191,69 @@ input, select, textarea {
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
   letter-spacing: -0.05em;
+}
+
+/* Accordions (details / summary) */
+details.neu-accordion {
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--neu-shadow);
+  margin-bottom: var(--spacing-6);
+  transition: all var(--transition-normal);
+  overflow: hidden;
+}
+
+details.neu-accordion > summary {
+  padding: var(--spacing-6);
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  outline: none;
+}
+
+details.neu-accordion > summary::-webkit-details-marker {
+  display: none;
+}
+
+details.neu-accordion > summary::after {
+  content: '▼';
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  transition: transform var(--transition-normal);
+}
+
+details.neu-accordion[open] > summary::after {
+  transform: rotate(180deg);
+}
+
+details.neu-accordion[open] > summary {
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.accordion-body {
+  padding: var(--spacing-6);
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Card List */
+.neu-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-5);
+}
+
+.neu-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--neu-shadow);
+  padding: var(--spacing-5);
+  transition: all var(--transition-normal);
+  position: relative;
 }
 
 /* Forms & Buttons */

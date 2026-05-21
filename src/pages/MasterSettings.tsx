@@ -117,74 +117,82 @@ export const MasterSettings: React.FC = () => {
           </button>
         </div>
         {Object.entries(groupedItems).map(([type, items]) => (
-          <div key={type} style={{ marginBottom: 'var(--spacing-8)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-3)' }}>
-              <h3 style={{ color: 'var(--accent-primary)', margin: 0 }}>{type}</h3>
-              <button className="btn btn-outline" style={{ padding: '4px 12px', fontSize: '0.75rem' }} onClick={() => handleAdd(type)} disabled={editingId !== null}>
-                ＋ 項目追加
-              </button>
-            </div>
-            <div className="table-container">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th style={{ width: '50px' }}>No</th>
-                    <th style={{ width: '200px' }}>評価項目</th>
-                    <th>評価内容</th>
-                    <th>達成水準</th>
-                    <th style={{ width: '120px' }}>操作</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map(item => (
-                    <tr key={item.id}>
-                      {editingId === item.id && editForm ? (
-                        <>
-                          <td><input type="number" className="form-input" value={editForm.no} onChange={e => setEditForm({...editForm, no: Number(e.target.value)})} style={{width: '60px'}} /></td>
-                          <td><input className="form-input" value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} placeholder="項目名" /></td>
-                          <td><textarea className="form-input" value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} rows={2} /></td>
-                          <td><textarea className="form-input" value={editForm.achievementLevel} onChange={e => setEditForm({...editForm, achievementLevel: e.target.value})} rows={2} /></td>
-                          <td>
-                            <div style={{display: 'flex', gap: '4px', flexDirection: 'column'}}>
-                              <button className="btn btn-primary" style={{padding: '4px', fontSize: '0.75rem'}} onClick={handleSave}>保存</button>
-                              <button className="btn btn-outline" style={{padding: '4px', fontSize: '0.75rem'}} onClick={handleCancel}>取消</button>
-                            </div>
-                          </td>
-                        </>
-                      ) : (
-                        <>
-                          <td>{item.no}</td>
-                          <td style={{ fontWeight: 600 }}>{item.name}</td>
-                          <td>{item.description}</td>
-                          <td style={{ color: 'var(--text-secondary)' }}>{item.achievementLevel}</td>
-                          <td>
-                            <div style={{display: 'flex', gap: '4px'}}>
-                              <button className="btn btn-outline" style={{padding: '4px 8px', fontSize: '0.75rem'}} onClick={() => handleEdit(item)}>編集</button>
-                              <button className="btn btn-outline" style={{padding: '4px 8px', fontSize: '0.75rem', borderColor: 'var(--danger)', color: 'var(--danger)'}} onClick={() => handleDelete(item.id)}>削除</button>
-                            </div>
-                          </td>
-                        </>
-                      )}
-                    </tr>
-                  ))}
-                  {editingId === `NEW_${type}` && editForm && (
+          <details key={type} className="neu-accordion" open={false}>
+            <summary>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
+                <span style={{ color: 'var(--accent-primary)', fontSize: '1.2rem' }}>{type}</span>
+                <span className="badge">{items.length} 項目</span>
+              </div>
+            </summary>
+            
+            <div className="accordion-body">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--spacing-4)' }}>
+                <button className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => handleAdd(type)} disabled={editingId !== null}>
+                  ＋ {type}に項目追加
+                </button>
+              </div>
+              <div className="table-container">
+                <table className="table">
+                  <thead>
                     <tr>
-                      <td><input type="number" className="form-input" value={editForm.no} onChange={e => setEditForm({...editForm, no: Number(e.target.value)})} style={{width: '60px'}} /></td>
-                      <td><input className="form-input" value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} placeholder="項目名" /></td>
-                      <td><textarea className="form-input" value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} rows={2} /></td>
-                      <td><textarea className="form-input" value={editForm.achievementLevel} onChange={e => setEditForm({...editForm, achievementLevel: e.target.value})} rows={2} /></td>
-                      <td>
-                        <div style={{display: 'flex', gap: '4px', flexDirection: 'column'}}>
-                          <button className="btn btn-primary" style={{padding: '4px', fontSize: '0.75rem'}} onClick={handleSave}>追加</button>
-                          <button className="btn btn-outline" style={{padding: '4px', fontSize: '0.75rem'}} onClick={handleCancel}>取消</button>
-                        </div>
-                      </td>
+                      <th style={{ width: '50px' }}>No</th>
+                      <th style={{ width: '200px' }}>評価項目</th>
+                      <th>評価内容</th>
+                      <th>達成水準</th>
+                      <th style={{ width: '120px' }}>操作</th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {items.map(item => (
+                      <tr key={item.id}>
+                        {editingId === item.id && editForm ? (
+                          <>
+                            <td><input type="number" className="form-input" value={editForm.no} onChange={e => setEditForm({...editForm, no: Number(e.target.value)})} style={{width: '60px'}} /></td>
+                            <td><input className="form-input" value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} placeholder="項目名" /></td>
+                            <td><textarea className="form-input" value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} rows={2} /></td>
+                            <td><textarea className="form-input" value={editForm.achievementLevel} onChange={e => setEditForm({...editForm, achievementLevel: e.target.value})} rows={2} /></td>
+                            <td>
+                              <div style={{display: 'flex', gap: '8px', flexDirection: 'column'}}>
+                                <button className="btn btn-primary" style={{padding: '6px', fontSize: '0.75rem'}} onClick={handleSave}>保存</button>
+                                <button className="btn btn-outline" style={{padding: '6px', fontSize: '0.75rem'}} onClick={handleCancel}>取消</button>
+                              </div>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td>{item.no}</td>
+                            <td style={{ fontWeight: 600 }}>{item.name}</td>
+                            <td>{item.description}</td>
+                            <td style={{ color: 'var(--text-secondary)' }}>{item.achievementLevel}</td>
+                            <td>
+                              <div style={{display: 'flex', gap: '8px', flexDirection: 'column'}}>
+                                <button className="btn btn-outline" style={{padding: '6px 12px', fontSize: '0.75rem'}} onClick={() => handleEdit(item)}>編集</button>
+                                <button className="btn btn-outline" style={{padding: '6px 12px', fontSize: '0.75rem', borderColor: 'var(--danger)', color: 'var(--danger)'}} onClick={() => handleDelete(item.id)}>削除</button>
+                              </div>
+                            </td>
+                          </>
+                        )}
+                      </tr>
+                    ))}
+                    {editingId === `NEW_${type}` && editForm && (
+                      <tr>
+                        <td><input type="number" className="form-input" value={editForm.no} onChange={e => setEditForm({...editForm, no: Number(e.target.value)})} style={{width: '60px'}} /></td>
+                        <td><input className="form-input" value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} placeholder="項目名" /></td>
+                        <td><textarea className="form-input" value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} rows={2} /></td>
+                        <td><textarea className="form-input" value={editForm.achievementLevel} onChange={e => setEditForm({...editForm, achievementLevel: e.target.value})} rows={2} /></td>
+                        <td>
+                          <div style={{display: 'flex', gap: '8px', flexDirection: 'column'}}>
+                            <button className="btn btn-primary" style={{padding: '6px', fontSize: '0.75rem'}} onClick={handleSave}>追加</button>
+                            <button className="btn btn-outline" style={{padding: '6px', fontSize: '0.75rem'}} onClick={handleCancel}>取消</button>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          </details>
         ))}
       </div>
     </div>
