@@ -142,7 +142,19 @@ export const MyPage: React.FC = () => {
   const masterItems = useStore(state => state.masterItems);
   const currentEval = getEvaluation(staff.id, period, year);
 
-  // Prepare Chart Data for current evaluation
+  const getYearsOfService = (joinedAt?: string) => {
+    if (!joinedAt) return 0;
+    const joinedDate = new Date(joinedAt);
+    const today = new Date();
+    let years = today.getFullYear() - joinedDate.getFullYear();
+    const m = today.getMonth() - joinedDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < joinedDate.getDate())) {
+      years--;
+    }
+    return Math.max(0, years);
+  };
+
+  // State for targets and self-evals (these are saved independently of the main evaluation by the staff)
   const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981'];
   
   let performanceData: any[] = [];
@@ -296,6 +308,16 @@ export const MyPage: React.FC = () => {
                 />
               </div>
             ))}
+
+            {staff.joinedAt && (
+              <div style={{ marginTop: 'var(--spacing-8)', padding: 'var(--spacing-6)', background: 'var(--bg-surface)', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--neu-shadow-inset)', textAlign: 'center' }}>
+                <h3 style={{ color: 'var(--text-secondary)', marginBottom: '16px' }}>勤続年数</h3>
+                <div style={{ fontSize: '76px', fontWeight: 'bold', lineHeight: 1, color: 'var(--accent-primary)', textShadow: '2px 2px 8px rgba(0,0,0,0.1)' }}>
+                  {getYearsOfService(staff.joinedAt)}<span style={{ fontSize: '24px', color: 'var(--text-secondary)', marginLeft: '4px' }}>年</span>
+                </div>
+                <p style={{ marginTop: '12px', color: 'var(--text-muted)' }}>入社日: {staff.joinedAt}</p>
+              </div>
+            )}
           </div>
 
           <div>
