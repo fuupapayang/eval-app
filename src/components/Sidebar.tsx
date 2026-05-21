@@ -18,7 +18,7 @@ export const Sidebar: React.FC = () => {
       <div className="sidebar-header">
         <div className="sidebar-brand">
           <ShieldCheck className="w-6 h-6" style={{ color: 'var(--accent-primary)' }} />
-          <span>EvalSystem</span>
+          <span>QLEA Career Compass</span>
         </div>
       </div>
       <nav className="nav-links" style={{ flexGrow: 1 }}>

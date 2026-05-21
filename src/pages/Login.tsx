@@ -42,7 +42,7 @@ export const Login: React.FC = () => {
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
       <div className="glass-panel" style={{ padding: 'var(--spacing-8)', width: '100%', maxWidth: '400px' }}>
         <h1 className="gradient-text" style={{ textAlign: 'center', marginBottom: 'var(--spacing-6)', fontSize: '2rem' }}>
-          Evaluation System
+          QLEA Career Compass
         </h1>
         
         {error && <div style={{ color: 'var(--danger)', marginBottom: 'var(--spacing-4)', textAlign: 'center', fontSize: '0.875rem' }}>{error}</div>}
