@@ -28,11 +28,11 @@
   --border-highlight: rgba(255, 255, 255, 0.8);
   --border-focus: rgba(59, 130, 246, 0.5);
 
-  /* Neumorphism Shadows */
-  --neu-shadow: 8px 8px 16px #c4c8d2, -8px -8px 16px #ffffff;
-  --neu-shadow-hover: 12px 12px 20px #c4c8d2, -12px -12px 20px #ffffff;
+  /* Neumorphism Specs (Softened by 50%) */
+  --neu-shadow: 4px 4px 10px rgba(0, 0, 0, 0.05), -4px -4px 10px rgba(255, 255, 255, 0.5);
+  --neu-shadow-hover: 6px 6px 15px rgba(0, 0, 0, 0.06), -6px -6px 15px rgba(255, 255, 255, 0.6);
   --neu-shadow-active: inset 4px 4px 8px #c4c8d2, inset -4px -4px 8px #ffffff;
-  --neu-shadow-inset: inset 6px 6px 12px #c4c8d2, inset -6px -6px 12px #ffffff;
+  --neu-shadow-inset: inset 3px 3px 6px rgba(0, 0, 0, 0.04), inset -3px -3px 6px rgba(255, 255, 255, 0.4);
 
   /* Dark Sidebar */
   --sidebar-bg: #1e2024;
@@ -77,8 +77,8 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-size: 1.05rem; /* Slightly larger base font */
-  line-height: 1.6;
+  font-size: 0.95rem; /* Reduced font size back down slightly */
+  line-height: 1.5;
 }
 
 /* Background gradient overlay (subtle) */
@@ -204,9 +204,9 @@ details.neu-accordion {
 }
 
 details.neu-accordion > summary {
-  padding: var(--spacing-6);
+  padding: var(--spacing-5);
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   cursor: pointer;
   list-style: none;
   display: flex;
