@@ -54,7 +54,16 @@ export const EvaluationForm: React.FC = () => {
         setGeneralComment(existing.generalComment || '');
         setEvaluationDate(existing.evaluationDate || new Date().toISOString().split('T')[0]);
         setReviewer(existing.reviewer || '');
-        // Note: commonScores and typeScores would also need to be saved/loaded. Currently they are calculated.
+        
+        if (existing.entries && existing.entries.length > 0) {
+          const loadedTypeScores: Record<string, number> = {};
+          existing.entries.forEach(entry => {
+            loadedTypeScores[entry.itemId] = entry.finalScore;
+          });
+          setTypeScores(loadedTypeScores);
+        } else {
+          setTypeScores({});
+        }
       } else {
         setPerformanceDetails([0, 0, 0]);
         setThemeDetails([0, 0, 0]);
@@ -112,7 +121,14 @@ export const EvaluationForm: React.FC = () => {
       bonusScore,
       bonusComment,
       totalScore,
-      entries: [], // Detailed entries can be saved here if we expand
+      entries: typeItems.map(item => ({
+        itemId: item.id,
+        selfScore: 0,
+        primaryScore: typeScores[item.id] || 0,
+        secondaryScore: 0,
+        finalScore: typeScores[item.id] || 0,
+        comment: ''
+      })),
       generalComment,
       updatedAt: new Date().toISOString()
     });
