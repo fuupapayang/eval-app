@@ -39,7 +39,7 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
       <div className="glass-panel animate-fade-in" style={{
         width: '100%', maxWidth: '900px', maxHeight: '90vh', 
         overflowY: 'auto', padding: 'var(--spacing-6)', position: 'relative',
-        background: 'var(--bg-card)'
+        background: 'var(--bg-surface)'
       }}>
         <button 
           className="btn" 
@@ -126,7 +126,7 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                           <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fill: 'var(--text-muted)' }} />
                           <Radar name={staff.name} dataKey="score" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.5} />
                           <RechartsTooltip 
-                            contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+                          contentStyle={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
                             itemStyle={{ color: 'var(--text-primary)' }}
                           />
                         </RadarChart>
@@ -145,7 +145,7 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                         <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{fontSize: 12}} />
                         <YAxis domain={[0, 10]} stroke="var(--text-secondary)" tick={{fontSize: 12}} />
                         <RechartsTooltip 
-                          contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+                          contentStyle={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
                           cursor={{ fill: 'rgba(255,255,255,0.05)' }}
                         />
                         <Bar dataKey="score" name="獲得点数" radius={[4, 4, 0, 0]}>
@@ -169,7 +169,7 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                           <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{fontSize: 12}} />
                           <YAxis domain={[0, 5]} stroke="var(--text-secondary)" tick={{fontSize: 12}} />
                           <RechartsTooltip 
-                            contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+                            contentStyle={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
                             cursor={{ fill: 'rgba(255,255,255,0.05)' }}
                           />
                           <Bar dataKey="score" name="獲得点数" radius={[4, 4, 0, 0]} fill="#ec4899" />

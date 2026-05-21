@@ -220,7 +220,7 @@ export const MyPage: React.FC = () => {
                         <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fill: 'var(--text-muted)' }} />
                         <Radar name={staff.name} dataKey="score" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.4} />
                         <RechartsTooltip 
-                          contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+                          contentStyle={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
                           itemStyle={{ color: 'var(--text-primary)' }}
                         />
                       </RadarChart>
@@ -240,7 +240,7 @@ export const MyPage: React.FC = () => {
                         <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{fontSize: 11}} />
                         <YAxis domain={[0, 10]} stroke="var(--text-secondary)" tick={{fontSize: 11}} />
                         <RechartsTooltip 
-                          contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+                          contentStyle={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
                           cursor={{ fill: 'rgba(0,0,0,0.05)' }}
                         />
                         <Bar dataKey="score" name="獲得点数" radius={[4, 4, 0, 0]}>
@@ -265,7 +265,7 @@ export const MyPage: React.FC = () => {
                         <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{fontSize: 11}} />
                         <YAxis domain={[0, 5]} stroke="var(--text-secondary)" tick={{fontSize: 11}} />
                         <RechartsTooltip 
-                          contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+                          contentStyle={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
                           cursor={{ fill: 'rgba(0,0,0,0.05)' }}
                         />
                         <Bar dataKey="score" name="獲得点数" radius={[4, 4, 0, 0]} fill="#ec4899" />
