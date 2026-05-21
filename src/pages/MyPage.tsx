@@ -161,21 +161,22 @@ export const MyPage: React.FC = () => {
       score: currentEval.themeDetails[i],
       text: text || '未設定'
     })).filter(d => d.text !== '未設定') || [];
-
-    const typeEntries = currentEval.entries.filter(en => {
-      const item = masterItems.find(m => m.id === en.itemId);
-      return item && item.category === '職種・タイプ別評価' && item.type === staff.type;
-    });
-
-    radarData = typeEntries.map(en => {
-      const item = masterItems.find(m => m.id === en.itemId);
-      return {
-        subject: item ? item.name : en.itemId,
-        score: en.finalScore,
-        fullMark: 5
-      };
-    });
   }
+
+  // Always build radar data for the staff's type, even if not yet evaluated
+  const typeItems = masterItems.filter(m => m.category === '職種・タイプ別評価' && m.type === staff.type);
+  radarData = typeItems.map(item => {
+    let score = 0;
+    if (currentEval) {
+      const entry = currentEval.entries.find(en => en.itemId === item.id);
+      if (entry) score = entry.finalScore;
+    }
+    return {
+      subject: item.name,
+      score: score,
+      fullMark: 5
+    };
+  });
 
   return (
     <div className="animate-fade-in">
@@ -201,19 +202,20 @@ export const MyPage: React.FC = () => {
         </div>
 
         {/* Charts Section */}
-        {currentEval && currentEval.totalScore > 0 && (
-          <div style={{ marginTop: 'var(--spacing-8)', marginBottom: 'var(--spacing-8)' }}>
-            <h3 style={{ marginBottom: 'var(--spacing-4)', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>現在の評価状況（{year}年度 {period}）- 総合: {currentEval.totalScore}点</h3>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-              {/* Type/Role Radar Chart */}
-              {radarData.length > 0 && (
-                <div style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
-                  <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)' }}>職種・タイプ別 バランス</h4>
-                  <div style={{ width: '100%', height: 250 }}>
-                    <ResponsiveContainer>
-                      <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
-                        <PolarGrid stroke="rgba(0,0,0,0.1)" />
+        <div style={{ marginTop: 'var(--spacing-8)', marginBottom: 'var(--spacing-8)' }}>
+          <h3 style={{ marginBottom: 'var(--spacing-4)', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
+            現在の評価状況（{year}年度 {period}）{currentEval && currentEval.totalScore > 0 ? `- 総合: ${currentEval.totalScore}点` : '- 評価未確定'}
+          </h3>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+            {/* Type/Role Radar Chart (Always show based on master items) */}
+            {radarData.length > 0 && (
+              <div style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
+                <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)' }}>職種・タイプ別評価（最大 25 点）</h4>
+                <div style={{ width: '100%', height: 250 }}>
+                  <ResponsiveContainer>
+                    <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+                      <PolarGrid stroke="rgba(0,0,0,0.1)" />
                         <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
                         <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fill: 'var(--text-muted)' }} />
                         <Radar name={staff.name} dataKey="score" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.4} />
@@ -230,7 +232,7 @@ export const MyPage: React.FC = () => {
               {/* Performance Bar Chart */}
               {performanceData.length > 0 && (
                 <div style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
-                  <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)' }}>業績・案件貢献（{currentEval.performanceScore}点）</h4>
+                  <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)' }}>業績・案件貢献（{currentEval?.performanceScore || 0}点）</h4>
                   <div style={{ width: '100%', height: 250 }}>
                     <ResponsiveContainer>
                       <BarChart data={performanceData} margin={{ top: 20, right: 30, left: -20, bottom: 5 }}>
@@ -255,7 +257,7 @@ export const MyPage: React.FC = () => {
               {/* Theme Bar Chart */}
               {themeData.length > 0 && (
                 <div style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
-                  <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)' }}>個人テーマ（{currentEval.themeScore}点）</h4>
+                  <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)' }}>個人テーマ（{currentEval?.themeScore || 0}点）</h4>
                   <div style={{ width: '100%', height: 250 }}>
                     <ResponsiveContainer>
                       <BarChart data={themeData} margin={{ top: 20, right: 30, left: -20, bottom: 5 }}>
@@ -274,7 +276,6 @@ export const MyPage: React.FC = () => {
               )}
             </div>
           </div>
-        )}
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-6)' }}>
           <div>
