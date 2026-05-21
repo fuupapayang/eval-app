@@ -2,6 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { useStore } from '../store';
 import type { Period } from '../types';
 import { EvaluationDetailModal } from '../components/EvaluationDetailModal';
+import { 
+  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Cell 
+} from 'recharts';
 
 export const MyPage: React.FC = () => {
   const currentUser = useStore(state => state.currentUser);
@@ -135,6 +139,44 @@ export const MyPage: React.FC = () => {
     return <span className="badge" style={{ color: 'var(--danger)' }}>D</span>;
   };
 
+  const masterItems = useStore(state => state.masterItems);
+  const currentEval = getEvaluation(staff.id, period, year);
+
+  // Prepare Chart Data for current evaluation
+  const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981'];
+  
+  let performanceData: any[] = [];
+  let themeData: any[] = [];
+  let radarData: any[] = [];
+
+  if (currentEval) {
+    performanceData = [
+      { name: '案件貢献', score: currentEval.performanceDetails[0] },
+      { name: '品質・納期', score: currentEval.performanceDetails[1] },
+      { name: '顧客・社内貢献', score: currentEval.performanceDetails[2] },
+    ];
+
+    themeData = currentEval.themeTexts?.map((text, i) => ({
+      name: `テーマ${i+1}`,
+      score: currentEval.themeDetails[i],
+      text: text || '未設定'
+    })).filter(d => d.text !== '未設定') || [];
+
+    const typeEntries = currentEval.entries.filter(en => {
+      const item = masterItems.find(m => m.id === en.itemId);
+      return item && item.category === '職種・タイプ別評価' && item.type === staff.type;
+    });
+
+    radarData = typeEntries.map(en => {
+      const item = masterItems.find(m => m.id === en.itemId);
+      return {
+        subject: item ? item.name : en.itemId,
+        score: en.finalScore,
+        fullMark: 5
+      };
+    });
+  }
+
   return (
     <div className="animate-fade-in">
       <div className="page-header">
@@ -157,6 +199,82 @@ export const MyPage: React.FC = () => {
             </select>
           </div>
         </div>
+
+        {/* Charts Section */}
+        {currentEval && currentEval.totalScore > 0 && (
+          <div style={{ marginTop: 'var(--spacing-8)', marginBottom: 'var(--spacing-8)' }}>
+            <h3 style={{ marginBottom: 'var(--spacing-4)', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>現在の評価状況（{year}年度 {period}）- 総合: {currentEval.totalScore}点</h3>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+              {/* Type/Role Radar Chart */}
+              {radarData.length > 0 && (
+                <div style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
+                  <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)' }}>職種・タイプ別 バランス</h4>
+                  <div style={{ width: '100%', height: 250 }}>
+                    <ResponsiveContainer>
+                      <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+                        <PolarGrid stroke="rgba(0,0,0,0.1)" />
+                        <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
+                        <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fill: 'var(--text-muted)' }} />
+                        <Radar name={staff.name} dataKey="score" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.4} />
+                        <RechartsTooltip 
+                          contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+                          itemStyle={{ color: 'var(--text-primary)' }}
+                        />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
+
+              {/* Performance Bar Chart */}
+              {performanceData.length > 0 && (
+                <div style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
+                  <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)' }}>業績・案件貢献（{currentEval.performanceScore}点）</h4>
+                  <div style={{ width: '100%', height: 250 }}>
+                    <ResponsiveContainer>
+                      <BarChart data={performanceData} margin={{ top: 20, right: 30, left: -20, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+                        <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{fontSize: 11}} />
+                        <YAxis domain={[0, 5]} stroke="var(--text-secondary)" tick={{fontSize: 11}} />
+                        <RechartsTooltip 
+                          contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+                          cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                        />
+                        <Bar dataKey="score" name="獲得点数" radius={[4, 4, 0, 0]}>
+                          {performanceData.map((_, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
+
+              {/* Theme Bar Chart */}
+              {themeData.length > 0 && (
+                <div style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
+                  <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)' }}>個人テーマ（{currentEval.themeScore}点）</h4>
+                  <div style={{ width: '100%', height: 250 }}>
+                    <ResponsiveContainer>
+                      <BarChart data={themeData} margin={{ top: 20, right: 30, left: -20, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+                        <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{fontSize: 11}} />
+                        <YAxis domain={[0, 5]} stroke="var(--text-secondary)" tick={{fontSize: 11}} />
+                        <RechartsTooltip 
+                          contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+                          cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                        />
+                        <Bar dataKey="score" name="獲得点数" radius={[4, 4, 0, 0]} fill="#ec4899" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-6)' }}>
           <div>
