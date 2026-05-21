@@ -139,6 +139,14 @@ export const MyPage: React.FC = () => {
     return <span className="badge" style={{ color: 'var(--danger)' }}>D</span>;
   };
 
+  const getRankLetter = (score: number) => {
+    if (score >= 90) return { letter: 'S', color: 'var(--accent-primary)' };
+    if (score >= 80) return { letter: 'A', color: 'var(--success)' };
+    if (score >= 70) return { letter: 'B', color: 'var(--warning)' };
+    if (score >= 60) return { letter: 'C', color: 'var(--text-primary)' };
+    return { letter: 'D', color: 'var(--danger)' };
+  };
+
   const masterItems = useStore(state => state.masterItems);
   const currentEval = getEvaluation(staff.id, period, year);
 
@@ -238,7 +246,7 @@ export const MyPage: React.FC = () => {
                       <BarChart data={performanceData} margin={{ top: 20, right: 30, left: -20, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
                         <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{fontSize: 11}} />
-                        <YAxis domain={[0, 5]} stroke="var(--text-secondary)" tick={{fontSize: 11}} />
+                        <YAxis domain={[0, 10]} stroke="var(--text-secondary)" tick={{fontSize: 11}} />
                         <RechartsTooltip 
                           contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
                           cursor={{ fill: 'rgba(0,0,0,0.05)' }}
@@ -296,6 +304,17 @@ export const MyPage: React.FC = () => {
                 />
               </div>
             ))}
+            
+            {/* Rank display at the bottom of the left column */}
+            {currentEval && currentEval.totalScore > 0 && (
+              <div style={{ marginTop: 'var(--spacing-8)', padding: 'var(--spacing-6)', background: 'var(--bg-surface)', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--neu-shadow-inset)', textAlign: 'center' }}>
+                <h3 style={{ color: 'var(--text-secondary)', marginBottom: '16px' }}>現在のランク（{year}年度 {period}）</h3>
+                <div style={{ fontSize: '76px', fontWeight: 'bold', lineHeight: 1, color: getRankLetter(currentEval.totalScore).color, textShadow: '2px 2px 8px rgba(0,0,0,0.1)' }}>
+                  {getRankLetter(currentEval.totalScore).letter}
+                </div>
+                <p style={{ marginTop: '12px', color: 'var(--text-muted)' }}>総合: {currentEval.totalScore} / 120 点</p>
+              </div>
+            )}
           </div>
 
           <div>

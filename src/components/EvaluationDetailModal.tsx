@@ -143,7 +143,7 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                       <BarChart data={performanceData} margin={{ top: 20, right: 30, left: -20, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                         <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{fontSize: 12}} />
-                        <YAxis domain={[0, 5]} stroke="var(--text-secondary)" tick={{fontSize: 12}} />
+                        <YAxis domain={[0, 10]} stroke="var(--text-secondary)" tick={{fontSize: 12}} />
                         <RechartsTooltip 
                           contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
                           cursor={{ fill: 'rgba(255,255,255,0.05)' }}

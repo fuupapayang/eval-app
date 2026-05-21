@@ -171,7 +171,7 @@ export const EvaluationForm: React.FC = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-6)', borderBottom: '1px solid var(--border-color)', paddingBottom: 'var(--spacing-4)' }}>
             <h2>評価シート入力</h2>
             <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>
-              合計点数: <span className="gradient-text">{totalScore}</span> / 100 点
+              合計点数: <span className="gradient-text">{totalScore}</span> / 120 点
             </div>
           </div>
 
@@ -187,17 +187,17 @@ export const EvaluationForm: React.FC = () => {
                 </div>
               )}
 
-              <h3 style={{ marginBottom: 'var(--spacing-3)' }}>① 業績・案件貢献（最大15点）</h3>
+              <h3 style={{ marginBottom: 'var(--spacing-3)' }}>① 業績・案件貢献（最大30点）</h3>
               <div style={{ background: 'rgba(0,0,0,0.1)', padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
                 <div className="form-group">
                   <label className="form-label">1. 案件貢献</label>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px', marginTop: '-4px' }}>担当案件の売上・利益・継続受注への貢献</p>
                   <select className="form-select" value={performanceDetails[0]} onChange={e => setPerformanceDetails([Number(e.target.value), performanceDetails[1], performanceDetails[2]])}>
-                    <option value={5}>5: 大きく貢献した</option>
-                    <option value={4}>4: 十分に貢献した</option>
-                    <option value={3}>3: 標準的に貢献した</option>
-                    <option value={2}>2: 貢献は限定的だった</option>
-                    <option value={1}>1: 貢献が不足していた</option>
+                    <option value={10}>10: 大きく貢献した</option>
+                    <option value={8}>8: 十分に貢献した</option>
+                    <option value={6}>6: 標準的に貢献した</option>
+                    <option value={4}>4: 貢献は限定的だった</option>
+                    <option value={2}>2: 貢献が不足していた</option>
                     <option value={0}>0: 該当なし／評価対象外</option>
                   </select>
                 </div>
@@ -205,11 +205,11 @@ export const EvaluationForm: React.FC = () => {
                   <label className="form-label">2. 品質・納期</label>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px', marginTop: '-4px' }}>納期遵守、手戻りの少なさ、クライアントに迷惑をかけない進行</p>
                   <select className="form-select" value={performanceDetails[1]} onChange={e => setPerformanceDetails([performanceDetails[0], Number(e.target.value), performanceDetails[2]])}>
-                    <option value={5}>5: 非常に安心して任せられた</option>
-                    <option value={4}>4: 安心して任せられた</option>
-                    <option value={3}>3: 概ね問題なく進行できた</option>
-                    <option value={2}>2: 一部フォローが必要だった</option>
-                    <option value={1}>1: 継続的なフォローが必要だった</option>
+                    <option value={10}>10: 非常に安心して任せられた</option>
+                    <option value={8}>8: 安心して任せられた</option>
+                    <option value={6}>6: 概ね問題なく進行できた</option>
+                    <option value={4}>4: 一部フォローが必要だった</option>
+                    <option value={2}>2: 継続的なフォローが必要だった</option>
                     <option value={0}>0: 該当なし／評価対象外</option>
                   </select>
                 </div>
@@ -217,11 +217,11 @@ export const EvaluationForm: React.FC = () => {
                   <label className="form-label">3. 顧客・社内貢献</label>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px', marginTop: '-4px' }}>営業・ディレクター・クライアントの期待に応えた貢献</p>
                   <select className="form-select" value={performanceDetails[2]} onChange={e => setPerformanceDetails([performanceDetails[0], performanceDetails[1], Number(e.target.value)])}>
-                    <option value={5}>5: 期待を大きく上回る</option>
-                    <option value={4}>4: 期待を上回る</option>
-                    <option value={3}>3: 期待どおり</option>
-                    <option value={2}>2: 一部期待を下回る</option>
-                    <option value={1}>1: 期待を下回る</option>
+                    <option value={10}>10: 期待を大きく上回る</option>
+                    <option value={8}>8: 期待を上回る</option>
+                    <option value={6}>6: 期待どおり</option>
+                    <option value={4}>4: 一部期待を下回る</option>
+                    <option value={2}>2: 期待を下回る</option>
                     <option value={0}>0: 該当なし</option>
                   </select>
                 </div>
@@ -311,15 +311,15 @@ export const EvaluationForm: React.FC = () => {
                 ))}
               </div>
 
-              <h3 style={{ marginBottom: 'var(--spacing-3)', marginTop: 'var(--spacing-6)' }}>⑤ その他評価（最大15点）</h3>
+              <h3 style={{ marginBottom: 'var(--spacing-3)', marginTop: 'var(--spacing-6)' }}>⑤ その他評価（最大20点）</h3>
               <div className="form-group">
                 <label className="form-label">リーダー評価（最大10点）</label>
                 <input type="number" max="10" min="0" className="form-input" value={leaderScore || ''} onChange={e => setLeaderScore(Number(e.target.value))} />
                 <textarea className="form-textarea" rows={2} placeholder="評価点の理由" value={leaderComment} onChange={e => setLeaderComment(e.target.value)} style={{ marginTop: 'var(--spacing-2)' }}></textarea>
               </div>
               <div className="form-group">
-                <label className="form-label">加点評価（最大5点）</label>
-                <input type="number" max="5" min="0" className="form-input" value={bonusScore || ''} onChange={e => setBonusScore(Number(e.target.value))} />
+                <label className="form-label">加点評価（最大10点）</label>
+                <input type="number" max="10" min="0" className="form-input" value={bonusScore || ''} onChange={e => setBonusScore(Number(e.target.value))} />
                 <textarea className="form-textarea" rows={2} placeholder="評価点の理由" value={bonusComment} onChange={e => setBonusComment(e.target.value)} style={{ marginTop: 'var(--spacing-2)' }}></textarea>
               </div>
             </div>
