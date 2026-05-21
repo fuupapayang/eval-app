@@ -116,6 +116,16 @@ export const StaffList: React.FC = () => {
     return date.toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' });
   };
 
+  const getYearsOfService = (joinedAt: string | undefined) => {
+    if (!joinedAt) return '-';
+    const joinDate = new Date(joinedAt);
+    const today = new Date();
+    const diffMonths = (today.getFullYear() - joinDate.getFullYear()) * 12 + (today.getMonth() - joinDate.getMonth());
+    // Use Math.max to prevent negative years if joinedAt is in the future
+    const years = Math.max(1, Math.floor(diffMonths / 12) + 1);
+    return `${years}年目`;
+  };
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -156,6 +166,7 @@ export const StaffList: React.FC = () => {
                 <th>職種</th>
                 <th>タイプ</th>
                 <th>役割</th>
+                <th>入社日 (年数)</th>
                 <th>パスワード</th>
                 <th>登録日</th>
                 <th>操作</th>
@@ -215,6 +226,14 @@ export const StaffList: React.FC = () => {
                         </td>
                         <td>
                           <input 
+                            type="date" 
+                            className="form-input" 
+                            value={editForm.joinedAt || ''} 
+                            onChange={e => setEditForm({...editForm, joinedAt: e.target.value})} 
+                          />
+                        </td>
+                        <td>
+                          <input 
                             type="text" 
                             className="form-input" 
                             value={editForm.password || ''} 
@@ -249,6 +268,14 @@ export const StaffList: React.FC = () => {
                           ) : (
                             <span className="badge">{staff.roleTitle}</span>
                           )}
+                        </td>
+                        <td>
+                          {staff.joinedAt ? (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                              <span style={{ fontSize: '0.875rem' }}>{staff.joinedAt}</span>
+                              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>({getYearsOfService(staff.joinedAt)})</span>
+                            </div>
+                          ) : <span style={{ color: 'var(--text-muted)' }}>未設定</span>}
                         </td>
                         <td style={{fontFamily: 'monospace', color: 'var(--text-secondary)'}}>
                           {staff.password || <span style={{opacity: 0.5}}>{staff.id.replace('staff-', '').padStart(4, '0')} (初期)</span>}
@@ -309,6 +336,14 @@ export const StaffList: React.FC = () => {
                         />
                         チーム目標入力権限
                       </label>
+                    </td>
+                    <td>
+                      <input 
+                        type="date" 
+                        className="form-input" 
+                        value={editForm.joinedAt || ''} 
+                        onChange={e => setEditForm({...editForm, joinedAt: e.target.value})} 
+                      />
                     </td>
                     <td>
                       <input 
