@@ -53,21 +53,21 @@ export const useRoleQuest = (
     // Find the lowest stage where yearsRequired > yearsOfService
     const nextStage = sortedStages.find(s => s.yearsRequired > yearsOfService) || null;
 
-    // If there is no evaluation or next stage, return empty progress
-    if (!currentEval || !nextStage) {
+    // If there is no next stage, return empty progress
+    if (!nextStage) {
       return {
         currentStage,
         nextStage,
         progressList: [],
         isAllCleared: false,
-        completionPercentage: 0
+        completionPercentage: 100
       };
     }
 
     // Type evaluation average calculation
     const typeItems = masterItems.filter(m => m.category === '職種・タイプ別評価' && m.type === staff.type);
     let typeAverage = 0;
-    if (typeItems.length > 0) {
+    if (typeItems.length > 0 && currentEval) {
       let typeSum = 0;
       typeItems.forEach(item => {
         const entry = currentEval.entries.find(en => en.itemId === item.id);
@@ -81,20 +81,22 @@ export const useRoleQuest = (
     const progressList: QuestProgress[] = nextStage.requirements.map(req => {
       let currentScore = 0;
 
-      switch (req.type) {
-        case 'common':
-          if (req.commonIndex !== undefined && currentEval.commonDetails && currentEval.commonDetails[req.commonIndex - 1] !== undefined) {
-            currentScore = currentEval.commonDetails[req.commonIndex - 1];
-          }
-          break;
-        case 'type_average':
-          currentScore = typeAverage;
-          break;
-        case 'performance':
-          currentScore = currentEval.performanceScore;
-          break;
-        default:
-          currentScore = 0;
+      if (currentEval) {
+        switch (req.type) {
+          case 'common':
+            if (req.commonIndex !== undefined && currentEval.commonDetails && currentEval.commonDetails[req.commonIndex - 1] !== undefined) {
+              currentScore = currentEval.commonDetails[req.commonIndex - 1];
+            }
+            break;
+          case 'type_average':
+            currentScore = typeAverage;
+            break;
+          case 'performance':
+            currentScore = currentEval.performanceScore;
+            break;
+          default:
+            currentScore = 0;
+        }
       }
 
       return {
