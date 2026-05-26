@@ -61,7 +61,8 @@ export interface EvaluationForm {
   
   selfComment?: string;     // スタッフ本人の自己評価コメント
   
-  commonScore: number;      // 共通評価 (Max 20)
+  commonScore: number;      // 共通評価 (Max 20 or 25)
+  commonDetails?: number[]; // [1, 2, 3, 4, 5] point for each common item
   typeScore: number;        // 職種・タイプ別評価 (Max 20 or 30)
   leaderScore: number;      // リーダー評価 (Max 10)
   leaderComment?: string;

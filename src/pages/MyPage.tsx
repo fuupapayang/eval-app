@@ -2,6 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { useStore } from '../store';
 import type { Period } from '../types';
 import { EvaluationDetailModal } from '../components/EvaluationDetailModal';
+import { CheckCircle, Circle, Target, ChevronRight } from 'lucide-react';
+import { useRoleQuest } from '../hooks/useRoleQuest';
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Cell 
@@ -141,6 +143,8 @@ export const MyPage: React.FC = () => {
 
   const masterItems = useStore(state => state.masterItems);
   const currentEval = getEvaluation(staff.id, period, year);
+  
+  const questStatus = useRoleQuest(staff, currentEval, masterItems);
 
   const getYearsOfService = (joinedAt?: string) => {
     if (!joinedAt) return 0;
@@ -299,7 +303,60 @@ export const MyPage: React.FC = () => {
             </div>
           </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-6)' }}>
+          {/* Role Model Quest Panel */}
+          {questStatus.nextStage && (
+            <div className="glass-panel" style={{ marginTop: 'var(--spacing-8)', padding: 'var(--spacing-6)', borderLeft: '4px solid var(--accent-primary)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-4)' }}>
+                <div>
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Target size={20} style={{ color: 'var(--accent-primary)' }} />
+                    次のステージへの条件（給与レンジアップ）
+                  </h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '8px' }}>
+                    現在のステージ：<strong style={{color: 'var(--text-primary)'}}>{questStatus.currentStage.title}</strong> 
+                    <ChevronRight size={14} style={{ display: 'inline', margin: '0 8px', verticalAlign: 'middle', color: 'var(--text-muted)' }} />
+                    次のステージ：<strong style={{color: 'var(--accent-primary)'}}>{questStatus.nextStage.title}</strong>（目標レンジ: {questStatus.nextStage.salaryRange}）
+                  </p>
+                </div>
+                <div style={{ textAlign: 'right', background: 'var(--bg-base)', padding: '12px 24px', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--neu-shadow-inset)' }}>
+                  <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--accent-primary)', lineHeight: 1 }}>{questStatus.completionPercentage}<span style={{ fontSize: '16px' }}>%</span></div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>達成度</div>
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div style={{ width: '100%', height: '8px', background: 'var(--bg-surface-hover)', borderRadius: '4px', overflow: 'hidden', marginBottom: 'var(--spacing-6)', boxShadow: 'var(--neu-shadow-inset)' }}>
+                <div style={{ height: '100%', width: `${questStatus.completionPercentage}%`, background: 'var(--accent-primary)', transition: 'width 0.5s ease' }} />
+              </div>
+
+              {/* Checklist */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+                {questStatus.progressList.map(p => (
+                  <div key={p.requirement.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', background: 'var(--bg-base)', padding: '16px', borderRadius: 'var(--radius-md)', border: p.isCleared ? '1px solid var(--success)' : '1px solid transparent', boxShadow: 'var(--neu-shadow)' }}>
+                    <div style={{ marginTop: '2px', color: p.isCleared ? 'var(--success)' : 'var(--text-muted)' }}>
+                      {p.isCleared ? <CheckCircle size={24} /> : <Circle size={24} />}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: '600', marginBottom: '8px', fontSize: '0.95rem' }}>{p.requirement.name}</div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>現在: <strong style={{color: 'var(--text-primary)', fontSize: '1rem'}}>{p.currentScore.toFixed(1)}</strong></span>
+                        <span>目標: {p.requirement.targetScore.toFixed(1)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {questStatus.isAllCleared && (
+                <div style={{ marginTop: 'var(--spacing-6)', padding: '16px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success)', borderRadius: 'var(--radius-md)', textAlign: 'center', fontWeight: 'bold', border: '1px solid var(--success)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <CheckCircle size={20} />
+                  🎉 基準達成！次の給与レンジ（{questStatus.nextStage.salaryRange}）への条件をクリアしました！
+                </div>
+              )}
+            </div>
+          )}
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-6)', marginTop: 'var(--spacing-8)' }}>
           <div>
             <h3 style={{ marginBottom: 'var(--spacing-3)' }}>個人テーマ</h3>
             {[0, 1, 2].map(i => (

@@ -64,6 +64,16 @@ export const EvaluationForm: React.FC = () => {
         } else {
           setTypeScores({});
         }
+
+        if (existing.commonDetails) {
+          const loadedCommonScores: Record<number, number> = {};
+          existing.commonDetails.forEach((score, index) => {
+            loadedCommonScores[index + 1] = score;
+          });
+          setCommonScores(loadedCommonScores);
+        } else {
+          setCommonScores({});
+        }
       } else {
         setPerformanceDetails([0, 0, 0]);
         setThemeDetails([0, 0, 0]);
@@ -115,6 +125,13 @@ export const EvaluationForm: React.FC = () => {
       teamTexts,
       selfComment,
       commonScore: Object.values(commonScores).reduce((a, b) => a + b, 0),
+      commonDetails: [
+        commonScores[1] || 0,
+        commonScores[2] || 0,
+        commonScores[3] || 0,
+        commonScores[4] || 0,
+        commonScores[5] || 0
+      ],
       typeScore: Object.values(typeScores).reduce((a, b) => a + b, 0),
       leaderScore,
       leaderComment,
