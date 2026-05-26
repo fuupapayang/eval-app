@@ -217,8 +217,16 @@ export const MyPage: React.FC = () => {
 
         {/* Charts Section */}
         <div style={{ marginTop: 'var(--spacing-8)', marginBottom: 'var(--spacing-8)' }}>
-          <h3 style={{ marginBottom: 'var(--spacing-4)', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
-            現在の評価状況（{year}年度 {period}）{currentEval && currentEval.totalScore > 0 ? `- 総合: ${currentEval.totalScore}点` : '- 評価未確定'}
+          <h3 style={{ marginBottom: 'var(--spacing-4)', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            現在の評価状況（{year}年度 {period}）
+            {currentEval && currentEval.totalScore > 0 ? (
+              <>
+                <span>- 総合: {currentEval.totalScore}点</span>
+                <span style={{ marginLeft: '8px' }}>{renderRankBadge(currentEval.totalScore)}</span>
+              </>
+            ) : (
+              <span>- 評価未確定</span>
+            )}
           </h3>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
@@ -302,24 +310,30 @@ export const MyPage: React.FC = () => {
           </div>
 
           {/* Role Model Quest Panel */}
-          {questStatus.nextStage && (
+          {(questStatus.currentStage || questStatus.nextStage) && (
             <div className="glass-panel" style={{ marginTop: 'var(--spacing-8)', padding: 'var(--spacing-6)', borderLeft: '4px solid var(--accent-primary)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-4)' }}>
                 <div>
                   <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Target size={20} style={{ color: 'var(--accent-primary)' }} />
-                    次のステージへの条件（給与レンジアップ）
+                    {questStatus.nextStage ? '次のステージへの条件（給与レンジアップ）' : '現在のステージ情報'}
                   </h3>
                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '8px' }}>
                     現在のステージ：<strong style={{color: 'var(--text-primary)'}}>{questStatus.currentStage.title}</strong> 
-                    <ChevronRight size={14} style={{ display: 'inline', margin: '0 8px', verticalAlign: 'middle', color: 'var(--text-muted)' }} />
-                    次のステージ：<strong style={{color: 'var(--accent-primary)'}}>{questStatus.nextStage.title}</strong>（目標レンジ: {questStatus.nextStage.salaryRange}）
+                    {questStatus.nextStage && (
+                      <>
+                        <ChevronRight size={14} style={{ display: 'inline', margin: '0 8px', verticalAlign: 'middle', color: 'var(--text-muted)' }} />
+                        次のステージ：<strong style={{color: 'var(--accent-primary)'}}>{questStatus.nextStage.title}</strong>（目標レンジ: {questStatus.nextStage.salaryRange}）
+                      </>
+                    )}
                   </p>
                 </div>
-                <div style={{ textAlign: 'right', background: 'var(--bg-base)', padding: '12px 24px', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--neu-shadow-inset)' }}>
-                  <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--accent-primary)', lineHeight: 1 }}>{questStatus.completionPercentage}<span style={{ fontSize: '16px' }}>%</span></div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>達成度</div>
-                </div>
+                {questStatus.nextStage && (
+                  <div style={{ textAlign: 'right', background: 'var(--bg-base)', padding: '12px 24px', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--neu-shadow-inset)' }}>
+                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--accent-primary)', lineHeight: 1 }}>{questStatus.completionPercentage}<span style={{ fontSize: '16px' }}>%</span></div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>達成度</div>
+                  </div>
+                )}
               </div>
 
               {/* Progress Bar */}
@@ -345,7 +359,7 @@ export const MyPage: React.FC = () => {
                 ))}
               </div>
 
-              {questStatus.isAllCleared && (
+              {questStatus.isAllCleared && questStatus.nextStage && (
                 <div style={{ marginTop: 'var(--spacing-6)', padding: '16px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success)', borderRadius: 'var(--radius-md)', textAlign: 'center', fontWeight: 'bold', border: '1px solid var(--success)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                   <CheckCircle size={20} />
                   🎉 基準達成！次の給与レンジ（{questStatus.nextStage.salaryRange}）への条件をクリアしました！
