@@ -142,9 +142,10 @@ export const MyPage: React.FC = () => {
   };
 
   const masterItems = useStore(state => state.masterItems);
+  const roleStages = useStore(state => state.roleStages);
   const currentEval = getEvaluation(staff.id, period, year);
   
-  const questStatus = useRoleQuest(staff, currentEval, masterItems);
+  const questStatus = useRoleQuest(staff, currentEval, masterItems, roleStages);
 
   const getYearsOfService = (joinedAt?: string) => {
     if (!joinedAt) return 0;

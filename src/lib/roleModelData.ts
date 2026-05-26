@@ -1,19 +1,4 @@
-export interface RoleRequirement {
-  id: string;
-  name: string;      // 表示名（例：品質管理）
-  targetScore: number; // 目標スコア（星の数 1〜5、業績は10〜30など）
-  type: 'common' | 'type_average' | 'performance' | 'theme';
-  commonIndex?: number; // common_evaluationのインデックス (0〜4)
-  description?: string;
-}
-
-export interface RoleStage {
-  id: string;
-  title: string;          // 例：一般、中堅
-  yearsRequired: number;  // 必要（目安）勤続年数
-  salaryRange: string;    // 例：300〜400万円
-  requirements: RoleRequirement[];
-}
+import type { RoleStage } from '../types';
 
 export const ROLE_STAGES: RoleStage[] = [
   {

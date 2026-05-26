@@ -1,7 +1,5 @@
 import { useMemo } from 'react';
-import type { EvaluationForm, EvaluationItem, Staff } from '../types';
-import { getNextStage, getCurrentStage } from '../lib/roleModelData';
-import type { RoleStage, RoleRequirement } from '../lib/roleModelData';
+import type { EvaluationForm, EvaluationItem, Staff, RoleStage, RoleRequirement } from '../types';
 
 export interface QuestProgress {
   requirement: RoleRequirement;
@@ -20,7 +18,8 @@ export interface QuestStatus {
 export const useRoleQuest = (
   staff: Staff,
   currentEval: EvaluationForm | undefined,
-  masterItems: EvaluationItem[]
+  masterItems: EvaluationItem[],
+  roleStages: RoleStage[]
 ): QuestStatus => {
   return useMemo(() => {
     // 勤続年数の計算
@@ -36,8 +35,23 @@ export const useRoleQuest = (
       yearsOfService = Math.max(0, yearsOfService);
     }
 
-    const currentStage = getCurrentStage(yearsOfService);
-    const nextStage = getNextStage(yearsOfService);
+    const sortedStages = [...roleStages].sort((a, b) => a.yearsRequired - b.yearsRequired);
+    
+    // Default to a dummy current stage if none are loaded
+    let currentStage = sortedStages.length > 0 ? sortedStages[0] : {
+      id: 'default', title: '未設定', yearsRequired: 0, salaryRange: '-', requirements: []
+    };
+    
+    // Find the highest stage where yearsRequired <= yearsOfService
+    for (let i = sortedStages.length - 1; i >= 0; i--) {
+      if (yearsOfService >= sortedStages[i].yearsRequired) {
+        currentStage = sortedStages[i];
+        break;
+      }
+    }
+
+    // Find the lowest stage where yearsRequired > yearsOfService
+    const nextStage = sortedStages.find(s => s.yearsRequired > yearsOfService) || null;
 
     // If there is no evaluation or next stage, return empty progress
     if (!currentEval || !nextStage) {
@@ -101,5 +115,5 @@ export const useRoleQuest = (
       isAllCleared,
       completionPercentage
     };
-  }, [staff, currentEval, masterItems]);
+  }, [staff, currentEval, masterItems, roleStages]);
 };

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import type { Staff, EvaluationItem, EvaluationForm, AuthUser } from '../types';
+import type { Staff, EvaluationItem, EvaluationForm, AuthUser, RoleStage } from '../types';
 import { INITIAL_STAFF, EVALUATION_MASTER } from './initialData';
+import { ROLE_STAGES as INITIAL_ROLE_STAGES } from '../lib/roleModelData';
 import { db } from '../lib/firebase';
 import { collection, doc, setDoc, deleteDoc, onSnapshot, getDocs, writeBatch } from 'firebase/firestore';
 
@@ -8,6 +9,7 @@ interface AppState {
   currentUser: AuthUser | null;
   staffList: Staff[];
   masterItems: EvaluationItem[];
+  roleStages: RoleStage[];
   evaluations: EvaluationForm[];
   isSyncing: boolean;
   
@@ -25,12 +27,17 @@ interface AppState {
   updateMasterItem: (item: EvaluationItem) => Promise<void>;
   deleteMasterItem: (id: string) => Promise<void>;
   reorderStaff: (newStaffList: Staff[]) => Promise<void>;
+  
+  addRoleStage: (stage: RoleStage) => Promise<void>;
+  updateRoleStage: (stage: RoleStage) => Promise<void>;
+  deleteRoleStage: (id: string) => Promise<void>;
 }
 
 export const useStore = create<AppState>()((set, get) => ({
   currentUser: null,
   staffList: [],
   masterItems: [],
+  roleStages: [],
   evaluations: [],
   isSyncing: false,
 
@@ -49,6 +56,9 @@ export const useStore = create<AppState>()((set, get) => ({
       EVALUATION_MASTER.forEach(item => {
         batch.set(doc(db, 'masterItems', item.id), item);
       });
+      INITIAL_ROLE_STAGES.forEach(stage => {
+        batch.set(doc(db, 'roleStages', stage.id), stage);
+      });
       await batch.commit();
     }
 
@@ -66,8 +76,13 @@ export const useStore = create<AppState>()((set, get) => ({
 
     onSnapshot(collection(db, 'masterItems'), (snapshot) => {
       const masterItems = snapshot.docs.map(doc => doc.data() as EvaluationItem);
-      // Sort by id or a specific order if necessary, but we'll assume natural order is fine for now
       set({ masterItems });
+    });
+
+    onSnapshot(collection(db, 'roleStages'), (snapshot) => {
+      const roleStages = snapshot.docs.map(doc => doc.data() as RoleStage);
+      roleStages.sort((a, b) => a.yearsRequired - b.yearsRequired);
+      set({ roleStages });
     });
 
     onSnapshot(collection(db, 'evaluations'), (snapshot) => {
@@ -111,6 +126,18 @@ export const useStore = create<AppState>()((set, get) => ({
 
   deleteMasterItem: async (id) => {
     await deleteDoc(doc(db, 'masterItems', id));
+  },
+
+  addRoleStage: async (stage) => {
+    await setDoc(doc(db, 'roleStages', stage.id), stage);
+  },
+  
+  updateRoleStage: async (stage) => {
+    await setDoc(doc(db, 'roleStages', stage.id), stage);
+  },
+  
+  deleteRoleStage: async (id) => {
+    await deleteDoc(doc(db, 'roleStages', id));
   },
 
   reorderStaff: async (newStaffList) => {
