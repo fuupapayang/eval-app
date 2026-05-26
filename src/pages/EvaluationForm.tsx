@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useStore } from '../store';
 import type { Period } from '../types';
+import { COMMON_EVALUATION } from '../store/initialData';
 
 export const EvaluationForm: React.FC = () => {
   const staffList = useStore(state => state.staffList);
@@ -344,7 +345,25 @@ export const EvaluationForm: React.FC = () => {
                 ))}
               </div>
 
-              <h3 style={{ marginBottom: 'var(--spacing-3)', marginTop: 'var(--spacing-6)' }}>⑤ その他評価（最大20点）</h3>
+              <h3 style={{ marginBottom: 'var(--spacing-3)', marginTop: 'var(--spacing-6)' }}>⑤ 共通評価（最大 25 点）</h3>
+              <div style={{ background: 'rgba(0,0,0,0.1)', padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
+                {COMMON_EVALUATION.map(item => (
+                  <div key={item.no} className="form-group">
+                    <label className="form-label">{item.no}. {item.name}</label>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>{item.description}</p>
+                    <select className="form-select" value={commonScores[item.no] || 0} onChange={e => setCommonScores({...commonScores, [item.no]: Number(e.target.value)})}>
+                      <option value={0}>0: 該当なし</option>
+                      <option value={1}>1: 大きな改善が必要</option>
+                      <option value={2}>2: 一部改善が必要</option>
+                      <option value={3}>3: 期待どおり</option>
+                      <option value={4}>4: 期待を上回る</option>
+                      <option value={5}>5: 期待を大きく上回る</option>
+                    </select>
+                  </div>
+                ))}
+              </div>
+
+              <h3 style={{ marginBottom: 'var(--spacing-3)', marginTop: 'var(--spacing-6)' }}>⑥ その他評価（最大20点）</h3>
               <div className="form-group">
                 <label className="form-label">リーダー評価（最大10点）</label>
                 <input type="number" max="10" min="0" className="form-input" value={leaderScore || ''} onChange={e => setLeaderScore(Number(e.target.value))} />
