@@ -350,10 +350,12 @@ export const MyPage: React.FC = () => {
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: '600', marginBottom: '8px', fontSize: '0.95rem' }}>{p.requirement.name}</div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span>現在: <strong style={{color: 'var(--text-primary)', fontSize: '1rem'}}>{p.currentScore.toFixed(1)}</strong></span>
-                        <span>目標: {p.requirement.targetScore.toFixed(1)}</span>
-                      </div>
+                      {p.requirement.type !== 'checkbox' && (
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span>現在: <strong style={{color: 'var(--text-primary)', fontSize: '1rem'}}>{p.currentScore.toFixed(1)}</strong></span>
+                          <span>目標: {p.requirement.targetScore.toFixed(1)}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -363,6 +365,55 @@ export const MyPage: React.FC = () => {
                 <div style={{ marginTop: 'var(--spacing-6)', padding: '16px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success)', borderRadius: 'var(--radius-md)', textAlign: 'center', fontWeight: 'bold', border: '1px solid var(--success)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                   <CheckCircle size={20} />
                   🎉 基準達成！次の給与レンジ（{questStatus.nextStage.salaryRange}）への条件をクリアしました！
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Specialist Panel */}
+          {questStatus.specialistStage && questStatus.specialistProgress.length > 0 && (
+            <div className="glass-panel" style={{ marginTop: 'var(--spacing-6)', padding: 'var(--spacing-6)', borderLeft: '4px solid #f59e0b' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-4)' }}>
+                <div>
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Target size={20} style={{ color: '#f59e0b' }} />
+                    スペシャリスト認定条件
+                  </h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '8px' }}>
+                    勤続8年以上のスタッフ向けの特別認定要件（目標レンジ: {questStatus.specialistStage.salaryRange}）
+                  </p>
+                </div>
+                <div style={{ textAlign: 'right', background: 'var(--bg-base)', padding: '12px 24px', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--neu-shadow-inset)' }}>
+                  <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b', lineHeight: 1 }}>
+                    {Math.round((questStatus.specialistProgress.filter(p => p.isCleared).length / questStatus.specialistProgress.length) * 100)}<span style={{ fontSize: '16px' }}>%</span>
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>達成度</div>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+                {questStatus.specialistProgress.map(p => (
+                  <div key={p.requirement.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', background: 'var(--bg-base)', padding: '16px', borderRadius: 'var(--radius-md)', border: p.isCleared ? '1px solid #f59e0b' : '1px solid transparent', boxShadow: 'var(--neu-shadow)' }}>
+                    <div style={{ marginTop: '2px', color: p.isCleared ? '#f59e0b' : 'var(--text-muted)' }}>
+                      {p.isCleared ? <CheckCircle size={24} /> : <Circle size={24} />}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: '600', marginBottom: '8px', fontSize: '0.95rem' }}>{p.requirement.name}</div>
+                      {p.requirement.type !== 'checkbox' && (
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span>現在: <strong style={{color: 'var(--text-primary)', fontSize: '1rem'}}>{p.currentScore.toFixed(1)}</strong></span>
+                          <span>目標: {p.requirement.targetScore.toFixed(1)}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {questStatus.specialistProgress.every(p => p.isCleared) && (
+                <div style={{ marginTop: 'var(--spacing-6)', padding: '16px', background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', borderRadius: 'var(--radius-md)', textAlign: 'center', fontWeight: 'bold', border: '1px solid #f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <CheckCircle size={20} />
+                  🎉 基準達成！スペシャリスト認定条件をクリアしました！
                 </div>
               )}
             </div>

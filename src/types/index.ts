@@ -34,7 +34,7 @@ export interface RoleRequirement {
   id: string;
   name: string;      // 表示名（例：品質管理）
   targetScore: number; // 目標スコア（星の数 1〜5、業績は10〜30など）
-  type: 'common' | 'type_average' | 'performance' | 'theme';
+  type: 'common' | 'type_average' | 'performance' | 'theme' | 'checkbox';
   commonIndex?: number; // common_evaluationのインデックス (1〜5)
   description?: string;
 }
@@ -87,6 +87,9 @@ export interface EvaluationForm {
   bonusComment?: string;
   
   totalScore: number; // Max 100
+  
+  // Custom Role Requirements Checkboxes
+  customChecks?: Record<string, boolean>;
   
   // Detailed Entries
   entries: ScoreEntry[];

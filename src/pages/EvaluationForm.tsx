@@ -2,6 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { useStore } from '../store';
 import type { Period } from '../types';
 import { COMMON_EVALUATION } from '../store/initialData';
+import { useRoleQuest } from '../hooks/useRoleQuest';
+import { CheckSquare, Square } from 'lucide-react';
 
 export const EvaluationForm: React.FC = () => {
   const staffList = useStore(state => state.staffList);
@@ -29,12 +31,14 @@ export const EvaluationForm: React.FC = () => {
   const [bonusScore, setBonusScore] = useState<number>(0);
   const [bonusComment, setBonusComment] = useState<string>('');
   const [generalComment, setGeneralComment] = useState<string>('');
+  const [customChecks, setCustomChecks] = useState<Record<string, boolean>>({});
 
   const performanceScore = performanceDetails.reduce((a, b) => a + b, 0);
   const themeScore = themeDetails.reduce((a, b) => a + b, 0);
   const teamScore = teamDetails.reduce((a, b) => a + b, 0);
 
   const getEvaluation = useStore(state => state.getEvaluation);
+  const roleStages = useStore(state => state.roleStages);
 
   React.useEffect(() => {
     if (selectedStaffId && period && year) {
@@ -53,6 +57,7 @@ export const EvaluationForm: React.FC = () => {
         setBonusScore(existing.bonusScore || 0);
         setBonusComment(existing.bonusComment || '');
         setGeneralComment(existing.generalComment || '');
+        setCustomChecks(existing.customChecks || {});
         setEvaluationDate(existing.evaluationDate || new Date().toISOString().split('T')[0]);
         setReviewer(existing.reviewer || '');
         
@@ -87,6 +92,7 @@ export const EvaluationForm: React.FC = () => {
         setBonusScore(0);
         setBonusComment('');
         setGeneralComment('');
+        setCustomChecks({});
         setCommonScores({});
         setTypeScores({});
         setEvaluationDate(new Date().toISOString().split('T')[0]);
@@ -105,6 +111,39 @@ export const EvaluationForm: React.FC = () => {
     const typeSum = Object.values(typeScores).reduce((a, b) => a + b, 0);
     return performanceScore + themeScore + teamScore + commonSum + typeSum + leaderScore + bonusScore;
   }, [performanceScore, themeScore, teamScore, commonScores, typeScores, leaderScore, bonusScore]);
+
+  // Construct a dummy evaluation object based on current form state to compute quest status accurately
+  const currentEvalObj: any = useMemo(() => {
+    if (!selectedStaffId) return undefined;
+    return {
+      performanceScore,
+      commonDetails: [
+        commonScores[1] || 0,
+        commonScores[2] || 0,
+        commonScores[3] || 0,
+        commonScores[4] || 0,
+        commonScores[5] || 0
+      ],
+      customChecks,
+      entries: typeItems.map(item => ({
+        itemId: item.id,
+        finalScore: typeScores[item.id] || 0
+      }))
+    };
+  }, [selectedStaffId, performanceScore, commonScores, customChecks, typeItems, typeScores]);
+
+  const questStatus = useRoleQuest(selectedStaff as any, currentEvalObj, masterItems, roleStages);
+
+  const checkboxRequirements = useMemo(() => {
+    let reqs: any[] = [];
+    if (questStatus.nextStage) {
+      reqs = [...reqs, ...questStatus.nextStage.requirements.filter(req => req.type === 'checkbox')];
+    }
+    if (questStatus.specialistStage) {
+      reqs = [...reqs, ...questStatus.specialistStage.requirements.filter(req => req.type === 'checkbox')];
+    }
+    return reqs;
+  }, [questStatus.nextStage, questStatus.specialistStage]);
 
   const handleSave = () => {
     if (!selectedStaffId) return;
@@ -139,6 +178,7 @@ export const EvaluationForm: React.FC = () => {
       bonusScore,
       bonusComment,
       totalScore,
+      customChecks,
       entries: typeItems.map(item => ({
         itemId: item.id,
         selfScore: 0,
@@ -376,6 +416,41 @@ export const EvaluationForm: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {checkboxRequirements.length > 0 && (
+            <div style={{ marginTop: 'var(--spacing-8)' }}>
+              <h3 style={{ marginBottom: 'var(--spacing-3)' }}>⑦ ステージ昇格条件（チェックリスト）</h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 'var(--spacing-4)' }}>
+                次ステージ（{questStatus.nextStage?.title}）への昇格に必要な個別条件です。満たしている場合はチェックを入れてください。
+              </p>
+              <div style={{ background: 'rgba(0,0,0,0.1)', padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
+                {checkboxRequirements.map(req => (
+                  <div 
+                    key={req.id} 
+                    onClick={() => setCustomChecks({ ...customChecks, [req.id]: !customChecks[req.id] })}
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'flex-start', 
+                      gap: '12px', 
+                      padding: '12px', 
+                      background: customChecks[req.id] ? 'rgba(0, 255, 128, 0.1)' : 'rgba(255,255,255,0.05)', 
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      border: customChecks[req.id] ? '1px solid var(--success)' : '1px solid transparent',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <div style={{ color: customChecks[req.id] ? 'var(--success)' : 'var(--text-muted)' }}>
+                      {customChecks[req.id] ? <CheckSquare size={20} /> : <Square size={20} />}
+                    </div>
+                    <div style={{ flex: 1, fontSize: '0.9rem', lineHeight: '1.4' }}>
+                      {req.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="form-group" style={{ marginTop: 'var(--spacing-8)' }}>
             <label className="form-label">総合コメント</label>
