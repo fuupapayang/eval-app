@@ -4,6 +4,7 @@ import type { Period } from '../types';
 import { EvaluationDetailModal } from '../components/EvaluationDetailModal';
 import { CheckCircle, Circle, Target, ChevronRight } from 'lucide-react';
 import { useRoleQuest } from '../hooks/useRoleQuest';
+import { renderRankBadge } from '../lib/rankUtils';
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Cell 
@@ -134,11 +135,7 @@ export const MyPage: React.FC = () => {
   }, [evaluations, staff.id]);
 
   const getRank = (score: number) => {
-    if (score >= 90) return <span className="badge primary">S</span>;
-    if (score >= 80) return <span className="badge success">A</span>;
-    if (score >= 70) return <span className="badge warning">B</span>;
-    if (score >= 60) return <span className="badge">C</span>;
-    return <span className="badge" style={{ color: 'var(--danger)' }}>D</span>;
+    return renderRankBadge(score);
   };
 
   const masterItems = useStore(state => state.masterItems);

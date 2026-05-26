@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useStore } from '../store';
 import type { Staff } from '../types';
+import { renderRankBadge, getRankData } from '../lib/rankUtils';
 import { Download, Printer } from 'lucide-react';
 import { EvaluationDetailModal } from '../components/EvaluationDetailModal';
 
@@ -53,42 +54,7 @@ export const Dashboard: React.FC = () => {
     });
   }, [staffList, evaluations, selectedYear]);
 
-  const getRank = (score: number | null) => {
-    if (score === null) return '-';
-    
-    let baseRank = '';
-    let subRank = '';
-    let colorClass = '';
-
-    if (score >= 90) { baseRank = 'S'; colorClass = 'primary'; }
-    else if (score >= 80) { baseRank = 'A'; colorClass = 'success'; }
-    else if (score >= 70) { baseRank = 'B'; colorClass = 'warning'; }
-    else if (score >= 60) { baseRank = 'C'; colorClass = ''; }
-    else { baseRank = 'D'; colorClass = 'danger'; }
-
-    if (score >= 90) {
-      if (score >= 98) subRank = '++';
-      else if (score >= 96) subRank = '+';
-      else if (score >= 94) subRank = '';
-      else if (score >= 92) subRank = '-';
-      else subRank = '--';
-    } else if (score >= 60) {
-      const lastDigit = score % 10;
-      if (lastDigit >= 8) subRank = '++';
-      else if (lastDigit >= 6) subRank = '+';
-      else if (lastDigit >= 4) subRank = '';
-      else if (lastDigit >= 2) subRank = '-';
-      else subRank = '--';
-    } else {
-      if (score >= 48) subRank = '++';
-      else if (score >= 36) subRank = '+';
-      else if (score >= 24) subRank = '';
-      else if (score >= 12) subRank = '-';
-      else subRank = '--';
-    }
-    
-    return <span className={`badge ${colorClass === 'danger' ? '' : colorClass}`} style={colorClass === 'danger' ? { color: 'var(--danger)' } : {}}>{baseRank}{subRank}</span>;
-  };
+  const getRank = (score: number | null) => renderRankBadge(score);
 
   const handleDownloadCSV = () => {
     const headers = ['氏名', '所属', '職種', 'タイプ', '役割', '上期点数', '下期点数', '年間通期点', '評価ランク'];
@@ -96,12 +62,10 @@ export const Dashboard: React.FC = () => {
       // ランクのプレーンテキスト化
       let rankText = '-';
       if (row.total !== null) {
-        // extract base rank roughly
-        if (row.total >= 90) rankText = 'S';
-        else if (row.total >= 80) rankText = 'A';
-        else if (row.total >= 70) rankText = 'B';
-        else if (row.total >= 60) rankText = 'C';
-        else rankText = 'D';
+        const data = getRankData(row.total);
+        if (data) {
+          rankText = data.subRank.startsWith('-') ? `${data.subRank}${data.baseRank}` : `${data.baseRank}${data.subRank}`;
+        }
       }
 
       return [

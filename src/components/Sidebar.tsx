@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Users, FileText, BarChart3, Settings, ShieldCheck, LogOut, User } from 'lucide-react';
 import { useStore } from '../store';
+import { getRankData } from '../lib/rankUtils';
 import './Layout.css';
 
 export const Sidebar: React.FC = () => {
@@ -13,14 +14,6 @@ export const Sidebar: React.FC = () => {
   const handleLogout = () => {
     logout();
     navigate('/login');
-  };
-
-  const getRankLetter = (score: number) => {
-    if (score >= 90) return { letter: 'S', color: 'var(--accent-primary)' };
-    if (score >= 80) return { letter: 'A', color: 'var(--success)' };
-    if (score >= 70) return { letter: 'B', color: 'var(--warning)' };
-    if (score >= 60) return { letter: 'C', color: 'var(--text-primary)' };
-    return { letter: 'D', color: 'var(--danger)' };
   };
 
   const currentEval = useMemo(() => {
@@ -105,17 +98,34 @@ export const Sidebar: React.FC = () => {
           )}
 
           {currentUser?.type === 'STAFF' && currentEval && currentEval.totalScore > 0 && (
-            <div style={{ marginTop: 'var(--spacing-6)', paddingTop: 'var(--spacing-6)', borderTop: '1px solid var(--border-color)', textAlign: 'center' }}>
-              <div style={{ fontSize: '76px', fontWeight: 'bold', lineHeight: 1, color: getRankLetter(currentEval.totalScore).color, textShadow: '2px 2px 8px rgba(0,0,0,0.1)', marginBottom: '8px' }}>
-                {getRankLetter(currentEval.totalScore).letter}
-              </div>
-              <p style={{ color: 'var(--text-primary)', fontWeight: 'bold', marginBottom: '4px' }}>
-                総合: {currentEval.totalScore} / 120 点
-              </p>
-              <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                {currentEval.year}年度{currentEval.period === '上期' ? '上半期' : '下半期'}
-              </p>
-            </div>
+            (() => {
+              const rankData = getRankData(currentEval.totalScore);
+              if (!rankData) return null;
+              const isMinus = rankData.subRank.startsWith('-');
+              const isPlus = rankData.subRank.startsWith('+');
+              
+              const subRankNode = rankData.subRank ? (
+                <span style={{ fontSize: '0.4em', verticalAlign: isPlus ? 'super' : 'baseline', margin: '0 2px' }}>
+                  {rankData.subRank}
+                </span>
+              ) : null;
+
+              return (
+                <div style={{ marginTop: 'var(--spacing-6)', paddingTop: 'var(--spacing-6)', borderTop: '1px solid var(--border-color)', textAlign: 'center' }}>
+                  <div style={{ fontSize: '76px', fontWeight: 'bold', lineHeight: 1, color: rankData.colorStyle, textShadow: '2px 2px 8px rgba(0,0,0,0.1)', marginBottom: '8px' }}>
+                    {isMinus && subRankNode}
+                    <span>{rankData.baseRank}</span>
+                    {isPlus && subRankNode}
+                  </div>
+                  <p style={{ color: 'var(--text-primary)', fontWeight: 'bold', marginBottom: '4px' }}>
+                    総合: {currentEval.totalScore} / 120 点
+                  </p>
+                  <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                    {currentEval.year}年度{currentEval.period === '上期' ? '上半期' : '下半期'}
+                  </p>
+                </div>
+              );
+            })()
           )}
         </div>
 
