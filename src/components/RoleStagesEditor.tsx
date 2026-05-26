@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useStore } from '../store';
 import type { RoleStage, RoleRequirement } from '../types';
-import { Plus, Trash2, Edit2, Save } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, RefreshCw } from 'lucide-react';
+import { ROLE_STAGES } from '../lib/roleModelData';
 
 export const RoleStagesEditor: React.FC = () => {
   const roleStages = useStore(state => state.roleStages);
@@ -11,6 +12,32 @@ export const RoleStagesEditor: React.FC = () => {
 
   const [editingStageId, setEditingStageId] = useState<string | null>(null);
   const [stageForm, setStageForm] = useState<RoleStage | null>(null);
+  const [isResetting, setIsResetting] = useState(false);
+
+  const handleResetToDefaults = async () => {
+    if (confirm('現在のステージ設定をすべて削除し、デフォルトの役割モデル（新人、一般、中堅、チームリーダー、部長、役員）で上書きします。よろしいですか？')) {
+      setIsResetting(true);
+      try {
+        // デフォルトを1つずつ追加（IDが同じなら上書きされる）
+        for (const stage of ROLE_STAGES) {
+          await addRoleStage(stage);
+        }
+        // 現在のリストにあるが、デフォルトにはないものを削除
+        const defaultIds = ROLE_STAGES.map(s => s.id);
+        for (const stage of roleStages) {
+          if (!defaultIds.includes(stage.id)) {
+            await deleteRoleStage(stage.id);
+          }
+        }
+        alert('デフォルト設定にリセットしました。');
+      } catch (e) {
+        console.error(e);
+        alert('リセット中にエラーが発生しました。');
+      } finally {
+        setIsResetting(false);
+      }
+    }
+  };
 
   const handleEditStage = (stage: RoleStage) => {
     setEditingStageId(stage.id);
@@ -83,10 +110,16 @@ export const RoleStagesEditor: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 style={{ margin: 0 }}>給与レンジ・昇格条件（ロールモデル）設定</h2>
-        <button className="btn primary" onClick={handleAddStage}>
-          <Plus size={16} style={{ marginRight: '8px' }} />
-          新規ステージ追加
-        </button>
+        <div style={{ display: 'flex', gap: 'var(--spacing-3)' }}>
+          <button className="btn outline" onClick={handleResetToDefaults} disabled={isResetting}>
+            <RefreshCw size={16} style={{ marginRight: '8px' }} />
+            {isResetting ? 'リセット中...' : '初期データにリセット'}
+          </button>
+          <button className="btn primary" onClick={handleAddStage}>
+            <Plus size={16} style={{ marginRight: '8px' }} />
+            新規ステージ追加
+          </button>
+        </div>
       </div>
       
       {roleStages.length === 0 && (

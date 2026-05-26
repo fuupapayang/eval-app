@@ -31,14 +31,14 @@ export const ROLE_STAGES: RoleStage[] = [
       { id: 'schedule', name: '納期・責任感 (スケジュール管理)', targetScore: 3, type: 'common', commonIndex: 1 },
       { id: 'learning', name: '学習・成長 (自己学習)', targetScore: 3, type: 'common', commonIndex: 4 },
       { id: 'tech', name: '技術力／デザイン力', targetScore: 4.0, type: 'type_average', description: '職種別評価の平均' },
-      { id: 'mentoring', name: '部下への技術指導・連携', targetScore: 3, type: 'common', commonIndex: 3 }, // 改善提案・連携
+      { id: 'mentoring', name: '部下への技術指導・連携', targetScore: 3, type: 'common', commonIndex: 3 },
       { id: 'performance', name: '目標達成・案件完遂', targetScore: 20, type: 'performance', description: '業績・案件貢献スコア(30点満点)' }
     ]
   },
   {
     id: 'leader',
     title: 'チームリーダー',
-    yearsRequired: 8,
+    yearsRequired: 9,
     salaryRange: '500〜600万円',
     requirements: [
       { id: 'quality', name: '品質意識 (ミスがない)', targetScore: 4, type: 'common', commonIndex: 2 },
@@ -51,13 +51,22 @@ export const ROLE_STAGES: RoleStage[] = [
   },
   {
     id: 'manager',
-    title: 'WEB制作部長',
+    title: '部長',
     yearsRequired: 15,
     salaryRange: '600〜800万円',
     requirements: [
       { id: 'tech', name: '技術力／マネジメント力', targetScore: 4.8, type: 'type_average' },
       { id: 'mentoring', name: '組織全体牽引・方針浸透', targetScore: 5, type: 'common', commonIndex: 3 },
       { id: 'performance', name: '事業部計画立案・外注利益管理', targetScore: 28, type: 'performance' }
+    ]
+  },
+  {
+    id: 'executive',
+    title: '役員',
+    yearsRequired: 20,
+    salaryRange: '800万円〜',
+    requirements: [
+      { id: 'performance', name: '全社業績達成', targetScore: 30, type: 'performance' }
     ]
   }
 ];
