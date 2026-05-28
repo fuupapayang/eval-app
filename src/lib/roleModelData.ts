@@ -44,7 +44,7 @@ export const ROLE_STAGES: RoleStage[] = [
     id: 'specialist',
     title: 'スペシャリスト',
     yearsRequired: 8,
-    salaryRange: '500〜800万円',
+    salaryRange: '600〜800万円',
     requirements: [
       { id: 'quality', name: '品質意識 (ミスがない)', targetScore: 4, type: 'common', commonIndex: 2 },
       { id: 'schedule', name: '納期・責任感 (スケジュール管理)', targetScore: 4, type: 'common', commonIndex: 1 },
