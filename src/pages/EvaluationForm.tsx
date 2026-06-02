@@ -21,9 +21,12 @@ export const EvaluationForm: React.FC = () => {
   const [performanceDetails, setPerformanceDetails] = useState<[number, number, number]>([0, 0, 0]);
   const [themeDetails, setThemeDetails] = useState<[number, number, number]>([0, 0, 0]);
   const [themeTexts, setThemeTexts] = useState<[string, string, string]>(['', '', '']);
+  const [initialThemeTexts, setInitialThemeTexts] = useState<[string, string, string]>(['', '', '']);
   const [teamDetails, setTeamDetails] = useState<[number, number, number]>([0, 0, 0]);
   const [teamTexts, setTeamTexts] = useState<[string, string, string]>(['', '', '']);
+  const [initialTeamTexts, setInitialTeamTexts] = useState<[string, string, string]>(['', '', '']);
   const [selfComment, setSelfComment] = useState<string>('');
+  const [initialSelfComment, setInitialSelfComment] = useState<string>('');
   const [commonScores, setCommonScores] = useState<Record<string, number>>({});
   const [typeScores, setTypeScores] = useState<Record<string, number>>({});
   const [leaderScore, setLeaderScore] = useState<number>(0);
@@ -47,9 +50,12 @@ export const EvaluationForm: React.FC = () => {
         setPerformanceDetails(existing.performanceDetails || [0, 0, 0]);
         setThemeDetails(existing.themeDetails || [0, 0, 0]);
         setThemeTexts(existing.themeTexts || ['', '', '']);
+        setInitialThemeTexts(existing.themeTexts || ['', '', '']);
         setTeamDetails(existing.teamDetails || [0, 0, 0]);
         setTeamTexts(existing.teamTexts || ['', '', '']);
+        setInitialTeamTexts(existing.teamTexts || ['', '', '']);
         setSelfComment(existing.selfComment || '');
+        setInitialSelfComment(existing.selfComment || '');
         // Also might want to set old totals if details aren't present (backward compatibility)
         // For simplicity, we just use the new arrays.
         setLeaderScore(existing.leaderScore || 0);
@@ -84,9 +90,12 @@ export const EvaluationForm: React.FC = () => {
         setPerformanceDetails([0, 0, 0]);
         setThemeDetails([0, 0, 0]);
         setThemeTexts(['', '', '']);
+        setInitialThemeTexts(['', '', '']);
         setTeamDetails([0, 0, 0]);
         setTeamTexts(['', '', '']);
+        setInitialTeamTexts(['', '', '']);
         setSelfComment('');
+        setInitialSelfComment('');
         setLeaderScore(0);
         setLeaderComment('');
         setBonusScore(0);
@@ -148,6 +157,18 @@ export const EvaluationForm: React.FC = () => {
   const handleSave = () => {
     if (!selectedStaffId) return;
     
+    // Fetch latest to prevent overwriting staff's self-input fields (race condition)
+    const latestExisting = getEvaluation(selectedStaffId, period, year);
+    
+    const isThemeUnchanged = JSON.stringify(themeTexts) === JSON.stringify(initialThemeTexts);
+    const finalThemeTexts = isThemeUnchanged && latestExisting?.themeTexts ? latestExisting.themeTexts : themeTexts;
+    
+    const isTeamUnchanged = JSON.stringify(teamTexts) === JSON.stringify(initialTeamTexts);
+    const finalTeamTexts = isTeamUnchanged && latestExisting?.teamTexts ? latestExisting.teamTexts : teamTexts;
+    
+    const isSelfCommentUnchanged = selfComment === initialSelfComment;
+    const finalSelfComment = isSelfCommentUnchanged && latestExisting?.selfComment ? latestExisting.selfComment : selfComment;
+
     saveEvaluation({
       id: `${selectedStaffId}-${year}-${period}`,
       staffId: selectedStaffId,
@@ -159,11 +180,11 @@ export const EvaluationForm: React.FC = () => {
       performanceDetails,
       themeScore,
       themeDetails,
-      themeTexts,
+      themeTexts: finalThemeTexts,
       teamScore,
       teamDetails,
-      teamTexts,
-      selfComment,
+      teamTexts: finalTeamTexts,
+      selfComment: finalSelfComment,
       commonScore: Object.values(commonScores).reduce((a, b) => a + b, 0),
       commonDetails: [
         commonScores[1] || 0,

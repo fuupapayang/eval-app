@@ -165,14 +165,14 @@ export const MyPage: React.FC = () => {
 
   if (currentEval) {
     performanceData = [
-      { name: '案件貢献', score: currentEval.performanceDetails[0] },
-      { name: '品質・納期', score: currentEval.performanceDetails[1] },
-      { name: '顧客・社内貢献', score: currentEval.performanceDetails[2] },
+      { name: '案件貢献', score: currentEval.performanceDetails?.[0] || 0 },
+      { name: '品質・納期', score: currentEval.performanceDetails?.[1] || 0 },
+      { name: '顧客・社内貢献', score: currentEval.performanceDetails?.[2] || 0 },
     ];
 
     themeData = currentEval.themeTexts?.map((text, i) => ({
       name: `テーマ${i+1}`,
-      score: currentEval.themeDetails[i],
+      score: currentEval.themeDetails?.[i] || 0,
       text: text || '未設定'
     })).filter(d => d.text !== '未設定') || [];
   }

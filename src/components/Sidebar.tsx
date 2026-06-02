@@ -67,6 +67,9 @@ export const Sidebar: React.FC = () => {
 
       {/* 2. Secondary Light Sidebar (Text & Labels) */}
       <aside className="nav-secondary">
+        <div style={{ padding: '0 var(--spacing-4) var(--spacing-6) var(--spacing-4)', marginTop: '-8px' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: 0 }}>QLEA Career Compass</h2>
+        </div>
         <div className="user-profile">
           <div className="user-avatar">
             <User className="w-5 h-5" />
