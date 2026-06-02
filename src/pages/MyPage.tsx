@@ -82,7 +82,7 @@ export const MyPage: React.FC = () => {
     saveEvaluation({
       ...evalData,
       themeTexts,
-      teamTexts: canEditTeam ? teamTexts : evalData.teamTexts,
+      teamTexts: canEditTeam ? teamTexts : (evalData.teamTexts || ['', '', '']),
       selfComment,
       updatedAt: new Date().toISOString()
     });
