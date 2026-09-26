@@ -16,7 +16,10 @@ export const MyPage: React.FC = () => {
   const saveEvaluation = useStore(state => state.saveEvaluation);
   const getEvaluation = useStore(state => state.getEvaluation);
 
+  const staff = currentUser?.type === 'STAFF' ? currentUser.staff : null;
+
   const [year, setYear] = useState<number>(() => {
+    if (!staff) return new Date().getFullYear();
     const myEvals = evaluations.filter(e => e.staffId === staff.id).sort((a, b) => b.year - a.year || (a.period === '下期' ? -1 : 1));
     if (myEvals.length > 0) return myEvals[0].year;
     
@@ -24,7 +27,7 @@ export const MyPage: React.FC = () => {
     return today.getMonth() < 3 ? today.getFullYear() - 1 : today.getFullYear();
   });
   
-  const [period, setPeriod] = useState<Period>(() => {
+  const [period, setPeriod] = useState<Period | '通期'>(() => {
     return '通期';
   });
 
@@ -51,13 +54,6 @@ export const MyPage: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState('');
-
-  if (!currentUser || currentUser.type !== 'STAFF') {
-    return <div>権限がありません</div>;
-  }
-
-  const staff = currentUser.staff;
-
 
   // Load goals when period/year changes
   React.useEffect(() => {
@@ -351,6 +347,10 @@ export const MyPage: React.FC = () => {
       fullMark: 5
     };
   });
+
+  if (!staff) {
+    return <div>権限がありません</div>;
+  }
 
   return (
     <div className="animate-fade-in">
