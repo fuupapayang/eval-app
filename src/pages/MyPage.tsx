@@ -465,13 +465,26 @@ export const MyPage: React.FC = () => {
                 <p style={{ marginTop: '16px', color: 'var(--text-muted)' }}>入社日: {staff.joinedAt ? staff.joinedAt : '未設定'}</p>
               </div>
 
-              {/* Monthly Salary Panel */}
+              {/* Salary Panel */}
               <div style={{ background: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--neu-shadow-inset)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
-                <h4 style={{ textAlign: 'center', marginBottom: '16px', color: 'var(--text-secondary)' }}>現在の月額給与額</h4>
+                <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)' }}>現在の年収（基本給）</h4>
                 <div style={{ fontSize: '42px', fontWeight: 'bold', lineHeight: 1, color: 'var(--accent-primary)', textShadow: '2px 2px 8px rgba(0,0,0,0.1)' }}>
-                  {staff.monthlySalary ? staff.monthlySalary.toLocaleString() : '-'}<span style={{ fontSize: '18px', color: 'var(--text-secondary)', marginLeft: '4px' }}>円</span>
+                  {staff.annualSalary ? staff.annualSalary.toLocaleString() : staff.monthlySalary ? (staff.monthlySalary * 12).toLocaleString() : '-'}<span style={{ fontSize: '18px', color: 'var(--text-secondary)', marginLeft: '4px' }}>円</span>
                 </div>
-                <p style={{ marginTop: '16px', color: 'var(--text-muted)' }}>※管理者によって設定された月額給与額です</p>
+                
+                <h4 style={{ textAlign: 'center', marginTop: '24px', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>算出 月額給与</h4>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', lineHeight: 1, color: 'var(--text-primary)' }}>
+                  {staff.annualSalary ? Math.floor(staff.annualSalary / 12).toLocaleString() : staff.monthlySalary ? staff.monthlySalary.toLocaleString() : '-'}<span style={{ fontSize: '14px', color: 'var(--text-secondary)', marginLeft: '4px' }}>円</span>
+                </div>
+
+                {staff.incentive ? (
+                  <>
+                    <h4 style={{ textAlign: 'center', marginTop: '16px', marginBottom: '4px', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>インセンティブ</h4>
+                    <div style={{ fontSize: '18px', fontWeight: 'bold', lineHeight: 1, color: 'var(--text-primary)' }}>
+                      {staff.incentive.toLocaleString()}<span style={{ fontSize: '12px', color: 'var(--text-secondary)', marginLeft: '4px' }}>円</span>
+                    </div>
+                  </>
+                ) : null}
               </div>
 
             </div>

@@ -157,13 +157,23 @@ const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCance
                 />
               </div>
               <div className="form-group">
-                <label className="form-label">月額給与（円）</label>
+                <label className="form-label">年収（インセンティブを含まない）</label>
                 <input 
                   type="number" 
                   className="form-input" 
-                  value={editForm.monthlySalary || ''} 
-                  onChange={e => setEditForm({...editForm, monthlySalary: Number(e.target.value) || undefined})} 
-                  placeholder="例: 300000"
+                  value={editForm.annualSalary || ''} 
+                  onChange={e => setEditForm({...editForm, annualSalary: Number(e.target.value) || undefined})} 
+                  placeholder="例: 4800000"
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">インセンティブ（円）</label>
+                <input 
+                  type="number" 
+                  className="form-input" 
+                  value={editForm.incentive || ''} 
+                  onChange={e => setEditForm({...editForm, incentive: Number(e.target.value) || undefined})} 
+                  placeholder="例: 200000"
                 />
               </div>
               <div className="form-group">
@@ -193,8 +203,12 @@ const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCance
                 <p>{staff.canEditTeamGoals ? 'あり' : 'なし'}</p>
               </div>
               <div>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>月額給与</p>
-                <p>{staff.monthlySalary ? `${staff.monthlySalary.toLocaleString()} 円` : '未設定'}</p>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>年収（月額給与）</p>
+                <p>{staff.annualSalary ? `${staff.annualSalary.toLocaleString()} 円 (${Math.floor(staff.annualSalary / 12).toLocaleString()} 円/月)` : staff.monthlySalary ? `${(staff.monthlySalary * 12).toLocaleString()} 円 (${staff.monthlySalary.toLocaleString()} 円/月)` : '未設定'}</p>
+              </div>
+              <div>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>インセンティブ</p>
+                <p>{staff.incentive ? `${staff.incentive.toLocaleString()} 円` : '-'}</p>
               </div>
               <div>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>パスワード</p>
