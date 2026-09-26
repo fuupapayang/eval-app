@@ -350,27 +350,32 @@ export const EvaluationForm: React.FC = () => {
                       <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px', padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>
                         <div style={{ fontWeight: '500' }}>
                           {themeTexts[i]}
-                          {themeStatuses?.[i] && (
-                            <span style={{ 
-                              marginLeft: '8px', 
-                              padding: '2px 8px', 
-                              borderRadius: '12px', 
-                              fontSize: '0.75rem',
-                              background: themeStatuses[i] === '達成' ? 'rgba(16, 185, 129, 0.2)' : 
-                                         themeStatuses[i] === '未達' ? 'rgba(239, 68, 68, 0.2)' : 
-                                         'rgba(245, 158, 11, 0.2)',
-                              color: themeStatuses[i] === '達成' ? '#10b981' : 
-                                     themeStatuses[i] === '未達' ? '#ef4444' : 
-                                     '#f59e0b',
-                              border: `1px solid ${
-                                themeStatuses[i] === '達成' ? '#10b981' : 
-                                themeStatuses[i] === '未達' ? '#ef4444' : 
-                                '#f59e0b'
-                              }`
-                            }}>
-                              {themeStatuses[i]}
-                            </span>
-                          )}
+                        </div>
+                        
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '8px', marginBottom: '8px' }}>
+                          {['達成', '未達', '継続中'].map(status => (
+                            <button
+                              key={status}
+                              type="button"
+                              className={`btn ${themeStatuses?.[i] === status ? 'btn-primary' : 'btn-outline'}`}
+                              style={{ 
+                                padding: '2px 8px', 
+                                fontSize: '0.75rem',
+                                background: themeStatuses?.[i] === status 
+                                  ? (status === '達成' ? '#10b981' : status === '未達' ? '#ef4444' : '#f59e0b') 
+                                  : 'transparent',
+                                borderColor: status === '達成' ? '#10b981' : status === '未達' ? '#ef4444' : '#f59e0b',
+                                color: themeStatuses?.[i] === status ? '#fff' : (status === '達成' ? '#10b981' : status === '未達' ? '#ef4444' : '#f59e0b')
+                              }}
+                              onClick={() => {
+                                const newStatuses = [...themeStatuses] as [string, string, string];
+                                newStatuses[i] = newStatuses[i] === status ? '' : status;
+                                setThemeStatuses(newStatuses);
+                              }}
+                            >
+                              {status}
+                            </button>
+                          ))}
                         </div>
                         
                         {themeReflections?.[i] && (
