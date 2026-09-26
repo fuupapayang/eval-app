@@ -15,6 +15,7 @@ export interface Staff {
   canEditTeamGoals?: boolean;
   roleTitle: string;
   joinedAt?: string;
+  monthlySalary?: number; // 月額給与額
   createdAt: string;
   password?: string;
   order?: number;

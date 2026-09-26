@@ -157,6 +157,16 @@ const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCance
                 />
               </div>
               <div className="form-group">
+                <label className="form-label">月額給与（円）</label>
+                <input 
+                  type="number" 
+                  className="form-input" 
+                  value={editForm.monthlySalary || ''} 
+                  onChange={e => setEditForm({...editForm, monthlySalary: Number(e.target.value) || undefined})} 
+                  placeholder="例: 300000"
+                />
+              </div>
+              <div className="form-group">
                 <label className="form-label">パスワード (空欄で初期値)</label>
                 <input 
                   type="text" 
@@ -181,6 +191,10 @@ const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCance
               <div>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>チーム目標権限</p>
                 <p>{staff.canEditTeamGoals ? 'あり' : 'なし'}</p>
+              </div>
+              <div>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>月額給与</p>
+                <p>{staff.monthlySalary ? `${staff.monthlySalary.toLocaleString()} 円` : '未設定'}</p>
               </div>
               <div>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>パスワード</p>

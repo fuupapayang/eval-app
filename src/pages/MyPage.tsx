@@ -366,6 +366,15 @@ export const MyPage: React.FC = () => {
                 <p style={{ marginTop: '16px', color: 'var(--text-muted)' }}>入社日: {staff.joinedAt ? staff.joinedAt : '未設定'}</p>
               </div>
 
+              {/* Monthly Salary Panel */}
+              <div style={{ background: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--neu-shadow-inset)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+                <h4 style={{ textAlign: 'center', marginBottom: '16px', color: 'var(--text-secondary)' }}>現在の月額給与額</h4>
+                <div style={{ fontSize: '42px', fontWeight: 'bold', lineHeight: 1, color: 'var(--accent-primary)', textShadow: '2px 2px 8px rgba(0,0,0,0.1)' }}>
+                  {staff.monthlySalary ? staff.monthlySalary.toLocaleString() : '-'}<span style={{ fontSize: '18px', color: 'var(--text-secondary)', marginLeft: '4px' }}>円</span>
+                </div>
+                <p style={{ marginTop: '16px', color: 'var(--text-muted)' }}>※管理者によって設定された月額給与額です</p>
+              </div>
+
             </div>
           </div>
 
