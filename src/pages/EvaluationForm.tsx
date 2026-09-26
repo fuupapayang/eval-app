@@ -58,7 +58,7 @@ export const EvaluationForm: React.FC = () => {
         setThemeStatuses(existing.themeStatuses || ['', '', '']);
         setInitialThemeStatuses(existing.themeStatuses || ['', '', '']);
         setThemeReflections(existing.themeReflections || ['', '', '']);
-        setThemeHistory(existing.themeHistory || [[], [], []]);
+        setThemeHistory(existing.themeHistory || {'0': [], '1': [], '2': []});
         setTeamDetails(existing.teamDetails || [0, 0, 0]);
         setTeamTexts(existing.teamTexts || ['', '', '']);
         setInitialTeamTexts(existing.teamTexts || ['', '', '']);
