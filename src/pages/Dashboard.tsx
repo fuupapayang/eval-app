@@ -57,16 +57,15 @@ export const Dashboard: React.FC = () => {
   const getRank = (score: number | null) => renderRankBadge(score);
 
   const handleDownloadCSV = () => {
-    const headers = ['氏名', '所属', '職種', 'タイプ', '役割', '上期点数', '下期点数', '年間通期点', '評価ランク'];
+    const headers = ['氏名', '所属', '職種', 'タイプ', '役割', '上期点数', '上期ランク', '下期点数', '下期ランク', '年間通期点', '総合ランク'];
     const rows = annualScores.map(row => {
-      // ランクのプレーンテキスト化
-      let rankText = '-';
-      if (row.total !== null) {
-        const data = getRankData(row.total);
-        if (data) {
-          rankText = data.subRank.startsWith('-') ? `${data.subRank}${data.baseRank}` : `${data.baseRank}${data.subRank}`;
-        }
-      }
+      // ランクのプレーンテキスト化ヘルパー
+      const getRankText = (score: number | null) => {
+        if (score === null) return '-';
+        const data = getRankData(score);
+        if (!data) return '-';
+        return data.subRank.startsWith('-') ? `${data.subRank}${data.baseRank}` : `${data.baseRank}${data.subRank}`;
+      };
 
       return [
         row.staff.name,
@@ -75,9 +74,11 @@ export const Dashboard: React.FC = () => {
         row.staff.type,
         row.staff.roleTitle,
         row.upper !== null ? row.upper : '',
+        getRankText(row.upper),
         row.lower !== null ? row.lower : '',
+        getRankText(row.lower),
         row.total !== null ? row.total : '',
-        rankText
+        getRankText(row.total)
       ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(',');
     });
 
@@ -132,10 +133,10 @@ export const Dashboard: React.FC = () => {
               <tr>
                 <th>氏名</th>
                 <th>職種 / タイプ</th>
-                <th>上期 点数</th>
-                <th>下期 点数</th>
+                <th>上期 (点数・ランク)</th>
+                <th>下期 (点数・ランク)</th>
                 <th>年間 通期点</th>
-                <th>評価ランク</th>
+                <th>年間 総合ランク</th>
                 <th className="no-print">詳細ログ</th>
               </tr>
             </thead>
@@ -144,8 +145,22 @@ export const Dashboard: React.FC = () => {
                 <tr key={row.staff.id}>
                   <td style={{ fontWeight: 600 }}>{row.staff.name}</td>
                   <td>{row.staff.role} / <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>{row.staff.type}</span></td>
-                  <td>{row.upper !== null ? `${row.upper} 点` : '-'}</td>
-                  <td>{row.lower !== null ? `${row.lower} 点` : '-'}</td>
+                  <td>
+                    {row.upper !== null ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span>{row.upper} 点</span>
+                        {getRank(row.upper)}
+                      </div>
+                    ) : '-'}
+                  </td>
+                  <td>
+                    {row.lower !== null ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span>{row.lower} 点</span>
+                        {getRank(row.lower)}
+                      </div>
+                    ) : '-'}
+                  </td>
                   <td style={{ fontWeight: 700, color: 'var(--accent-primary)' }}>{row.total !== null ? `${row.total} 点` : '-'}</td>
                   <td>{getRank(row.total)}</td>
                   <td className="no-print">
