@@ -16,10 +16,10 @@ export const MyPage: React.FC = () => {
   const saveEvaluation = useStore(state => state.saveEvaluation);
   const getEvaluation = useStore(state => state.getEvaluation);
 
-  const staff = currentUser?.type === 'STAFF' ? currentUser.staff : null;
+  const staff = (currentUser?.type === 'STAFF' ? currentUser.staff : {}) as import('../types').Staff;
 
   const [year, setYear] = useState<number>(() => {
-    if (!staff) return new Date().getFullYear();
+    if (!staff.id) return new Date().getFullYear();
     const myEvals = evaluations.filter(e => e.staffId === staff.id).sort((a, b) => b.year - a.year || (a.period === '下期' ? -1 : 1));
     if (myEvals.length > 0) return myEvals[0].year;
     
@@ -348,7 +348,7 @@ export const MyPage: React.FC = () => {
     };
   });
 
-  if (!staff) {
+  if (!staff.id) {
     return <div>権限がありません</div>;
   }
 
