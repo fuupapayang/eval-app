@@ -7,7 +7,7 @@ import { useRoleQuest } from '../hooks/useRoleQuest';
 import { renderRankBadge } from '../lib/rankUtils';
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Cell 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Cell, Legend 
 } from 'recharts';
 
 export const MyPage: React.FC = () => {
@@ -238,16 +238,27 @@ export const MyPage: React.FC = () => {
   }
 
   // Always build radar data for the staff's type, even if not yet evaluated
+  const upperEval = getEvaluation(staff.id, '上期', year);
+  const lowerEval = getEvaluation(staff.id, '下期', year);
+  
   const typeItems = masterItems.filter(m => m.category === '職種・タイプ別評価' && m.type === staff.type);
   radarData = typeItems.map(item => {
-    let score = 0;
-    if (currentEval) {
-      const entry = currentEval.entries.find(en => en.itemId === item.id);
-      if (entry) score = entry.finalScore;
+    let scoreUpper = 0;
+    let scoreLower = 0;
+    
+    if (upperEval) {
+      const entry = upperEval.entries.find(en => en.itemId === item.id);
+      if (entry) scoreUpper = entry.finalScore;
     }
+    if (lowerEval) {
+      const entry = lowerEval.entries.find(en => en.itemId === item.id);
+      if (entry) scoreLower = entry.finalScore;
+    }
+    
     return {
       subject: item.name,
-      score: score,
+      上期: scoreUpper,
+      下期: scoreLower,
       fullMark: 5
     };
   });
@@ -293,14 +304,16 @@ export const MyPage: React.FC = () => {
             {/* Type/Role Radar Chart (Always show based on master items) */}
             {radarData.length > 0 && (
               <div style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
-                <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)' }}>職種・タイプ別評価（最大 25 点）</h4>
+                <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)' }}>職種・タイプ別評価（通期比較）</h4>
                 <div style={{ width: '100%', height: 250 }}>
                   <ResponsiveContainer>
                     <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
                       <PolarGrid stroke="rgba(0,0,0,0.1)" />
                         <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
                         <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fill: 'var(--text-muted)' }} />
-                        <Radar name={staff.name} dataKey="score" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.4} />
+                        <Radar name="上期" dataKey="上期" stroke="#94a3b8" fill="#94a3b8" fillOpacity={0.3} />
+                        <Radar name="下期" dataKey="下期" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.5} />
+                        <Legend wrapperStyle={{ fontSize: '12px' }} />
                         <RechartsTooltip 
                           contentStyle={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
                           itemStyle={{ color: 'var(--text-primary)' }}

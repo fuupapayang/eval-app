@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 import { useStore } from '../store';
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Cell 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Cell, Legend 
 } from 'recharts';
 
 interface Props {
@@ -88,16 +88,26 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
             text: text || '未設定'
           })).filter(d => d.text !== '未設定') || [];
 
-          const typeEntries = ev.entries.filter(en => {
-            const item = masterItems.find(m => m.id === en.itemId);
-            return item && item.category === '職種・タイプ別評価' && item.type === staff.type;
-          });
+          const typeItems = masterItems.filter(m => m.category === '職種・タイプ別評価' && m.type === staff.type);
+          
+          const upperEval = evaluations.find(e => e.period === '上期');
+          const lowerEval = evaluations.find(e => e.period === '下期');
 
-          const radarData = typeEntries.map(en => {
-            const item = masterItems.find(m => m.id === en.itemId);
+          const radarData = typeItems.map(item => {
+            let scoreUpper = 0;
+            let scoreLower = 0;
+            if (upperEval) {
+              const en = upperEval.entries.find(e => e.itemId === item.id);
+              if (en) scoreUpper = en.finalScore;
+            }
+            if (lowerEval) {
+              const en = lowerEval.entries.find(e => e.itemId === item.id);
+              if (en) scoreLower = en.finalScore;
+            }
             return {
-              subject: item ? item.name : en.itemId,
-              score: en.finalScore,
+              subject: item.name,
+              上期: scoreUpper,
+              下期: scoreLower,
               fullMark: 5
             };
           });
@@ -117,14 +127,16 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                 {/* Type/Role Radar Chart */}
                 {radarData.length > 0 && (
                   <div style={{ background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
-                    <h4 style={{ textAlign: 'center', marginBottom: '8px' }}>職種・タイプ別 バランス</h4>
+                    <h4 style={{ textAlign: 'center', marginBottom: '8px' }}>職種・タイプ別 バランス（通期比較）</h4>
                     <div style={{ width: '100%', height: 250 }}>
                       <ResponsiveContainer>
                         <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
                           <PolarGrid stroke="rgba(255,255,255,0.2)" />
                           <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
                           <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fill: 'var(--text-muted)' }} />
-                          <Radar name={staff.name} dataKey="score" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.5} />
+                          <Radar name="上期" dataKey="上期" stroke="#94a3b8" fill="#94a3b8" fillOpacity={0.3} />
+                          <Radar name="下期" dataKey="下期" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.5} />
+                          <Legend wrapperStyle={{ fontSize: '12px' }} />
                           <RechartsTooltip 
                           contentStyle={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
                             itemStyle={{ color: 'var(--text-primary)' }}
