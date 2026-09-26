@@ -469,7 +469,7 @@ export const MyPage: React.FC = () => {
               <div style={{ background: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--neu-shadow-inset)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
                 <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)' }}>現在の年収（基本給）</h4>
                 <div style={{ fontSize: '42px', fontWeight: 'bold', lineHeight: 1, color: 'var(--accent-primary)', textShadow: '2px 2px 8px rgba(0,0,0,0.1)' }}>
-                  {staff.annualSalary ? staff.annualSalary.toLocaleString() : staff.monthlySalary ? (staff.monthlySalary * 12).toLocaleString() : '-'}<span style={{ fontSize: '18px', color: 'var(--text-secondary)', marginLeft: '4px' }}>円</span>
+                  {staff.annualSalary ? (staff.annualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 }) : staff.monthlySalary ? (staff.monthlySalary * 12 / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 }) : '-'}<span style={{ fontSize: '18px', color: 'var(--text-secondary)', marginLeft: '4px' }}>万円</span>
                 </div>
                 
                 <h4 style={{ textAlign: 'center', marginTop: '24px', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>算出 月額給与</h4>
@@ -481,7 +481,7 @@ export const MyPage: React.FC = () => {
                   <>
                     <h4 style={{ textAlign: 'center', marginTop: '16px', marginBottom: '4px', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>インセンティブ</h4>
                     <div style={{ fontSize: '18px', fontWeight: 'bold', lineHeight: 1, color: 'var(--text-primary)' }}>
-                      {staff.incentive.toLocaleString()}<span style={{ fontSize: '12px', color: 'var(--text-secondary)', marginLeft: '4px' }}>円</span>
+                      {(staff.incentive / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}<span style={{ fontSize: '12px', color: 'var(--text-secondary)', marginLeft: '4px' }}>万円</span>
                     </div>
                   </>
                 ) : null}

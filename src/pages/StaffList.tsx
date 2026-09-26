@@ -204,11 +204,11 @@ const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCance
               </div>
               <div>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>年収（月額給与）</p>
-                <p>{staff.annualSalary ? `${staff.annualSalary.toLocaleString()} 円 (${Math.floor(staff.annualSalary / 12).toLocaleString()} 円/月)` : staff.monthlySalary ? `${(staff.monthlySalary * 12).toLocaleString()} 円 (${staff.monthlySalary.toLocaleString()} 円/月)` : '未設定'}</p>
+                <p>{staff.annualSalary ? `${(staff.annualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円 (${Math.floor(staff.annualSalary / 12).toLocaleString()}円/月)` : staff.monthlySalary ? `${(staff.monthlySalary * 12 / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円 (${staff.monthlySalary.toLocaleString()}円/月)` : '未設定'}</p>
               </div>
               <div>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>インセンティブ</p>
-                <p>{staff.incentive ? `${staff.incentive.toLocaleString()} 円` : '-'}</p>
+                <p>{staff.incentive ? `${(staff.incentive / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` : '-'}</p>
               </div>
               <div>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>パスワード</p>
