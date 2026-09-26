@@ -66,18 +66,20 @@ export const MyPage: React.FC = () => {
       let initialStatuses: [string, string, string] = ['', '', ''];
       
       if (prevEval && prevEval.themeTexts && prevEval.themeStatuses) {
-        // Carry over logic: 
-        // ユーザー指示：「未達、継続中というボタンの状態のときは引き継がれないというふうにしてください」
-        // つまり、状態が「未達」または「継続中」の場合は空にする（引き継がない）。
-        // それ以外（「達成」または未設定）の場合は引き継ぐ。
+        // Carry over logic (Fixed based on user feedback):
+        // 「達成」の場合は引き継がれない（リセット）
+        // 「未達」「継続中」の場合は次期へ引き継ぐ
         for (let i = 0; i < 3; i++) {
           const status = prevEval.themeStatuses[i];
-          if (status === '未達' || status === '継続中') {
+          if (status === '達成') {
             initialTexts[i] = '';
             initialStatuses[i] = '';
-          } else {
+          } else if (status === '未達' || status === '継続中') {
             initialTexts[i] = prevEval.themeTexts[i] || '';
-            // 引き継いだ場合、状態はいったんリセットするかそのままにするか？ リセット（空）にするのが一般的
+            initialStatuses[i] = status; // 状態もそのまま引き継ぐ（継続中や未達のまま）
+          } else {
+            // ステータス未設定の場合も引き継ぐ
+            initialTexts[i] = prevEval.themeTexts[i] || '';
             initialStatuses[i] = '';
           }
         }
