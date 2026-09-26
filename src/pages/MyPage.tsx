@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useStore } from '../store';
-import type { Period } from '../types';
+import type { Period, EvaluationForm } from '../types';
 import { EvaluationDetailModal } from '../components/EvaluationDetailModal';
 import { CheckCircle, Circle, Target, ChevronRight } from 'lucide-react';
 import { useRoleQuest } from '../hooks/useRoleQuest';
@@ -262,27 +262,31 @@ export const MyPage: React.FC = () => {
   const upperEvalObj = getEvaluation(staff.id, '上期', year);
   const lowerEvalObj = getEvaluation(staff.id, '下期', year);
   
-  let currentEval = getEvaluation(staff.id, period === '通期' ? '上期' : period, year); // fallback
+  let currentEval: EvaluationForm | undefined = undefined;
   if (period === '通期') {
-    // Create a synthesized evaluation object for the full year by averaging values
-    const divider = (upperEvalObj && lowerEvalObj) ? 2 : 1;
-    currentEval = {
-      ...(upperEvalObj || lowerEvalObj || {}),
-      totalScore: Number((((upperEvalObj?.totalScore || 0) + (lowerEvalObj?.totalScore || 0)) / divider).toFixed(1)),
-      performanceScore: Number((((upperEvalObj?.performanceScore || 0) + (lowerEvalObj?.performanceScore || 0)) / divider).toFixed(1)),
-      themeScore: Number((((upperEvalObj?.themeScore || 0) + (lowerEvalObj?.themeScore || 0)) / divider).toFixed(1)),
-      teamScore: Number((((upperEvalObj?.teamScore || 0) + (lowerEvalObj?.teamScore || 0)) / divider).toFixed(1)),
-      performanceDetails: [
-        Number((((upperEvalObj?.performanceDetails?.[0] || 0) + (lowerEvalObj?.performanceDetails?.[0] || 0)) / divider).toFixed(1)),
-        Number((((upperEvalObj?.performanceDetails?.[1] || 0) + (lowerEvalObj?.performanceDetails?.[1] || 0)) / divider).toFixed(1)),
-        Number((((upperEvalObj?.performanceDetails?.[2] || 0) + (lowerEvalObj?.performanceDetails?.[2] || 0)) / divider).toFixed(1)),
-      ],
-      themeDetails: [
-        Number((((upperEvalObj?.themeDetails?.[0] || 0) + (lowerEvalObj?.themeDetails?.[0] || 0)) / divider).toFixed(1)),
-        Number((((upperEvalObj?.themeDetails?.[1] || 0) + (lowerEvalObj?.themeDetails?.[1] || 0)) / divider).toFixed(1)),
-        Number((((upperEvalObj?.themeDetails?.[2] || 0) + (lowerEvalObj?.themeDetails?.[2] || 0)) / divider).toFixed(1)),
-      ],
-    } as any;
+    if (upperEvalObj || lowerEvalObj) {
+      // Create a synthesized evaluation object for the full year by averaging values
+      const divider = (upperEvalObj && lowerEvalObj) ? 2 : 1;
+      currentEval = {
+        ...(upperEvalObj || lowerEvalObj),
+        totalScore: Number((((upperEvalObj?.totalScore || 0) + (lowerEvalObj?.totalScore || 0)) / divider).toFixed(1)),
+        performanceScore: Number((((upperEvalObj?.performanceScore || 0) + (lowerEvalObj?.performanceScore || 0)) / divider).toFixed(1)),
+        themeScore: Number((((upperEvalObj?.themeScore || 0) + (lowerEvalObj?.themeScore || 0)) / divider).toFixed(1)),
+        teamScore: Number((((upperEvalObj?.teamScore || 0) + (lowerEvalObj?.teamScore || 0)) / divider).toFixed(1)),
+        performanceDetails: [
+          Number((((upperEvalObj?.performanceDetails?.[0] || 0) + (lowerEvalObj?.performanceDetails?.[0] || 0)) / divider).toFixed(1)),
+          Number((((upperEvalObj?.performanceDetails?.[1] || 0) + (lowerEvalObj?.performanceDetails?.[1] || 0)) / divider).toFixed(1)),
+          Number((((upperEvalObj?.performanceDetails?.[2] || 0) + (lowerEvalObj?.performanceDetails?.[2] || 0)) / divider).toFixed(1)),
+        ],
+        themeDetails: [
+          Number((((upperEvalObj?.themeDetails?.[0] || 0) + (lowerEvalObj?.themeDetails?.[0] || 0)) / divider).toFixed(1)),
+          Number((((upperEvalObj?.themeDetails?.[1] || 0) + (lowerEvalObj?.themeDetails?.[1] || 0)) / divider).toFixed(1)),
+          Number((((upperEvalObj?.themeDetails?.[2] || 0) + (lowerEvalObj?.themeDetails?.[2] || 0)) / divider).toFixed(1)),
+        ],
+      } as EvaluationForm;
+    } else {
+      currentEval = undefined;
+    }
   } else {
     currentEval = getEvaluation(staff.id, period, year);
   }
@@ -315,11 +319,11 @@ export const MyPage: React.FC = () => {
       { name: '顧客・社内貢献', score: currentEval.performanceDetails?.[2] || 0 },
     ];
 
-    themeData = currentEval.themeTexts?.map((text, i) => ({
+    themeData = currentEval.themeTexts?.map((text: string, i: number) => ({
       name: `テーマ${i+1}`,
-      score: currentEval.themeDetails?.[i] || 0,
+      score: currentEval?.themeDetails?.[i] || 0,
       text: text || '未設定'
-    })).filter(d => d.text !== '未設定') || [];
+    })).filter((d: {name: string, score: number, text: string}) => d.text !== '未設定') || [];
   }
 
   // Always build radar data for the staff's type, even if not yet evaluated
