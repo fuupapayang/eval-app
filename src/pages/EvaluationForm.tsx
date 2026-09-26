@@ -347,9 +347,53 @@ export const EvaluationForm: React.FC = () => {
                   <div key={`theme-${i}`} className="form-group">
                     <label className="form-label">{i + 1}. 個人テーマ{i + 1}</label>
                     {themeTexts[i] ? (
-                      <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px', padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>
-                        {themeTexts[i]}
-                      </p>
+                      <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px', padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>
+                        <div style={{ fontWeight: '500' }}>
+                          {themeTexts[i]}
+                          {themeStatuses?.[i] && (
+                            <span style={{ 
+                              marginLeft: '8px', 
+                              padding: '2px 8px', 
+                              borderRadius: '12px', 
+                              fontSize: '0.75rem',
+                              background: themeStatuses[i] === '達成' ? 'rgba(16, 185, 129, 0.2)' : 
+                                         themeStatuses[i] === '未達' ? 'rgba(239, 68, 68, 0.2)' : 
+                                         'rgba(245, 158, 11, 0.2)',
+                              color: themeStatuses[i] === '達成' ? '#10b981' : 
+                                     themeStatuses[i] === '未達' ? '#ef4444' : 
+                                     '#f59e0b',
+                              border: `1px solid ${
+                                themeStatuses[i] === '達成' ? '#10b981' : 
+                                themeStatuses[i] === '未達' ? '#ef4444' : 
+                                '#f59e0b'
+                              }`
+                            }}>
+                              {themeStatuses[i]}
+                            </span>
+                          )}
+                        </div>
+                        
+                        {themeReflections?.[i] && (
+                          <div style={{ marginTop: '4px', fontSize: '0.8rem', opacity: 0.9 }}>
+                            <span style={{ fontWeight: 'bold' }}>振り返り・理由:</span> {themeReflections[i]}
+                          </div>
+                        )}
+                        
+                        {themeHistory?.[i] && themeHistory[i].length > 0 && (
+                          <div style={{ marginTop: '8px', padding: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '4px', fontSize: '0.8rem' }}>
+                            <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>【過去の未達履歴】</div>
+                            <ul style={{ paddingLeft: '16px', margin: 0 }}>
+                              {themeHistory[i].map((h, hi) => (
+                                <li key={hi} style={{ marginBottom: '4px' }}>
+                                  <span style={{ color: '#ef4444', marginRight: '4px' }}>[未達]</span>
+                                  {h.text}
+                                  {h.reflection && <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>理由: {h.reflection}</div>}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
                     ) : (
                       <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px' }}>（未設定）</p>
                     )}

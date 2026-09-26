@@ -185,28 +185,51 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                 <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', marginBottom: '16px' }}>2. 個人テーマ 詳細</h3>
                 <ul style={{ paddingLeft: '20px', marginBottom: '16px', fontSize: '0.875rem' }}>
                   {ev.themeTexts?.map((t, i) => t ? (
-                    <li key={i} style={{ marginBottom: '8px' }}>
-                      {t}
-                      {ev.themeStatuses?.[i] && (
-                        <span style={{ 
-                          marginLeft: '8px', 
-                          padding: '2px 8px', 
-                          borderRadius: '12px', 
-                          fontSize: '0.75rem',
-                          background: ev.themeStatuses[i] === '達成' ? 'rgba(16, 185, 129, 0.2)' : 
-                                     ev.themeStatuses[i] === '未達' ? 'rgba(239, 68, 68, 0.2)' : 
-                                     'rgba(245, 158, 11, 0.2)',
-                          color: ev.themeStatuses[i] === '達成' ? '#10b981' : 
-                                 ev.themeStatuses[i] === '未達' ? '#ef4444' : 
-                                 '#f59e0b',
-                          border: `1px solid ${
-                            ev.themeStatuses[i] === '達成' ? '#10b981' : 
-                            ev.themeStatuses[i] === '未達' ? '#ef4444' : 
-                            '#f59e0b'
-                          }`
-                        }}>
-                          {ev.themeStatuses[i]}
-                        </span>
+                    <li key={i} style={{ marginBottom: '16px' }}>
+                      <div style={{ fontWeight: '500' }}>
+                        {t}
+                        {ev.themeStatuses?.[i] && (
+                          <span style={{ 
+                            marginLeft: '8px', 
+                            padding: '2px 8px', 
+                            borderRadius: '12px', 
+                            fontSize: '0.75rem',
+                            background: ev.themeStatuses[i] === '達成' ? 'rgba(16, 185, 129, 0.2)' : 
+                                       ev.themeStatuses[i] === '未達' ? 'rgba(239, 68, 68, 0.2)' : 
+                                       'rgba(245, 158, 11, 0.2)',
+                            color: ev.themeStatuses[i] === '達成' ? '#10b981' : 
+                                   ev.themeStatuses[i] === '未達' ? '#ef4444' : 
+                                   '#f59e0b',
+                            border: `1px solid ${
+                              ev.themeStatuses[i] === '達成' ? '#10b981' : 
+                              ev.themeStatuses[i] === '未達' ? '#ef4444' : 
+                              '#f59e0b'
+                            }`
+                          }}>
+                            {ev.themeStatuses[i]}
+                          </span>
+                        )}
+                      </div>
+                      
+                      {ev.themeReflections?.[i] && (
+                        <div style={{ marginTop: '4px', color: 'var(--text-secondary)', fontSize: '0.8rem', padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>
+                          <span style={{ fontWeight: 'bold' }}>振り返り・理由:</span> {ev.themeReflections[i]}
+                        </div>
+                      )}
+                      
+                      {ev.themeHistory?.[i] && ev.themeHistory[i].length > 0 && (
+                        <div style={{ marginTop: '8px', color: 'var(--text-secondary)', fontSize: '0.8rem', padding: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '4px' }}>
+                          <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>【過去の未達履歴】</div>
+                          <ul style={{ paddingLeft: '16px', margin: 0 }}>
+                            {ev.themeHistory[i].map((h, hi) => (
+                              <li key={hi} style={{ marginBottom: '4px' }}>
+                                <span style={{ color: '#ef4444', marginRight: '4px' }}>[未達]</span>
+                                {h.text}
+                                {h.reflection && <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>理由: {h.reflection}</div>}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       )}
                     </li>
                   ) : null)}
