@@ -29,6 +29,9 @@ export const EvaluationForm: React.FC = () => {
   const [teamDetails, setTeamDetails] = useState<[number, number, number]>([0, 0, 0]);
   const [teamTexts, setTeamTexts] = useState<[string, string, string]>(['', '', '']);
   const [initialTeamTexts, setInitialTeamTexts] = useState<[string, string, string]>(['', '', '']);
+  const [teamStatuses, setTeamStatuses] = useState<[string, string, string]>(['', '', '']);
+  const [teamReflections, setTeamReflections] = useState<[string, string, string]>(['', '', '']);
+  const [teamHistory, setTeamHistory] = useState<Record<string, import('../types').ThemeHistoryItem[]>>({'0': [], '1': [], '2': []});
   const [selfComment, setSelfComment] = useState<string>('');
   const [initialSelfComment, setInitialSelfComment] = useState<string>('');
   const [commonScores, setCommonScores] = useState<Record<string, number>>({});
@@ -62,6 +65,9 @@ export const EvaluationForm: React.FC = () => {
         setTeamDetails(existing.teamDetails || [0, 0, 0]);
         setTeamTexts(existing.teamTexts || ['', '', '']);
         setInitialTeamTexts(existing.teamTexts || ['', '', '']);
+        setTeamStatuses(existing.teamStatuses || ['', '', '']);
+        setTeamReflections(existing.teamReflections || ['', '', '']);
+        setTeamHistory(existing.teamHistory || {'0': [], '1': [], '2': []});
         setSelfComment(existing.selfComment || '');
         setInitialSelfComment(existing.selfComment || '');
         // Also might want to set old totals if details aren't present (backward compatibility)
@@ -181,6 +187,13 @@ export const EvaluationForm: React.FC = () => {
     const isTeamUnchanged = JSON.stringify(teamTexts) === JSON.stringify(initialTeamTexts);
     const finalTeamTexts = isTeamUnchanged && latestExisting?.teamTexts ? latestExisting.teamTexts : teamTexts;
     
+    // We should also track teamStatuses if master changes them, but master typically doesn't change team statuses (staff does).
+    // Let's preserve staff's input for team states unless we explicitly track initialTeamStatuses.
+    // For safety, let's just always save whatever is in the form state, or fallback to latest if unchanged.
+    const finalTeamStatuses = latestExisting?.teamStatuses || teamStatuses;
+    const finalTeamReflections = latestExisting?.teamReflections || teamReflections;
+    const finalTeamHistory = latestExisting?.teamHistory || teamHistory;
+    
     const isSelfCommentUnchanged = selfComment === initialSelfComment;
     const finalSelfComment = isSelfCommentUnchanged && latestExisting?.selfComment ? latestExisting.selfComment : selfComment;
 
@@ -202,6 +215,9 @@ export const EvaluationForm: React.FC = () => {
       teamScore,
       teamDetails,
       teamTexts: finalTeamTexts,
+      teamStatuses: finalTeamStatuses,
+      teamReflections: finalTeamReflections,
+      teamHistory: finalTeamHistory,
       selfComment: finalSelfComment,
       commonScore: Object.values(commonScores).reduce((a, b) => a + b, 0),
       commonDetails: [
@@ -427,9 +443,58 @@ export const EvaluationForm: React.FC = () => {
                   <div key={`team-${i}`} className="form-group">
                     <label className="form-label">{i + 1}. チーム目標{i + 1}</label>
                     {teamTexts[i] ? (
-                      <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px', padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>
-                        {teamTexts[i]}
-                      </p>
+                      <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px', padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>
+                        <div style={{ fontWeight: '500' }}>
+                          {teamTexts[i]}
+                        </div>
+                        
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '8px', marginBottom: '8px' }}>
+                          {['達成', '未達', '継続中'].map(status => (
+                            <button
+                              key={status}
+                              type="button"
+                              className={`btn ${teamStatuses?.[i] === status ? 'btn-primary' : 'btn-outline'}`}
+                              style={{ 
+                                padding: '2px 8px', 
+                                fontSize: '0.75rem',
+                                background: teamStatuses?.[i] === status 
+                                  ? (status === '達成' ? '#10b981' : status === '未達' ? '#ef4444' : '#f59e0b') 
+                                  : 'transparent',
+                                borderColor: status === '達成' ? '#10b981' : status === '未達' ? '#ef4444' : '#f59e0b',
+                                color: teamStatuses?.[i] === status ? '#fff' : (status === '達成' ? '#10b981' : status === '未達' ? '#ef4444' : '#f59e0b')
+                              }}
+                              onClick={() => {
+                                const newStatuses = [...teamStatuses] as [string, string, string];
+                                newStatuses[i] = newStatuses[i] === status ? '' : status;
+                                setTeamStatuses(newStatuses);
+                              }}
+                            >
+                              {status}
+                            </button>
+                          ))}
+                        </div>
+                        
+                        {teamReflections?.[i] && (
+                          <div style={{ marginTop: '4px', fontSize: '0.8rem', opacity: 0.9 }}>
+                            <span style={{ fontWeight: 'bold' }}>振り返り・理由:</span> {teamReflections[i]}
+                          </div>
+                        )}
+                        
+                        {teamHistory?.[String(i)] && teamHistory[String(i)].length > 0 && (
+                          <div style={{ marginTop: '8px', padding: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '4px', fontSize: '0.8rem' }}>
+                            <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>【過去の未達履歴】</div>
+                            <ul style={{ paddingLeft: '16px', margin: 0 }}>
+                              {teamHistory[String(i)].map((h, hi) => (
+                                <li key={hi} style={{ marginBottom: '4px' }}>
+                                  <span style={{ color: '#ef4444', marginRight: '4px' }}>[未達]</span>
+                                  {h.text}
+                                  {h.reflection && <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>理由: {h.reflection}</div>}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
                     ) : (
                       <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px' }}>（未設定）</p>
                     )}

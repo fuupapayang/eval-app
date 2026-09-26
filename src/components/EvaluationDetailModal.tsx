@@ -252,9 +252,56 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                 <div>
                   <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', marginBottom: '16px' }}>3. チーム目標達成度（{ev.teamScore}点）</h3>
                   <ul style={{ paddingLeft: '20px', marginBottom: '16px', fontSize: '0.875rem' }}>
-                    {ev.teamTexts?.map((t, i) => t ? <li key={i}>
-                      {t} <span style={{fontWeight: 'bold', color: 'var(--accent-primary)', marginLeft: '8px'}}>[ {ev.teamDetails[i]}点 ]</span>
-                    </li> : null)}
+                    {ev.teamTexts?.map((t, i) => t ? (
+                      <li key={i} style={{ marginBottom: '16px' }}>
+                        <div style={{ fontWeight: '500' }}>
+                          {t}
+                          <span style={{fontWeight: 'bold', color: 'var(--accent-primary)', marginLeft: '8px'}}>[ {ev.teamDetails[i]}点 ]</span>
+                          {ev.teamStatuses?.[i] && (
+                            <span style={{ 
+                              marginLeft: '8px', 
+                              padding: '2px 8px', 
+                              borderRadius: '12px', 
+                              fontSize: '0.75rem',
+                              background: ev.teamStatuses[i] === '達成' ? 'rgba(16, 185, 129, 0.2)' : 
+                                         ev.teamStatuses[i] === '未達' ? 'rgba(239, 68, 68, 0.2)' : 
+                                         'rgba(245, 158, 11, 0.2)',
+                              color: ev.teamStatuses[i] === '達成' ? '#10b981' : 
+                                     ev.teamStatuses[i] === '未達' ? '#ef4444' : 
+                                     '#f59e0b',
+                              border: `1px solid ${
+                                ev.teamStatuses[i] === '達成' ? '#10b981' : 
+                                ev.teamStatuses[i] === '未達' ? '#ef4444' : 
+                                '#f59e0b'
+                              }`
+                            }}>
+                              {ev.teamStatuses[i]}
+                            </span>
+                          )}
+                        </div>
+                        
+                        {ev.teamReflections?.[i] && (
+                          <div style={{ marginTop: '4px', color: 'var(--text-secondary)', fontSize: '0.8rem', padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>
+                            <span style={{ fontWeight: 'bold' }}>振り返り・理由:</span> {ev.teamReflections[i]}
+                          </div>
+                        )}
+                        
+                        {ev.teamHistory?.[String(i)] && ev.teamHistory[String(i)].length > 0 && (
+                          <div style={{ marginTop: '8px', color: 'var(--text-secondary)', fontSize: '0.8rem', padding: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '4px' }}>
+                            <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>【過去の未達履歴】</div>
+                            <ul style={{ paddingLeft: '16px', margin: 0 }}>
+                              {ev.teamHistory[String(i)].map((h, hi) => (
+                                <li key={hi} style={{ marginBottom: '4px' }}>
+                                  <span style={{ color: '#ef4444', marginRight: '4px' }}>[未達]</span>
+                                  {h.text}
+                                  {h.reflection && <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>理由: {h.reflection}</div>}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </li>
+                    ) : null)}
                   </ul>
                 </div>
               )}

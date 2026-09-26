@@ -84,6 +84,9 @@ export interface EvaluationForm {
   themeDetails: [number, number, number];
   
   teamTexts?: [string, string, string];     // チーム目標の内容
+  teamStatuses?: [string, string, string]; // チーム目標の状態
+  teamReflections?: [string, string, string]; // チーム目標の振り返り
+  teamHistory?: Record<string, ThemeHistoryItem[]>; // チーム目標の過去の履歴
   teamScore: number;        // チーム目標達成度 (Max 15)
   teamDetails: [number, number, number];
   

@@ -24,7 +24,13 @@ export const MyPage: React.FC = () => {
   const [themeStatuses, setThemeStatuses] = useState<[string, string, string]>(['', '', '']);
   const [themeReflections, setThemeReflections] = useState<[string, string, string]>(['', '', '']);
   const [themeHistory, setThemeHistory] = useState<Record<string, import('../types').ThemeHistoryItem[]>>({'0': [], '1': [], '2': []});
+  
   const [teamTexts, setTeamTexts] = useState<[string, string, string]>(['', '', '']);
+  const [initialTeamTexts, setInitialTeamTexts] = useState<[string, string, string]>(['', '', '']);
+  const [teamStatuses, setTeamStatuses] = useState<[string, string, string]>(['', '', '']);
+  const [teamReflections, setTeamReflections] = useState<[string, string, string]>(['', '', '']);
+  const [teamHistory, setTeamHistory] = useState<Record<string, import('../types').ThemeHistoryItem[]>>({'0': [], '1': [], '2': []});
+  
   const [selfComment, setSelfComment] = useState<string>('');
   
   const [detailPeriodInfo, setDetailPeriodInfo] = useState<{year: number, period: '上期'|'下期'} | null>(null);
@@ -53,11 +59,16 @@ export const MyPage: React.FC = () => {
       setThemeStatuses(existing.themeStatuses || ['', '', '']);
       setThemeReflections(existing.themeReflections || ['', '', '']);
       setThemeHistory(existing.themeHistory || {'0': [], '1': [], '2': []});
+      
       setTeamTexts(existing.teamTexts || ['', '', '']);
+      setInitialTeamTexts(existing.teamTexts || ['', '', '']);
+      setTeamStatuses(existing.teamStatuses || ['', '', '']);
+      setTeamReflections(existing.teamReflections || ['', '', '']);
+      setTeamHistory(existing.teamHistory || {'0': [], '1': [], '2': []});
+      
       setSelfComment(existing.selfComment || '');
     } else {
       // If no existing, check if we should carry over from previous term
-      // Previous term is either (year, '上期') if current is '下期', or (year-1, '下期') if current is '上期'
       let prevYear = year;
       let prevPeriod: Period = '上期';
       if (period === '下期') {
@@ -73,30 +84,57 @@ export const MyPage: React.FC = () => {
       let initialReflections: [string, string, string] = ['', '', ''];
       let initialHistory: Record<string, import('../types').ThemeHistoryItem[]> = {'0': [], '1': [], '2': []};
       
-      if (prevEval && prevEval.themeTexts && prevEval.themeStatuses) {
-        // Carry over logic (Fixed based on user feedback):
-        // 「達成」の場合は引き継がれない（リセット）
-        // 「未達」「継続中」の場合は次期へ引き継ぐ
-        for (let i = 0; i < 3; i++) {
-          const status = prevEval.themeStatuses[i];
-          const prevHistory = prevEval.themeHistory ? prevEval.themeHistory[String(i)] || [] : [];
-          
-          if (status === '達成') {
-            initialTexts[i] = '';
-            initialStatuses[i] = '';
-            initialReflections[i] = '';
-            initialHistory[String(i)] = []; // 達成したら履歴もリセット（新しい目標になるため）
-          } else if (status === '未達' || status === '継続中') {
-            initialTexts[i] = prevEval.themeTexts[i] || '';
-            initialStatuses[i] = status; // 状態もそのまま引き継ぐ（継続中や未達のまま）
-            initialReflections[i] = prevEval.themeReflections ? prevEval.themeReflections[i] : '';
-            initialHistory[String(i)] = [...prevHistory]; // 過去の履歴も引き継ぐ
-          } else {
-            // ステータス未設定の場合も引き継ぐ
-            initialTexts[i] = prevEval.themeTexts[i] || '';
-            initialStatuses[i] = '';
-            initialReflections[i] = prevEval.themeReflections ? prevEval.themeReflections[i] : '';
-            initialHistory[String(i)] = [...prevHistory];
+      let initialTeamTextsArray: [string, string, string] = ['', '', ''];
+      let initialTeamStatusesArray: [string, string, string] = ['', '', ''];
+      let initialTeamReflectionsArray: [string, string, string] = ['', '', ''];
+      let initialTeamHistoryMap: Record<string, import('../types').ThemeHistoryItem[]> = {'0': [], '1': [], '2': []};
+      
+      if (prevEval) {
+        if (prevEval.themeTexts && prevEval.themeStatuses) {
+          for (let i = 0; i < 3; i++) {
+            const status = prevEval.themeStatuses[i];
+            const prevHistory = prevEval.themeHistory ? prevEval.themeHistory[String(i)] || [] : [];
+            
+            if (status === '達成') {
+              initialTexts[i] = '';
+              initialStatuses[i] = '';
+              initialReflections[i] = '';
+              initialHistory[String(i)] = [];
+            } else if (status === '未達' || status === '継続中') {
+              initialTexts[i] = prevEval.themeTexts[i] || '';
+              initialStatuses[i] = status;
+              initialReflections[i] = prevEval.themeReflections ? prevEval.themeReflections[i] : '';
+              initialHistory[String(i)] = [...prevHistory];
+            } else {
+              initialTexts[i] = prevEval.themeTexts[i] || '';
+              initialStatuses[i] = '';
+              initialReflections[i] = prevEval.themeReflections ? prevEval.themeReflections[i] : '';
+              initialHistory[String(i)] = [...prevHistory];
+            }
+          }
+        }
+        
+        if (prevEval.teamTexts && prevEval.teamStatuses) {
+          for (let i = 0; i < 3; i++) {
+            const status = prevEval.teamStatuses[i];
+            const prevHistory = prevEval.teamHistory ? prevEval.teamHistory[String(i)] || [] : [];
+            
+            if (status === '達成') {
+              initialTeamTextsArray[i] = '';
+              initialTeamStatusesArray[i] = '';
+              initialTeamReflectionsArray[i] = '';
+              initialTeamHistoryMap[String(i)] = [];
+            } else if (status === '未達' || status === '継続中') {
+              initialTeamTextsArray[i] = prevEval.teamTexts[i] || '';
+              initialTeamStatusesArray[i] = status;
+              initialTeamReflectionsArray[i] = prevEval.teamReflections ? prevEval.teamReflections[i] : '';
+              initialTeamHistoryMap[String(i)] = [...prevHistory];
+            } else {
+              initialTeamTextsArray[i] = prevEval.teamTexts[i] || '';
+              initialTeamStatusesArray[i] = '';
+              initialTeamReflectionsArray[i] = prevEval.teamReflections ? prevEval.teamReflections[i] : '';
+              initialTeamHistoryMap[String(i)] = [...prevHistory];
+            }
           }
         }
       }
@@ -106,7 +144,13 @@ export const MyPage: React.FC = () => {
       setThemeStatuses(initialStatuses);
       setThemeReflections(initialReflections);
       setThemeHistory(initialHistory);
-      setTeamTexts(['', '', '']);
+      
+      setTeamTexts(initialTeamTextsArray);
+      setInitialTeamTexts(initialTeamTextsArray);
+      setTeamStatuses(initialTeamStatusesArray);
+      setTeamReflections(initialTeamReflectionsArray);
+      setTeamHistory(initialTeamHistoryMap);
+      
       setSelfComment('');
     }
   }, [staff.id, period, year, getEvaluation]);
@@ -143,6 +187,9 @@ export const MyPage: React.FC = () => {
       themeReflections,
       themeHistory,
       teamTexts: canEditTeam ? teamTexts : (evalData.teamTexts || ['', '', '']),
+      teamStatuses: canEditTeam ? teamStatuses : (evalData.teamStatuses || ['', '', '']),
+      teamReflections: canEditTeam ? teamReflections : (evalData.teamReflections || ['', '', '']),
+      teamHistory: canEditTeam ? teamHistory : (evalData.teamHistory || {'0': [], '1': [], '2': []}),
       selfComment,
       updatedAt: new Date().toISOString()
     });
@@ -607,8 +654,39 @@ export const MyPage: React.FC = () => {
           <div>
             <h3 style={{ marginBottom: 'var(--spacing-3)' }}>チーム目標</h3>
             {[0, 1, 2].map(i => (
-              <div key={`team-${i}`} className="form-group">
-                <label className="form-label">チーム目標 {i + 1}</label>
+              <div key={`team-${i}`} className="form-group" style={{ marginBottom: '16px', background: 'var(--bg-base)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+                <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>チーム目標 {i + 1}</span>
+                </label>
+                
+                {/* 履歴の表示 */}
+                {teamHistory && teamHistory[String(i)] && teamHistory[String(i)].length > 0 && (
+                  <div style={{ marginBottom: '12px', padding: '12px', background: 'rgba(0,0,0,0.02)', borderRadius: '4px', fontSize: '0.85rem' }}>
+                    <div style={{ fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '8px' }}>過去の未達・継続履歴</div>
+                    <ul style={{ margin: 0, paddingLeft: '20px', color: 'var(--text-secondary)' }}>
+                      {teamHistory[String(i)].map((hist, hIdx) => (
+                        <li key={hIdx} style={{ marginBottom: '4px' }}>
+                          <span style={{ color: 'var(--text-primary)' }}>{hist.text}</span>
+                          <span style={{ 
+                            marginLeft: '8px', 
+                            fontSize: '0.75rem', 
+                            padding: '2px 6px', 
+                            background: 'rgba(0,0,0,0.1)', 
+                            borderRadius: '12px' 
+                          }}>
+                            {hist.status}
+                          </span>
+                          {hist.reflection && (
+                            <div style={{ marginTop: '2px', fontStyle: 'italic', opacity: 0.8 }}>
+                              振り返り: {hist.reflection}
+                            </div>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
                 <input 
                   type="text" 
                   className="form-input" 
@@ -617,10 +695,74 @@ export const MyPage: React.FC = () => {
                     const newTexts = [...teamTexts] as [string, string, string];
                     newTexts[i] = e.target.value;
                     setTeamTexts(newTexts);
+                    
+                    if (e.target.value !== '' && e.target.value !== initialTeamTexts[i]) {
+                      const newStatuses = [...teamStatuses] as [string, string, string];
+                      newStatuses[i] = '未達';
+                      setTeamStatuses(newStatuses);
+                    }
+                  }}
+                  onBlur={() => {
+                    if (initialTeamTexts[i] !== '' && teamTexts[i] !== initialTeamTexts[i]) {
+                      const newHistory = { ...teamHistory };
+                      const currentHistory = newHistory[String(i)] || [];
+                      newHistory[String(i)] = [
+                        ...currentHistory,
+                        {
+                          text: initialTeamTexts[i],
+                          status: '未達',
+                          reflection: teamReflections[i] || '',
+                          updatedAt: new Date().toISOString()
+                        }
+                      ];
+                      setTeamHistory(newHistory);
+                      const newInitialTexts = [...initialTeamTexts] as [string, string, string];
+                      newInitialTexts[i] = teamTexts[i];
+                      setInitialTeamTexts(newInitialTexts);
+                      
+                      const newReflections = [...teamReflections] as [string, string, string];
+                      newReflections[i] = '';
+                      setTeamReflections(newReflections);
+                    }
                   }}
                   placeholder="チームとして達成したい目標"
                   disabled={!canEditTeam}
+                  style={{ marginBottom: '8px' }}
                 />
+                
+                <textarea
+                  className="form-input"
+                  value={teamReflections[i]}
+                  onChange={e => {
+                    const newReflections = [...teamReflections] as [string, string, string];
+                    newReflections[i] = e.target.value;
+                    setTeamReflections(newReflections);
+                  }}
+                  placeholder="未達の理由や振り返りがあれば入力してください"
+                  disabled={!canEditTeam}
+                  style={{ marginBottom: '8px', minHeight: '60px', fontSize: '0.85rem' }}
+                />
+                
+                {/* Status Buttons */}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {['達成', '未達', '継続中'].map(status => (
+                    <button
+                      key={status}
+                      type="button"
+                      className={`btn ${teamStatuses[i] === status ? 'btn-primary' : 'btn-outline'}`}
+                      style={{ padding: '4px 12px', fontSize: '0.85rem' }}
+                      onClick={() => {
+                        if (!canEditTeam) return;
+                        const newStatuses = [...teamStatuses] as [string, string, string];
+                        newStatuses[i] = newStatuses[i] === status ? '' : status;
+                        setTeamStatuses(newStatuses);
+                      }}
+                      disabled={!canEditTeam}
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
               </div>
             ))}
             {!canEditTeam && (
