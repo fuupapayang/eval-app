@@ -20,6 +20,7 @@ export const MyPage: React.FC = () => {
   const [year, setYear] = useState<number>(new Date().getFullYear());
 
   const [themeTexts, setThemeTexts] = useState<[string, string, string]>(['', '', '']);
+  const [themeStatuses, setThemeStatuses] = useState<[string, string, string]>(['', '', '']);
   const [teamTexts, setTeamTexts] = useState<[string, string, string]>(['', '', '']);
   const [selfComment, setSelfComment] = useState<string>('');
   
@@ -45,10 +46,45 @@ export const MyPage: React.FC = () => {
     const existing = getEvaluation(staff.id, period, year);
     if (existing) {
       setThemeTexts(existing.themeTexts || ['', '', '']);
+      setThemeStatuses(existing.themeStatuses || ['', '', '']);
       setTeamTexts(existing.teamTexts || ['', '', '']);
       setSelfComment(existing.selfComment || '');
     } else {
-      setThemeTexts(['', '', '']);
+      // If no existing, check if we should carry over from previous term
+      // Previous term is either (year, '上期') if current is '下期', or (year-1, '下期') if current is '上期'
+      let prevYear = year;
+      let prevPeriod: Period = '上期';
+      if (period === '下期') {
+        prevPeriod = '上期';
+      } else {
+        prevYear = year - 1;
+        prevPeriod = '下期';
+      }
+      const prevEval = getEvaluation(staff.id, prevPeriod, prevYear);
+      
+      let initialTexts: [string, string, string] = ['', '', ''];
+      let initialStatuses: [string, string, string] = ['', '', ''];
+      
+      if (prevEval && prevEval.themeTexts && prevEval.themeStatuses) {
+        // Carry over logic: 
+        // ユーザー指示：「未達、継続中というボタンの状態のときは引き継がれないというふうにしてください」
+        // つまり、状態が「未達」または「継続中」の場合は空にする（引き継がない）。
+        // それ以外（「達成」または未設定）の場合は引き継ぐ。
+        for (let i = 0; i < 3; i++) {
+          const status = prevEval.themeStatuses[i];
+          if (status === '未達' || status === '継続中') {
+            initialTexts[i] = '';
+            initialStatuses[i] = '';
+          } else {
+            initialTexts[i] = prevEval.themeTexts[i] || '';
+            // 引き継いだ場合、状態はいったんリセットするかそのままにするか？ リセット（空）にするのが一般的
+            initialStatuses[i] = '';
+          }
+        }
+      }
+      
+      setThemeTexts(initialTexts);
+      setThemeStatuses(initialStatuses);
       setTeamTexts(['', '', '']);
       setSelfComment('');
     }
@@ -82,6 +118,7 @@ export const MyPage: React.FC = () => {
     saveEvaluation({
       ...evalData,
       themeTexts,
+      themeStatuses,
       teamTexts: canEditTeam ? teamTexts : (evalData.teamTexts || ['', '', '']),
       selfComment,
       updatedAt: new Date().toISOString()
@@ -423,7 +460,7 @@ export const MyPage: React.FC = () => {
           <div>
             <h3 style={{ marginBottom: 'var(--spacing-3)' }}>個人テーマ</h3>
             {[0, 1, 2].map(i => (
-              <div key={`theme-${i}`} className="form-group">
+              <div key={`theme-${i}`} className="form-group" style={{ marginBottom: 'var(--spacing-5)' }}>
                 <label className="form-label">個人テーマ {i + 1}</label>
                 <input 
                   type="text" 
@@ -435,7 +472,28 @@ export const MyPage: React.FC = () => {
                     setThemeTexts(newTexts);
                   }}
                   placeholder="達成したい目標を入力"
+                  style={{ marginBottom: '8px' }}
                 />
+                
+                {/* Status Buttons */}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {['達成', '未達', '継続中'].map(status => (
+                    <button
+                      key={status}
+                      type="button"
+                      className={`btn ${themeStatuses[i] === status ? 'btn-primary' : 'btn-outline'}`}
+                      style={{ padding: '4px 12px', fontSize: '0.85rem' }}
+                      onClick={() => {
+                        const newStatuses = [...themeStatuses] as [string, string, string];
+                        // toggle off if clicked again
+                        newStatuses[i] = newStatuses[i] === status ? '' : status;
+                        setThemeStatuses(newStatuses);
+                      }}
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
               </div>
             ))}
           </div>

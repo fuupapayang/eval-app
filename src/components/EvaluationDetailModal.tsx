@@ -184,7 +184,32 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
               <div>
                 <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', marginBottom: '16px' }}>2. 個人テーマ 詳細</h3>
                 <ul style={{ paddingLeft: '20px', marginBottom: '16px', fontSize: '0.875rem' }}>
-                  {ev.themeTexts?.map((t, i) => t ? <li key={i}>{t}</li> : null)}
+                  {ev.themeTexts?.map((t, i) => t ? (
+                    <li key={i} style={{ marginBottom: '8px' }}>
+                      {t}
+                      {ev.themeStatuses?.[i] && (
+                        <span style={{ 
+                          marginLeft: '8px', 
+                          padding: '2px 8px', 
+                          borderRadius: '12px', 
+                          fontSize: '0.75rem',
+                          background: ev.themeStatuses[i] === '達成' ? 'rgba(16, 185, 129, 0.2)' : 
+                                     ev.themeStatuses[i] === '未達' ? 'rgba(239, 68, 68, 0.2)' : 
+                                     'rgba(245, 158, 11, 0.2)',
+                          color: ev.themeStatuses[i] === '達成' ? '#10b981' : 
+                                 ev.themeStatuses[i] === '未達' ? '#ef4444' : 
+                                 '#f59e0b',
+                          border: `1px solid ${
+                            ev.themeStatuses[i] === '達成' ? '#10b981' : 
+                            ev.themeStatuses[i] === '未達' ? '#ef4444' : 
+                            '#f59e0b'
+                          }`
+                        }}>
+                          {ev.themeStatuses[i]}
+                        </span>
+                      )}
+                    </li>
+                  ) : null)}
                 </ul>
               </div>
 

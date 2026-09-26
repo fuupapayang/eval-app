@@ -22,6 +22,8 @@ export const EvaluationForm: React.FC = () => {
   const [themeDetails, setThemeDetails] = useState<[number, number, number]>([0, 0, 0]);
   const [themeTexts, setThemeTexts] = useState<[string, string, string]>(['', '', '']);
   const [initialThemeTexts, setInitialThemeTexts] = useState<[string, string, string]>(['', '', '']);
+  const [themeStatuses, setThemeStatuses] = useState<[string, string, string]>(['', '', '']);
+  const [initialThemeStatuses, setInitialThemeStatuses] = useState<[string, string, string]>(['', '', '']);
   const [teamDetails, setTeamDetails] = useState<[number, number, number]>([0, 0, 0]);
   const [teamTexts, setTeamTexts] = useState<[string, string, string]>(['', '', '']);
   const [initialTeamTexts, setInitialTeamTexts] = useState<[string, string, string]>(['', '', '']);
@@ -51,6 +53,8 @@ export const EvaluationForm: React.FC = () => {
         setThemeDetails(existing.themeDetails || [0, 0, 0]);
         setThemeTexts(existing.themeTexts || ['', '', '']);
         setInitialThemeTexts(existing.themeTexts || ['', '', '']);
+        setThemeStatuses(existing.themeStatuses || ['', '', '']);
+        setInitialThemeStatuses(existing.themeStatuses || ['', '', '']);
         setTeamDetails(existing.teamDetails || [0, 0, 0]);
         setTeamTexts(existing.teamTexts || ['', '', '']);
         setInitialTeamTexts(existing.teamTexts || ['', '', '']);
@@ -91,6 +95,8 @@ export const EvaluationForm: React.FC = () => {
         setThemeDetails([0, 0, 0]);
         setThemeTexts(['', '', '']);
         setInitialThemeTexts(['', '', '']);
+        setThemeStatuses(['', '', '']);
+        setInitialThemeStatuses(['', '', '']);
         setTeamDetails([0, 0, 0]);
         setTeamTexts(['', '', '']);
         setInitialTeamTexts(['', '', '']);
@@ -163,6 +169,9 @@ export const EvaluationForm: React.FC = () => {
     const isThemeUnchanged = JSON.stringify(themeTexts) === JSON.stringify(initialThemeTexts);
     const finalThemeTexts = isThemeUnchanged && latestExisting?.themeTexts ? latestExisting.themeTexts : themeTexts;
     
+    const isThemeStatusesUnchanged = JSON.stringify(themeStatuses) === JSON.stringify(initialThemeStatuses);
+    const finalThemeStatuses = isThemeStatusesUnchanged && latestExisting?.themeStatuses ? latestExisting.themeStatuses : themeStatuses;
+    
     const isTeamUnchanged = JSON.stringify(teamTexts) === JSON.stringify(initialTeamTexts);
     const finalTeamTexts = isTeamUnchanged && latestExisting?.teamTexts ? latestExisting.teamTexts : teamTexts;
     
@@ -181,6 +190,7 @@ export const EvaluationForm: React.FC = () => {
       themeScore,
       themeDetails,
       themeTexts: finalThemeTexts,
+      themeStatuses: finalThemeStatuses,
       teamScore,
       teamDetails,
       teamTexts: finalTeamTexts,

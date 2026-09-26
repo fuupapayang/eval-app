@@ -69,6 +69,7 @@ export interface EvaluationForm {
   performanceDetails: [number, number, number];
   
   themeTexts?: [string, string, string];    // 個人テーマの内容（目標）
+  themeStatuses?: [string, string, string]; // 個人テーマの状態（達成、未達、継続中）
   themeScore: number;       // 個人テーマ評価 (Max 15)
   themeDetails: [number, number, number];
   
