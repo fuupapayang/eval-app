@@ -20,7 +20,10 @@ export const MyPage: React.FC = () => {
   const [year, setYear] = useState<number>(new Date().getFullYear());
 
   const [themeTexts, setThemeTexts] = useState<[string, string, string]>(['', '', '']);
+  const [initialThemeTexts, setInitialThemeTexts] = useState<[string, string, string]>(['', '', '']);
   const [themeStatuses, setThemeStatuses] = useState<[string, string, string]>(['', '', '']);
+  const [themeReflections, setThemeReflections] = useState<[string, string, string]>(['', '', '']);
+  const [themeHistory, setThemeHistory] = useState<[import('../types').ThemeHistoryItem[], import('../types').ThemeHistoryItem[], import('../types').ThemeHistoryItem[]]>([[], [], []]);
   const [teamTexts, setTeamTexts] = useState<[string, string, string]>(['', '', '']);
   const [selfComment, setSelfComment] = useState<string>('');
   
@@ -46,7 +49,10 @@ export const MyPage: React.FC = () => {
     const existing = getEvaluation(staff.id, period, year);
     if (existing) {
       setThemeTexts(existing.themeTexts || ['', '', '']);
+      setInitialThemeTexts(existing.themeTexts || ['', '', '']);
       setThemeStatuses(existing.themeStatuses || ['', '', '']);
+      setThemeReflections(existing.themeReflections || ['', '', '']);
+      setThemeHistory(existing.themeHistory || [[], [], []]);
       setTeamTexts(existing.teamTexts || ['', '', '']);
       setSelfComment(existing.selfComment || '');
     } else {
@@ -64,6 +70,8 @@ export const MyPage: React.FC = () => {
       
       let initialTexts: [string, string, string] = ['', '', ''];
       let initialStatuses: [string, string, string] = ['', '', ''];
+      let initialReflections: [string, string, string] = ['', '', ''];
+      let initialHistory: [import('../types').ThemeHistoryItem[], import('../types').ThemeHistoryItem[], import('../types').ThemeHistoryItem[]] = [[], [], []];
       
       if (prevEval && prevEval.themeTexts && prevEval.themeStatuses) {
         // Carry over logic (Fixed based on user feedback):
@@ -71,22 +79,33 @@ export const MyPage: React.FC = () => {
         // 「未達」「継続中」の場合は次期へ引き継ぐ
         for (let i = 0; i < 3; i++) {
           const status = prevEval.themeStatuses[i];
+          const prevHistory = prevEval.themeHistory ? prevEval.themeHistory[i] : [];
+          
           if (status === '達成') {
             initialTexts[i] = '';
             initialStatuses[i] = '';
+            initialReflections[i] = '';
+            initialHistory[i] = []; // 達成したら履歴もリセット（新しい目標になるため）
           } else if (status === '未達' || status === '継続中') {
             initialTexts[i] = prevEval.themeTexts[i] || '';
             initialStatuses[i] = status; // 状態もそのまま引き継ぐ（継続中や未達のまま）
+            initialReflections[i] = prevEval.themeReflections ? prevEval.themeReflections[i] : '';
+            initialHistory[i] = [...prevHistory]; // 過去の履歴も引き継ぐ
           } else {
             // ステータス未設定の場合も引き継ぐ
             initialTexts[i] = prevEval.themeTexts[i] || '';
             initialStatuses[i] = '';
+            initialReflections[i] = prevEval.themeReflections ? prevEval.themeReflections[i] : '';
+            initialHistory[i] = [...prevHistory];
           }
         }
       }
       
       setThemeTexts(initialTexts);
+      setInitialThemeTexts(initialTexts);
       setThemeStatuses(initialStatuses);
+      setThemeReflections(initialReflections);
+      setThemeHistory(initialHistory);
       setTeamTexts(['', '', '']);
       setSelfComment('');
     }
@@ -121,6 +140,8 @@ export const MyPage: React.FC = () => {
       ...evalData,
       themeTexts,
       themeStatuses,
+      themeReflections,
+      themeHistory,
       teamTexts: canEditTeam ? teamTexts : (evalData.teamTexts || ['', '', '']),
       selfComment,
       updatedAt: new Date().toISOString()
@@ -462,8 +483,24 @@ export const MyPage: React.FC = () => {
           <div>
             <h3 style={{ marginBottom: 'var(--spacing-3)' }}>個人テーマ</h3>
             {[0, 1, 2].map(i => (
-              <div key={`theme-${i}`} className="form-group" style={{ marginBottom: 'var(--spacing-5)' }}>
-                <label className="form-label">個人テーマ {i + 1}</label>
+              <div key={`theme-${i}`} className="form-group" style={{ marginBottom: 'var(--spacing-5)', padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                <label className="form-label" style={{ fontWeight: 'bold' }}>個人テーマ {i + 1}</label>
+                
+                {themeHistory[i]?.length > 0 && (
+                  <div style={{ marginBottom: '12px', padding: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '4px', fontSize: '0.85rem' }}>
+                    <div style={{ fontWeight: 'bold', marginBottom: '4px', color: 'var(--text-secondary)' }}>【過去の未達履歴】</div>
+                    <ul style={{ paddingLeft: '20px', margin: 0, color: 'var(--text-secondary)' }}>
+                      {themeHistory[i].map((h, hi) => (
+                        <li key={hi} style={{ marginBottom: '4px' }}>
+                          <span style={{ color: '#ef4444', marginRight: '4px' }}>[未達]</span>
+                          {h.text} 
+                          {h.reflection && <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>理由: {h.reflection}</div>}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
                 <input 
                   type="text" 
                   className="form-input" 
@@ -472,9 +509,54 @@ export const MyPage: React.FC = () => {
                     const newTexts = [...themeTexts] as [string, string, string];
                     newTexts[i] = e.target.value;
                     setThemeTexts(newTexts);
+                    
+                    // ユーザーの要望: 「テキストを修正した場合は自動で未達ボタンが選択されるようにして」
+                    // テキストが空でなく、初期状態から変更された場合に「未達」にする
+                    if (e.target.value !== '' && e.target.value !== initialThemeTexts[i]) {
+                      const newStatuses = [...themeStatuses] as [string, string, string];
+                      newStatuses[i] = '未達';
+                      setThemeStatuses(newStatuses);
+                    }
+                  }}
+                  onBlur={() => {
+                    // テキストが変更され、かつ元のテキストが存在した場合に履歴に追加する
+                    if (initialThemeTexts[i] !== '' && themeTexts[i] !== initialThemeTexts[i]) {
+                      const newHistory = [...themeHistory];
+                      newHistory[i] = [
+                        ...newHistory[i],
+                        {
+                          text: initialThemeTexts[i],
+                          status: '未達', // 過去のものは未達として履歴に残す
+                          reflection: themeReflections[i] || '',
+                          updatedAt: new Date().toISOString()
+                        }
+                      ];
+                      setThemeHistory(newHistory as any);
+                      // 初期テキストを現在のテキストに更新し、何度も履歴に入らないようにする
+                      const newInitialTexts = [...initialThemeTexts] as [string, string, string];
+                      newInitialTexts[i] = themeTexts[i];
+                      setInitialThemeTexts(newInitialTexts);
+                      
+                      // 古い振り返りテキストをクリアする
+                      const newReflections = [...themeReflections] as [string, string, string];
+                      newReflections[i] = '';
+                      setThemeReflections(newReflections);
+                    }
                   }}
                   placeholder="達成したい目標を入力"
                   style={{ marginBottom: '8px' }}
+                />
+                
+                <textarea
+                  className="form-input"
+                  value={themeReflections[i]}
+                  onChange={e => {
+                    const newReflections = [...themeReflections] as [string, string, string];
+                    newReflections[i] = e.target.value;
+                    setThemeReflections(newReflections);
+                  }}
+                  placeholder="未達の理由や振り返りがあれば入力してください"
+                  style={{ marginBottom: '8px', minHeight: '60px', fontSize: '0.85rem' }}
                 />
                 
                 {/* Status Buttons */}
@@ -487,7 +569,6 @@ export const MyPage: React.FC = () => {
                       style={{ padding: '4px 12px', fontSize: '0.85rem' }}
                       onClick={() => {
                         const newStatuses = [...themeStatuses] as [string, string, string];
-                        // toggle off if clicked again
                         newStatuses[i] = newStatuses[i] === status ? '' : status;
                         setThemeStatuses(newStatuses);
                       }}

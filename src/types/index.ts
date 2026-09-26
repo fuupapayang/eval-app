@@ -56,6 +56,13 @@ export interface ScoreEntry {
   comment: string;
 }
 
+export interface ThemeHistoryItem {
+  text: string;
+  status: string;
+  reflection: string;
+  updatedAt: string;
+}
+
 export interface EvaluationForm {
   id: string; // Unique ID for this evaluation log
   staffId: string;
@@ -70,6 +77,8 @@ export interface EvaluationForm {
   
   themeTexts?: [string, string, string];    // 個人テーマの内容（目標）
   themeStatuses?: [string, string, string]; // 個人テーマの状態（達成、未達、継続中）
+  themeReflections?: [string, string, string]; // 振り返り・未達理由など
+  themeHistory?: [ThemeHistoryItem[], ThemeHistoryItem[], ThemeHistoryItem[]]; // 過去の履歴リスト
   themeScore: number;       // 個人テーマ評価 (Max 15)
   themeDetails: [number, number, number];
   

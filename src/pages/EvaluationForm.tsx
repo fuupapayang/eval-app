@@ -24,6 +24,8 @@ export const EvaluationForm: React.FC = () => {
   const [initialThemeTexts, setInitialThemeTexts] = useState<[string, string, string]>(['', '', '']);
   const [themeStatuses, setThemeStatuses] = useState<[string, string, string]>(['', '', '']);
   const [initialThemeStatuses, setInitialThemeStatuses] = useState<[string, string, string]>(['', '', '']);
+  const [themeReflections, setThemeReflections] = useState<[string, string, string]>(['', '', '']);
+  const [themeHistory, setThemeHistory] = useState<[import('../types').ThemeHistoryItem[], import('../types').ThemeHistoryItem[], import('../types').ThemeHistoryItem[]]>([[], [], []]);
   const [teamDetails, setTeamDetails] = useState<[number, number, number]>([0, 0, 0]);
   const [teamTexts, setTeamTexts] = useState<[string, string, string]>(['', '', '']);
   const [initialTeamTexts, setInitialTeamTexts] = useState<[string, string, string]>(['', '', '']);
@@ -55,6 +57,8 @@ export const EvaluationForm: React.FC = () => {
         setInitialThemeTexts(existing.themeTexts || ['', '', '']);
         setThemeStatuses(existing.themeStatuses || ['', '', '']);
         setInitialThemeStatuses(existing.themeStatuses || ['', '', '']);
+        setThemeReflections(existing.themeReflections || ['', '', '']);
+        setThemeHistory(existing.themeHistory || [[], [], []]);
         setTeamDetails(existing.teamDetails || [0, 0, 0]);
         setTeamTexts(existing.teamTexts || ['', '', '']);
         setInitialTeamTexts(existing.teamTexts || ['', '', '']);
@@ -97,6 +101,8 @@ export const EvaluationForm: React.FC = () => {
         setInitialThemeTexts(['', '', '']);
         setThemeStatuses(['', '', '']);
         setInitialThemeStatuses(['', '', '']);
+        setThemeReflections(['', '', '']);
+        setThemeHistory([[], [], []]);
         setTeamDetails([0, 0, 0]);
         setTeamTexts(['', '', '']);
         setInitialTeamTexts(['', '', '']);
@@ -191,6 +197,8 @@ export const EvaluationForm: React.FC = () => {
       themeDetails,
       themeTexts: finalThemeTexts,
       themeStatuses: finalThemeStatuses,
+      themeReflections: latestExisting?.themeReflections || themeReflections,
+      themeHistory: latestExisting?.themeHistory || themeHistory,
       teamScore,
       teamDetails,
       teamTexts: finalTeamTexts,
