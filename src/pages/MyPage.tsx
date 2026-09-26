@@ -263,24 +263,23 @@ export const MyPage: React.FC = () => {
   
   let currentEval = getEvaluation(staff.id, period === '通期' ? '上期' : period, year); // fallback
   if (period === '通期') {
-    // Create a synthesized evaluation object for the full year by summing or picking appropriate values
-    const upperScore = upperEvalObj?.totalScore || 0;
-    const lowerScore = lowerEvalObj?.totalScore || 0;
+    // Create a synthesized evaluation object for the full year by averaging values
+    const divider = (upperEvalObj && lowerEvalObj) ? 2 : 1;
     currentEval = {
       ...(upperEvalObj || lowerEvalObj || {}),
-      totalScore: upperScore + lowerScore,
-      performanceScore: (upperEvalObj?.performanceScore || 0) + (lowerEvalObj?.performanceScore || 0),
-      themeScore: (upperEvalObj?.themeScore || 0) + (lowerEvalObj?.themeScore || 0),
-      teamScore: (upperEvalObj?.teamScore || 0) + (lowerEvalObj?.teamScore || 0),
+      totalScore: Number((((upperEvalObj?.totalScore || 0) + (lowerEvalObj?.totalScore || 0)) / divider).toFixed(1)),
+      performanceScore: Number((((upperEvalObj?.performanceScore || 0) + (lowerEvalObj?.performanceScore || 0)) / divider).toFixed(1)),
+      themeScore: Number((((upperEvalObj?.themeScore || 0) + (lowerEvalObj?.themeScore || 0)) / divider).toFixed(1)),
+      teamScore: Number((((upperEvalObj?.teamScore || 0) + (lowerEvalObj?.teamScore || 0)) / divider).toFixed(1)),
       performanceDetails: [
-        (upperEvalObj?.performanceDetails?.[0] || 0) + (lowerEvalObj?.performanceDetails?.[0] || 0),
-        (upperEvalObj?.performanceDetails?.[1] || 0) + (lowerEvalObj?.performanceDetails?.[1] || 0),
-        (upperEvalObj?.performanceDetails?.[2] || 0) + (lowerEvalObj?.performanceDetails?.[2] || 0),
+        Number((((upperEvalObj?.performanceDetails?.[0] || 0) + (lowerEvalObj?.performanceDetails?.[0] || 0)) / divider).toFixed(1)),
+        Number((((upperEvalObj?.performanceDetails?.[1] || 0) + (lowerEvalObj?.performanceDetails?.[1] || 0)) / divider).toFixed(1)),
+        Number((((upperEvalObj?.performanceDetails?.[2] || 0) + (lowerEvalObj?.performanceDetails?.[2] || 0)) / divider).toFixed(1)),
       ],
       themeDetails: [
-        (upperEvalObj?.themeDetails?.[0] || 0) + (lowerEvalObj?.themeDetails?.[0] || 0),
-        (upperEvalObj?.themeDetails?.[1] || 0) + (lowerEvalObj?.themeDetails?.[1] || 0),
-        (upperEvalObj?.themeDetails?.[2] || 0) + (lowerEvalObj?.themeDetails?.[2] || 0),
+        Number((((upperEvalObj?.themeDetails?.[0] || 0) + (lowerEvalObj?.themeDetails?.[0] || 0)) / divider).toFixed(1)),
+        Number((((upperEvalObj?.themeDetails?.[1] || 0) + (lowerEvalObj?.themeDetails?.[1] || 0)) / divider).toFixed(1)),
+        Number((((upperEvalObj?.themeDetails?.[2] || 0) + (lowerEvalObj?.themeDetails?.[2] || 0)) / divider).toFixed(1)),
       ],
     } as any;
   } else {
