@@ -16,15 +16,16 @@ export const MyPage: React.FC = () => {
   const saveEvaluation = useStore(state => state.saveEvaluation);
   const getEvaluation = useStore(state => state.getEvaluation);
 
-  const [period, setPeriod] = useState<Period>(() => {
-    const month = new Date().getMonth() + 1;
-    // Assuming April start: April (4) to Sept (9) is 上期, Oct (10) to March (3) is 下期
-    return (month >= 4 && month <= 9) ? '上期' : '下期';
-  });
   const [year, setYear] = useState<number>(() => {
+    const myEvals = evaluations.filter(e => e.staffId === staff.id).sort((a, b) => b.year - a.year || (a.period === '下期' ? -1 : 1));
+    if (myEvals.length > 0) return myEvals[0].year;
+    
     const today = new Date();
-    // If Jan-Mar, it belongs to the previous year's business year (assuming April start)
     return today.getMonth() < 3 ? today.getFullYear() - 1 : today.getFullYear();
+  });
+  
+  const [period, setPeriod] = useState<Period>(() => {
+    return '通期';
   });
 
   const [themeTexts, setThemeTexts] = useState<[string, string, string]>(['', '', '']);

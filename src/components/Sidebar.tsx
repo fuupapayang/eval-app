@@ -18,11 +18,22 @@ export const Sidebar: React.FC = () => {
 
   const currentEval = useMemo(() => {
     if (currentUser?.type !== 'STAFF') return null;
-    const myEvaluations = evaluations.filter(e => e.staffId === currentUser.staff.id).sort((a, b) => {
-      if (a.year !== b.year) return b.year - a.year;
-      return a.period === '下期' ? -1 : 1;
-    });
-    return myEvaluations[0] || null;
+    const myEvaluations = evaluations.filter(e => e.staffId === currentUser.staff.id).sort((a, b) => b.year - a.year);
+    if (myEvaluations.length === 0) return null;
+    
+    const latestYear = myEvaluations[0].year;
+    const upperEvalObj = myEvaluations.find(e => e.year === latestYear && e.period === '上期');
+    const lowerEvalObj = myEvaluations.find(e => e.year === latestYear && e.period === '下期');
+    
+    const divider = (upperEvalObj && lowerEvalObj) ? 2 : 1;
+    const synthesizedTotalScore = Number((((upperEvalObj?.totalScore || 0) + (lowerEvalObj?.totalScore || 0)) / divider).toFixed(1));
+    
+    return {
+      ...(upperEvalObj || lowerEvalObj || {}),
+      totalScore: synthesizedTotalScore,
+      year: latestYear,
+      period: '通期'
+    } as any;
   }, [evaluations, currentUser]);
 
   return (
@@ -124,7 +135,7 @@ export const Sidebar: React.FC = () => {
                     総合: {currentEval.totalScore} / 120 点
                   </p>
                   <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                    {currentEval.year}年度{currentEval.period === '上期' ? '上半期' : '下半期'}
+                    {currentEval.year}年度{currentEval.period === '上期' ? '上半期' : currentEval.period === '下期' ? '下半期' : ' 通期'}
                   </p>
                 </div>
               );
