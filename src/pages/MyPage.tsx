@@ -16,8 +16,16 @@ export const MyPage: React.FC = () => {
   const saveEvaluation = useStore(state => state.saveEvaluation);
   const getEvaluation = useStore(state => state.getEvaluation);
 
-  const [period, setPeriod] = useState<Period>('上期');
-  const [year, setYear] = useState<number>(new Date().getFullYear());
+  const [period, setPeriod] = useState<Period>(() => {
+    const month = new Date().getMonth() + 1;
+    // Assuming April start: April (4) to Sept (9) is 上期, Oct (10) to March (3) is 下期
+    return (month >= 4 && month <= 9) ? '上期' : '下期';
+  });
+  const [year, setYear] = useState<number>(() => {
+    const today = new Date();
+    // If Jan-Mar, it belongs to the previous year's business year (assuming April start)
+    return today.getMonth() < 3 ? today.getFullYear() - 1 : today.getFullYear();
+  });
 
   const [themeTexts, setThemeTexts] = useState<[string, string, string]>(['', '', '']);
   const [initialThemeTexts, setInitialThemeTexts] = useState<[string, string, string]>(['', '', '']);
@@ -33,7 +41,7 @@ export const MyPage: React.FC = () => {
   
   const [selfComment, setSelfComment] = useState<string>('');
   
-  const [detailPeriodInfo, setDetailPeriodInfo] = useState<{year: number, period: '上期'|'下期'} | null>(null);
+  const [detailPeriodInfo, setDetailPeriodInfo] = useState<{year: number, period: Period} | null>(null);
   
   // Password state
   const updateStaff = useStore(state => state.updateStaff);
@@ -52,6 +60,7 @@ export const MyPage: React.FC = () => {
 
   // Load goals when period/year changes
   React.useEffect(() => {
+    if (period === '通期') return;
     const existing = getEvaluation(staff.id, period, year);
     if (existing) {
       setThemeTexts(existing.themeTexts || ['', '', '']);
@@ -158,6 +167,7 @@ export const MyPage: React.FC = () => {
   const canEditTeam = staff.isLeader || staff.isSubLeader || staff.canEditTeamGoals;
 
   const handleSaveGoals = () => {
+    if (period === '通期') return;
     const existing = getEvaluation(staff.id, period, year);
     const evalData = existing || {
       id: `${staff.id}-${year}-${period}`,
@@ -247,7 +257,35 @@ export const MyPage: React.FC = () => {
 
   const masterItems = useStore(state => state.masterItems);
   const roleStages = useStore(state => state.roleStages);
-  const currentEval = getEvaluation(staff.id, period, year);
+  
+  const upperEvalObj = getEvaluation(staff.id, '上期', year);
+  const lowerEvalObj = getEvaluation(staff.id, '下期', year);
+  
+  let currentEval = getEvaluation(staff.id, period === '通期' ? '上期' : period, year); // fallback
+  if (period === '通期') {
+    // Create a synthesized evaluation object for the full year by summing or picking appropriate values
+    const upperScore = upperEvalObj?.totalScore || 0;
+    const lowerScore = lowerEvalObj?.totalScore || 0;
+    currentEval = {
+      ...(upperEvalObj || lowerEvalObj || {}),
+      totalScore: upperScore + lowerScore,
+      performanceScore: (upperEvalObj?.performanceScore || 0) + (lowerEvalObj?.performanceScore || 0),
+      themeScore: (upperEvalObj?.themeScore || 0) + (lowerEvalObj?.themeScore || 0),
+      teamScore: (upperEvalObj?.teamScore || 0) + (lowerEvalObj?.teamScore || 0),
+      performanceDetails: [
+        (upperEvalObj?.performanceDetails?.[0] || 0) + (lowerEvalObj?.performanceDetails?.[0] || 0),
+        (upperEvalObj?.performanceDetails?.[1] || 0) + (lowerEvalObj?.performanceDetails?.[1] || 0),
+        (upperEvalObj?.performanceDetails?.[2] || 0) + (lowerEvalObj?.performanceDetails?.[2] || 0),
+      ],
+      themeDetails: [
+        (upperEvalObj?.themeDetails?.[0] || 0) + (lowerEvalObj?.themeDetails?.[0] || 0),
+        (upperEvalObj?.themeDetails?.[1] || 0) + (lowerEvalObj?.themeDetails?.[1] || 0),
+        (upperEvalObj?.themeDetails?.[2] || 0) + (lowerEvalObj?.themeDetails?.[2] || 0),
+      ],
+    } as any;
+  } else {
+    currentEval = getEvaluation(staff.id, period, year);
+  }
   
   const questStatus = useRoleQuest(staff, currentEval, masterItems, roleStages);
 
@@ -329,6 +367,7 @@ export const MyPage: React.FC = () => {
             <select className="form-select" value={period} onChange={e => setPeriod(e.target.value as Period)}>
               <option value="上期">上期</option>
               <option value="下期">下期</option>
+              <option value="通期">通期</option>
             </select>
           </div>
         </div>
@@ -548,7 +587,9 @@ export const MyPage: React.FC = () => {
             </div>
           )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-6)', marginTop: 'var(--spacing-8)' }}>
+        {period !== '通期' && (
+          <>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-6)', marginTop: 'var(--spacing-8)' }}>
           <div>
             <h3 style={{ marginBottom: 'var(--spacing-3)' }}>個人テーマ</h3>
             {[0, 1, 2].map(i => (
@@ -787,6 +828,8 @@ export const MyPage: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'var(--spacing-4)' }}>
           <button className="btn btn-primary" onClick={handleSaveGoals}>目標・自己評価を保存</button>
         </div>
+          </>
+        )}
       </div>
 
       <div className="glass-panel" style={{ padding: 'var(--spacing-6)', marginBottom: 'var(--spacing-8)' }}>

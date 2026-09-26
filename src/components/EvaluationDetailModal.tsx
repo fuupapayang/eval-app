@@ -10,12 +10,12 @@ import {
 interface Props {
   staff: Staff;
   evaluations: EvaluationForm[];
-  initialPeriod: '上期' | '下期';
+  initialPeriod: import('../types').Period;
   onClose: () => void;
 }
 
 export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, initialPeriod, onClose }) => {
-  const [detailPeriod, setDetailPeriod] = useState<'上期' | '下期'>(initialPeriod);
+  const [detailPeriod, setDetailPeriod] = useState<import('../types').Period>(initialPeriod);
   const masterItems = useStore(state => state.masterItems);
 
   // Sync state if props change

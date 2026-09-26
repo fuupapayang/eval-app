@@ -1,6 +1,6 @@
 export type Role = 'WEBデザイナー' | 'コーダー' | '映像' | 'ディレクター' | 'その他' | string;
 export type StaffType = string;
-export type Period = '上期' | '下期';
+export type Period = '上期' | '下期' | '通期';
 
 export type AuthUser = { type: 'MASTER' } | { type: 'STAFF'; staff: Staff };
 
