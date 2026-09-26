@@ -114,7 +114,7 @@ export const useRoleQuest = (
     if (typeItems.length > 0 && currentEval) {
       let typeSum = 0;
       typeItems.forEach(item => {
-        const entry = currentEval.entries.find(en => en.itemId === item.id);
+        const entry = currentEval.entries?.find(en => en.itemId === item.id);
         if (entry) {
           typeSum += entry.finalScore;
         }

@@ -97,11 +97,11 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
             let scoreUpper = 0;
             let scoreLower = 0;
             if (upperEval) {
-              const en = upperEval.entries.find(e => e.itemId === item.id);
+              const en = upperEval.entries?.find(e => e.itemId === item.id);
               if (en) scoreUpper = en.finalScore;
             }
             if (lowerEval) {
-              const en = lowerEval.entries.find(e => e.itemId === item.id);
+              const en = lowerEval.entries?.find(e => e.itemId === item.id);
               if (en) scoreLower = en.finalScore;
             }
             return {
@@ -310,7 +310,7 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                 <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', marginBottom: '16px' }}>
                   4. 詳細項目一覧（共通: {ev.commonScore}点, 職種/タイプ: {ev.typeScore}点, リーダー: {ev.leaderScore}点）
                 </h3>
-                {ev.entries.filter(en => en.finalScore > 0 || en.comment).length === 0 ? (
+                {ev.entries?.filter(en => en.finalScore > 0 || en.comment).length === 0 ? (
                   <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>詳細項目の入力はありません</p>
                 ) : (
                   <table className="table" style={{ fontSize: '0.875rem' }}>
@@ -322,7 +322,7 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                       </tr>
                     </thead>
                     <tbody>
-                      {ev.entries.filter(en => en.finalScore > 0 || en.comment).map((en) => {
+                      {ev.entries?.filter(en => en.finalScore > 0 || en.comment).map((en) => {
                         const item = masterItems.find(m => m.id === en.itemId);
                         return (
                           <tr key={en.itemId}>

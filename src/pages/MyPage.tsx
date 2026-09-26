@@ -336,11 +336,11 @@ export const MyPage: React.FC = () => {
     let scoreLower = 0;
     
     if (upperEval) {
-      const entry = upperEval.entries.find(en => en.itemId === item.id);
+      const entry = upperEval.entries?.find(en => en.itemId === item.id);
       if (entry) scoreUpper = entry.finalScore;
     }
     if (lowerEval) {
-      const entry = lowerEval.entries.find(en => en.itemId === item.id);
+      const entry = lowerEval.entries?.find(en => en.itemId === item.id);
       if (entry) scoreLower = entry.finalScore;
     }
     
