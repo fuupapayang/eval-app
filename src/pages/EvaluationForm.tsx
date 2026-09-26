@@ -25,7 +25,7 @@ export const EvaluationForm: React.FC = () => {
   const [themeStatuses, setThemeStatuses] = useState<[string, string, string]>(['', '', '']);
   const [initialThemeStatuses, setInitialThemeStatuses] = useState<[string, string, string]>(['', '', '']);
   const [themeReflections, setThemeReflections] = useState<[string, string, string]>(['', '', '']);
-  const [themeHistory, setThemeHistory] = useState<[import('../types').ThemeHistoryItem[], import('../types').ThemeHistoryItem[], import('../types').ThemeHistoryItem[]]>([[], [], []]);
+  const [themeHistory, setThemeHistory] = useState<Record<string, import('../types').ThemeHistoryItem[]>>({'0': [], '1': [], '2': []});
   const [teamDetails, setTeamDetails] = useState<[number, number, number]>([0, 0, 0]);
   const [teamTexts, setTeamTexts] = useState<[string, string, string]>(['', '', '']);
   const [initialTeamTexts, setInitialTeamTexts] = useState<[string, string, string]>(['', '', '']);
@@ -102,7 +102,7 @@ export const EvaluationForm: React.FC = () => {
         setThemeStatuses(['', '', '']);
         setInitialThemeStatuses(['', '', '']);
         setThemeReflections(['', '', '']);
-        setThemeHistory([[], [], []]);
+        setThemeHistory({'0': [], '1': [], '2': []});
         setTeamDetails([0, 0, 0]);
         setTeamTexts(['', '', '']);
         setInitialTeamTexts(['', '', '']);
@@ -379,11 +379,11 @@ export const EvaluationForm: React.FC = () => {
                           </div>
                         )}
                         
-                        {themeHistory?.[i] && themeHistory[i].length > 0 && (
+                        {themeHistory?.[String(i)] && themeHistory[String(i)].length > 0 && (
                           <div style={{ marginTop: '8px', padding: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '4px', fontSize: '0.8rem' }}>
                             <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>【過去の未達履歴】</div>
                             <ul style={{ paddingLeft: '16px', margin: 0 }}>
-                              {themeHistory[i].map((h, hi) => (
+                              {themeHistory[String(i)].map((h, hi) => (
                                 <li key={hi} style={{ marginBottom: '4px' }}>
                                   <span style={{ color: '#ef4444', marginRight: '4px' }}>[未達]</span>
                                   {h.text}

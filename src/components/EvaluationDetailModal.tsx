@@ -217,11 +217,11 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                         </div>
                       )}
                       
-                      {ev.themeHistory?.[i] && ev.themeHistory[i].length > 0 && (
+                      {ev.themeHistory?.[String(i)] && ev.themeHistory[String(i)].length > 0 && (
                         <div style={{ marginTop: '8px', color: 'var(--text-secondary)', fontSize: '0.8rem', padding: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '4px' }}>
                           <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>【過去の未達履歴】</div>
                           <ul style={{ paddingLeft: '16px', margin: 0 }}>
-                            {ev.themeHistory[i].map((h, hi) => (
+                            {ev.themeHistory[String(i)].map((h, hi) => (
                               <li key={hi} style={{ marginBottom: '4px' }}>
                                 <span style={{ color: '#ef4444', marginRight: '4px' }}>[未達]</span>
                                 {h.text}

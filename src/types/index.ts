@@ -78,7 +78,7 @@ export interface EvaluationForm {
   themeTexts?: [string, string, string];    // 個人テーマの内容（目標）
   themeStatuses?: [string, string, string]; // 個人テーマの状態（達成、未達、継続中）
   themeReflections?: [string, string, string]; // 振り返り・未達理由など
-  themeHistory?: [ThemeHistoryItem[], ThemeHistoryItem[], ThemeHistoryItem[]]; // 過去の履歴リスト
+  themeHistory?: Record<string, ThemeHistoryItem[]>; // 過去の履歴リスト (key is '0', '1', '2')
   themeScore: number;       // 個人テーマ評価 (Max 15)
   themeDetails: [number, number, number];
   

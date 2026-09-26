@@ -23,7 +23,7 @@ export const MyPage: React.FC = () => {
   const [initialThemeTexts, setInitialThemeTexts] = useState<[string, string, string]>(['', '', '']);
   const [themeStatuses, setThemeStatuses] = useState<[string, string, string]>(['', '', '']);
   const [themeReflections, setThemeReflections] = useState<[string, string, string]>(['', '', '']);
-  const [themeHistory, setThemeHistory] = useState<[import('../types').ThemeHistoryItem[], import('../types').ThemeHistoryItem[], import('../types').ThemeHistoryItem[]]>([[], [], []]);
+  const [themeHistory, setThemeHistory] = useState<Record<string, import('../types').ThemeHistoryItem[]>>({'0': [], '1': [], '2': []});
   const [teamTexts, setTeamTexts] = useState<[string, string, string]>(['', '', '']);
   const [selfComment, setSelfComment] = useState<string>('');
   
@@ -52,7 +52,7 @@ export const MyPage: React.FC = () => {
       setInitialThemeTexts(existing.themeTexts || ['', '', '']);
       setThemeStatuses(existing.themeStatuses || ['', '', '']);
       setThemeReflections(existing.themeReflections || ['', '', '']);
-      setThemeHistory(existing.themeHistory || [[], [], []]);
+      setThemeHistory(existing.themeHistory || {'0': [], '1': [], '2': []});
       setTeamTexts(existing.teamTexts || ['', '', '']);
       setSelfComment(existing.selfComment || '');
     } else {
@@ -71,7 +71,7 @@ export const MyPage: React.FC = () => {
       let initialTexts: [string, string, string] = ['', '', ''];
       let initialStatuses: [string, string, string] = ['', '', ''];
       let initialReflections: [string, string, string] = ['', '', ''];
-      let initialHistory: [import('../types').ThemeHistoryItem[], import('../types').ThemeHistoryItem[], import('../types').ThemeHistoryItem[]] = [[], [], []];
+      let initialHistory: Record<string, import('../types').ThemeHistoryItem[]> = {'0': [], '1': [], '2': []};
       
       if (prevEval && prevEval.themeTexts && prevEval.themeStatuses) {
         // Carry over logic (Fixed based on user feedback):
@@ -79,24 +79,24 @@ export const MyPage: React.FC = () => {
         // 「未達」「継続中」の場合は次期へ引き継ぐ
         for (let i = 0; i < 3; i++) {
           const status = prevEval.themeStatuses[i];
-          const prevHistory = prevEval.themeHistory ? prevEval.themeHistory[i] : [];
+          const prevHistory = prevEval.themeHistory ? prevEval.themeHistory[String(i)] || [] : [];
           
           if (status === '達成') {
             initialTexts[i] = '';
             initialStatuses[i] = '';
             initialReflections[i] = '';
-            initialHistory[i] = []; // 達成したら履歴もリセット（新しい目標になるため）
+            initialHistory[String(i)] = []; // 達成したら履歴もリセット（新しい目標になるため）
           } else if (status === '未達' || status === '継続中') {
             initialTexts[i] = prevEval.themeTexts[i] || '';
             initialStatuses[i] = status; // 状態もそのまま引き継ぐ（継続中や未達のまま）
             initialReflections[i] = prevEval.themeReflections ? prevEval.themeReflections[i] : '';
-            initialHistory[i] = [...prevHistory]; // 過去の履歴も引き継ぐ
+            initialHistory[String(i)] = [...prevHistory]; // 過去の履歴も引き継ぐ
           } else {
             // ステータス未設定の場合も引き継ぐ
             initialTexts[i] = prevEval.themeTexts[i] || '';
             initialStatuses[i] = '';
             initialReflections[i] = prevEval.themeReflections ? prevEval.themeReflections[i] : '';
-            initialHistory[i] = [...prevHistory];
+            initialHistory[String(i)] = [...prevHistory];
           }
         }
       }
@@ -486,11 +486,11 @@ export const MyPage: React.FC = () => {
               <div key={`theme-${i}`} className="form-group" style={{ marginBottom: 'var(--spacing-5)', padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
                 <label className="form-label" style={{ fontWeight: 'bold' }}>個人テーマ {i + 1}</label>
                 
-                {themeHistory[i]?.length > 0 && (
+                {themeHistory[String(i)]?.length > 0 && (
                   <div style={{ marginBottom: '12px', padding: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '4px', fontSize: '0.85rem' }}>
                     <div style={{ fontWeight: 'bold', marginBottom: '4px', color: 'var(--text-secondary)' }}>【過去の未達履歴】</div>
                     <ul style={{ paddingLeft: '20px', margin: 0, color: 'var(--text-secondary)' }}>
-                      {themeHistory[i].map((h, hi) => (
+                      {themeHistory[String(i)].map((h, hi) => (
                         <li key={hi} style={{ marginBottom: '4px' }}>
                           <span style={{ color: '#ef4444', marginRight: '4px' }}>[未達]</span>
                           {h.text} 
@@ -521,9 +521,10 @@ export const MyPage: React.FC = () => {
                   onBlur={() => {
                     // テキストが変更され、かつ元のテキストが存在した場合に履歴に追加する
                     if (initialThemeTexts[i] !== '' && themeTexts[i] !== initialThemeTexts[i]) {
-                      const newHistory = [...themeHistory];
-                      newHistory[i] = [
-                        ...newHistory[i],
+                      const newHistory = { ...themeHistory };
+                      const currentHistory = newHistory[String(i)] || [];
+                      newHistory[String(i)] = [
+                        ...currentHistory,
                         {
                           text: initialThemeTexts[i],
                           status: '未達', // 過去のものは未達として履歴に残す
@@ -531,7 +532,7 @@ export const MyPage: React.FC = () => {
                           updatedAt: new Date().toISOString()
                         }
                       ];
-                      setThemeHistory(newHistory as any);
+                      setThemeHistory(newHistory);
                       // 初期テキストを現在のテキストに更新し、何度も履歴に入らないようにする
                       const newInitialTexts = [...initialThemeTexts] as [string, string, string];
                       newInitialTexts[i] = themeTexts[i];
