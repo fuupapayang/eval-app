@@ -127,11 +127,11 @@ export const MasterSettings: React.FC = () => {
                   <table className="table" style={{ fontSize: '0.8rem' }}>
                     <thead><tr><th style={{ background: 'var(--accent-primary)', color: 'white' }}>S ランク</th><th>点数帯</th><th>インセンティブ目安</th></tr></thead>
                     <tbody>
-                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>98.0 〜 100点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>100万円</span></td></tr>
-                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>96.0 〜 97.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>90万円</span></td></tr>
-                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S</span></td><td>94.0 〜 95.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>80万円</span></td></tr>
-                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>92.0 〜 93.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>70万円</span></td></tr>
-                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>90.0 〜 91.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>65万円</span></td></tr>
+                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>98.0 〜 100点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>110万円</span></td></tr>
+                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>96.0 〜 97.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>100万円</span></td></tr>
+                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S</span></td><td>94.0 〜 95.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>90万円</span></td></tr>
+                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>92.0 〜 93.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>80万円</span></td></tr>
+                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>90.0 〜 91.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>70万円</span></td></tr>
                     </tbody>
                   </table>
                 </div>
