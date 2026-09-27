@@ -137,6 +137,29 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
             text: text || '未設定'
           })) || [];
 
+          const teamData = ev.teamTexts?.map((text, i) => ({
+            name: `チーム目標${i+1}`,
+            score: ev.teamDetails[i],
+            text: text || '未設定'
+          })) || [];
+
+          const CustomTooltip = ({ active, payload, label }: any) => {
+            if (active && payload && payload.length) {
+              return (
+                <div style={{ backgroundColor: 'var(--bg-surface)', padding: '12px', border: '1px solid var(--border-color)', borderRadius: '8px', maxWidth: '300px' }}>
+                  <p style={{ fontWeight: 'bold', marginBottom: '8px' }}>{label}</p>
+                  <p style={{ fontSize: '0.875rem', marginBottom: '8px' }}>獲得点数: <span style={{ color: payload[0].color, fontWeight: 'bold' }}>{payload[0].value}</span> 点</p>
+                  {payload[0].payload.text && (
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>
+                      {payload[0].payload.text}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+            return null;
+          };
+
           const typeItems = masterItems.filter(m => m.category === '職種・タイプ別評価' && m.type === staff.type);
           
           const upperEval = evaluations.find(e => e.period === '上期');
@@ -230,10 +253,31 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                           <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{fontSize: 12}} />
                           <YAxis domain={[0, 5]} stroke="var(--text-secondary)" tick={{fontSize: 12}} />
                           <RechartsTooltip 
-                            contentStyle={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+                            content={<CustomTooltip />}
                             cursor={{ fill: 'rgba(255,255,255,0.05)' }}
                           />
                           <Bar dataKey="score" name="獲得点数" radius={[4, 4, 0, 0]} fill="#ec4899" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                )}
+
+                {/* Team Bar Chart */}
+                {teamData.length > 0 && (staff.isLeader || staff.canEditTeamGoals) && (
+                  <div style={{ background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                    <h4 style={{ textAlign: 'center', marginBottom: '8px' }}>チーム目標（{ev.teamScore}点）</h4>
+                    <div style={{ width: '100%', height: 250 }}>
+                      <ResponsiveContainer>
+                        <BarChart data={teamData} margin={{ top: 20, right: 30, left: -20, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                          <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{fontSize: 12}} />
+                          <YAxis domain={[0, 5]} stroke="var(--text-secondary)" tick={{fontSize: 12}} />
+                          <RechartsTooltip 
+                            content={<CustomTooltip />}
+                            cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                          />
+                          <Bar dataKey="score" name="獲得点数" radius={[4, 4, 0, 0]} fill="#f59e0b" />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
