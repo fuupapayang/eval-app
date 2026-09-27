@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { Staff, EvaluationForm } from '../types';
 import { X } from 'lucide-react';
 import { useStore } from '../store';
+import { getRankData } from '../lib/rankUtils';
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Cell, Legend 
@@ -184,12 +185,125 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
             };
           });
 
+          const getYearsOfService = (joinedAt?: string) => {
+            if (!joinedAt) return 0;
+            const joinedDate = new Date(joinedAt);
+            const today = new Date();
+            let years = today.getFullYear() - joinedDate.getFullYear();
+            const m = today.getMonth() - joinedDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < joinedDate.getDate())) {
+              years--;
+            }
+            return Math.max(0, years);
+          };
+
+          const fullEval = getDetailEval(staff.id, '通期');
+          const annualScore = fullEval && fullEval.totalScore > 0 ? fullEval.totalScore : null;
+
+          const getAutoNextSalary = (s: Staff) => {
+            if (!s.annualSalary) return undefined;
+            if (annualScore === null) return s.annualSalary;
+            
+            const rank = getRankData(annualScore)?.baseRank;
+            if (rank === 'S' || rank === 'A') {
+              return s.annualSalary + 360000;
+            } else if (rank === 'B') {
+              return s.annualSalary + 240000;
+            } else if (rank === 'C') {
+              return s.annualSalary + 120000;
+            }
+            return s.annualSalary;
+          };
+
           return (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
-              <div style={{ display: 'flex', gap: 'var(--spacing-4)' }}>
-                <div className="stat-card" style={{ flex: 1, padding: '16px', background: 'var(--bg-surface)', borderRadius: '8px' }}>
-                  <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>総合点数</p>
-                  <h3 style={{ fontSize: '2rem', color: 'var(--accent-primary)' }}>{ev.totalScore > 0 ? `${ev.totalScore} 点` : '評価未確定'}</h3>
+              
+              {/* 6つのパネル表示エリア */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--spacing-4)' }}>
+                {/* 現在の評価状況（総合点） */}
+                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)', background: 'var(--bg-surface)' }}>
+                  <div className="stat-content">
+                    <p className="stat-label" style={{ marginBottom: '4px' }}>現在の評価状況 (総合点)</p>
+                    <h3 className="stat-value" style={{ fontSize: '1.2rem', color: 'var(--accent-primary)' }}>{ev.totalScore > 0 ? `${ev.totalScore.toFixed(1)}点` : '未確定'}</h3>
+                  </div>
+                </div>
+
+                {/* 総合評価ランク */}
+                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)', background: 'var(--bg-surface)' }}>
+                  <div className="stat-content">
+                    <p className="stat-label" style={{ marginBottom: '4px' }}>総合評価ランク</p>
+                    <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
+                      {annualScore !== null ? (
+                        <span style={{ 
+                          display: 'inline-block', 
+                          padding: '2px 8px', 
+                          borderRadius: '4px', 
+                          backgroundColor: getRankData(annualScore)?.colorStyle + '20', 
+                          color: getRankData(annualScore)?.colorStyle 
+                        }}>
+                          {getRankData(annualScore)?.baseRank || '-'}
+                        </span>
+                      ) : '未確定'}
+                    </h3>
+                  </div>
+                </div>
+                
+                {/* 継続年数 */}
+                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)', background: 'var(--bg-surface)' }}>
+                  <div className="stat-content">
+                    <p className="stat-label" style={{ marginBottom: '4px' }}>継続年数</p>
+                    <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>{getYearsOfService(staff.joinedAt)}年</h3>
+                  </div>
+                </div>
+
+                {/* 現在の年収 */}
+                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)', background: 'var(--bg-surface)' }}>
+                  <div className="stat-content">
+                    <p className="stat-label" style={{ marginBottom: '4px' }}>現在の年収（月額）</p>
+                    <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
+                      {staff.annualSalary 
+                        ? `${(staff.annualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
+                        : '未設定'}
+                    </h3>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      {staff.annualSalary ? `(月額: ${Math.floor(staff.annualSalary / 12).toLocaleString()}円)` : '-'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* 来期年収予測予定 */}
+                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)', background: 'var(--bg-surface)' }}>
+                  <div className="stat-content">
+                    <p className="stat-label" style={{ marginBottom: '4px' }}>来期年収予測予定</p>
+                    <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
+                      {staff.nextAnnualSalary 
+                        ? `${(staff.nextAnnualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
+                        : (getAutoNextSalary(staff) 
+                            ? `${(getAutoNextSalary(staff)! / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
+                            : '未確定'
+                          )
+                      }
+                    </h3>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      {staff.nextAnnualSalary 
+                        ? `(月額: ${Math.floor(staff.nextAnnualSalary / 12).toLocaleString()}円)`
+                        : (getAutoNextSalary(staff) 
+                            ? `(月額: ${Math.floor(getAutoNextSalary(staff)! / 12).toLocaleString()}円) [自動]` 
+                            : '-'
+                          )
+                      }
+                    </p>
+                  </div>
+                </div>
+
+                {/* インセンティブ */}
+                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)', background: 'var(--bg-surface)' }}>
+                  <div className="stat-content">
+                    <p className="stat-label" style={{ marginBottom: '4px' }}>インセンティブ</p>
+                    <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
+                      {staff.incentive ? `${(staff.incentive / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` : '0万円'}
+                    </h3>
+                  </div>
                 </div>
               </div>
 
