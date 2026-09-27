@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../store';
-import type { Staff, Role, StaffType, EvaluationForm } from '../types';
-import { getRankData, calculateTotalScore } from '../lib/roleModelData';
+import type { Staff, Role, StaffType } from '../types';
+import { getRankData } from '../lib/rankUtils';
 import {
   DndContext,
   closestCenter,
@@ -21,7 +21,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Edit2 } from 'lucide-react';
 
-const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCancel, onEdit, availableTypes }: { 
+const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCancel, onEdit, availableTypes, getAutoNextSalary }: { 
   staff: Staff, 
   isEditing: boolean, 
   editForm: Staff | null,
@@ -29,7 +29,8 @@ const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCance
   onSave: () => void,
   onCancel: () => void,
   onEdit: () => void,
-  availableTypes: string[]
+  availableTypes: string[],
+  getAutoNextSalary: (s: Staff) => number | undefined
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: staff.id });
   const style = {
@@ -258,13 +259,20 @@ export const StaffList: React.FC = () => {
     if (!staff.annualSalary) return undefined;
     
     // Find rank for 2026 (or latest year)
-    const year = '2026';
+    const year = 2026;
     const evals = evaluations.filter(e => e.staffId === staff.id && e.year === year);
     const upper = evals.find(e => e.period === '上期');
     const lower = evals.find(e => e.period === '下期');
-    const upperScore = upper ? calculateTotalScore(upper, masterItems) : null;
-    const lowerScore = lower ? calculateTotalScore(lower, masterItems) : null;
-    const annualScore = (upperScore !== null && lowerScore !== null) ? upperScore + lowerScore : null;
+    const upperScore = upper ? upper.totalScore : null;
+    const lowerScore = lower ? lower.totalScore : null;
+    let annualScore = null;
+    if (upperScore !== null && lowerScore !== null) {
+      annualScore = (upperScore + lowerScore) / 2;
+    } else if (upperScore !== null) {
+      annualScore = upperScore;
+    } else if (lowerScore !== null) {
+      annualScore = lowerScore;
+    }
     
     if (annualScore === null) return staff.annualSalary;
     
@@ -398,6 +406,7 @@ export const StaffList: React.FC = () => {
                 onCancel={handleCancel}
                 onEdit={() => handleEdit(staff)}
                 availableTypes={availableTypes}
+                getAutoNextSalary={getAutoNextSalary}
               />
             ))}
           </SortableContext>
