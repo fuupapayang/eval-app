@@ -113,13 +113,21 @@ export const MyPage: React.FC = () => {
               initialAchieved[i] = true;
             } else if (status === '未達' || status === '継続中') {
               initialTexts[i] = prevEval.themeTexts[i] || '';
-              initialStatuses[i] = status;
-              initialReflections[i] = prevEval.themeReflections ? prevEval.themeReflections[i] : '';
-              initialHistory[String(i)] = [...prevHistory];
+              initialStatuses[i] = ''; // 新しい期は状態をリセット
+              initialReflections[i] = ''; // 新しい期の振り返りもリセット
+              initialHistory[String(i)] = [
+                ...prevHistory,
+                {
+                  text: prevEval.themeTexts[i] || '',
+                  status: status,
+                  reflection: prevEval.themeReflections ? prevEval.themeReflections[i] : '',
+                  updatedAt: prevEval.updatedAt || new Date().toISOString()
+                }
+              ];
             } else {
               initialTexts[i] = prevEval.themeTexts[i] || '';
               initialStatuses[i] = '';
-              initialReflections[i] = prevEval.themeReflections ? prevEval.themeReflections[i] : '';
+              initialReflections[i] = '';
               initialHistory[String(i)] = [...prevHistory];
             }
           }
@@ -138,13 +146,21 @@ export const MyPage: React.FC = () => {
               initialTeamAchieved[i] = true;
             } else if (status === '未達' || status === '継続中') {
               initialTeamTextsArray[i] = prevEval.teamTexts[i] || '';
-              initialTeamStatusesArray[i] = status;
-              initialTeamReflectionsArray[i] = prevEval.teamReflections ? prevEval.teamReflections[i] : '';
-              initialTeamHistoryMap[String(i)] = [...prevHistory];
+              initialTeamStatusesArray[i] = ''; // リセット
+              initialTeamReflectionsArray[i] = ''; // リセット
+              initialTeamHistoryMap[String(i)] = [
+                ...prevHistory,
+                {
+                  text: prevEval.teamTexts[i] || '',
+                  status: status,
+                  reflection: prevEval.teamReflections ? prevEval.teamReflections[i] : '',
+                  updatedAt: prevEval.updatedAt || new Date().toISOString()
+                }
+              ];
             } else {
               initialTeamTextsArray[i] = prevEval.teamTexts[i] || '';
               initialTeamStatusesArray[i] = '';
-              initialTeamReflectionsArray[i] = prevEval.teamReflections ? prevEval.teamReflections[i] : '';
+              initialTeamReflectionsArray[i] = '';
               initialTeamHistoryMap[String(i)] = [...prevHistory];
             }
           }
