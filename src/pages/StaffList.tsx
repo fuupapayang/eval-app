@@ -626,11 +626,11 @@ export const StaffList: React.FC = () => {
     const fullRank = `${baseRank}${subRank}`;
     
     switch (fullRank) {
-      case 'S++': incentive = 1100000; break;
-      case 'S+':  incentive = 1000000; break;
-      case 'S':   incentive = 900000; break;
-      case 'S-':  incentive = 800000; break;
-      case 'S--': incentive = 700000; break;
+      case 'S++': incentive = 1200000; break;
+      case 'S+':  incentive = 1100000; break;
+      case 'S':   incentive = 1000000; break;
+      case 'S-':  incentive = 900000; break;
+      case 'S--': incentive = 800000; break;
       case 'A++': incentive = 600000; break;
       case 'A+':  incentive = 550000; break;
       case 'A':   incentive = 500000; break;
