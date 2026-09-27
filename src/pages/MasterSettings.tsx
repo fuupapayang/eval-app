@@ -117,14 +117,78 @@ export const MasterSettings: React.FC = () => {
                 </tbody>
               </table>
             </div>
-            <div style={{ marginTop: 'var(--spacing-4)', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-              <p><strong>※ 評価ランクの細分化について</strong></p>
-              <p>各ランク（S〜D）は、合計点数に応じてさらに5段階（--, -, 無印, +, ++）に細分化されます。</p>
-              <ul style={{ paddingLeft: '20px', marginTop: '4px' }}>
-                <li><strong>A・B・Cランク</strong>：2点刻みで変動します。（例：A--は80〜81点、Aは84〜85点、A++は88〜89点）</li>
-                <li><strong>Sランク</strong>：90点から2点刻みで変動し、100点の場合のみ幅が広くなります。（例：S--は90〜91点、S++は98〜100点）</li>
-                <li><strong>Dランク</strong>：12点刻みで変動します。（例：D--は0〜11点、D++は48〜59点）</li>
-              </ul>
+            <div style={{ marginTop: 'var(--spacing-8)', paddingTop: 'var(--spacing-4)', borderTop: '1px solid var(--border-color)', fontSize: '0.875rem' }}>
+              <h3 style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>詳細な評価ランクと点数配分（S++ 〜 D--）</h3>
+              <p style={{ marginBottom: '16px', color: 'var(--text-secondary)' }}>各基本ランク（S〜D）は、合計点数に応じてさらに5段階に細分化されます。</p>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px' }}>
+                
+                <div className="table-container">
+                  <table className="table" style={{ fontSize: '0.8rem' }}>
+                    <thead><tr><th style={{ background: 'var(--accent-primary)', color: 'white' }}>S ランク</th><th>点数帯</th></tr></thead>
+                    <tbody>
+                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>98.0 〜 100点</td></tr>
+                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>96.0 〜 97.9点</td></tr>
+                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S</span></td><td>94.0 〜 95.9点</td></tr>
+                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>92.0 〜 93.9点</td></tr>
+                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>90.0 〜 91.9点</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="table-container">
+                  <table className="table" style={{ fontSize: '0.8rem' }}>
+                    <thead><tr><th style={{ background: 'var(--success)', color: 'white' }}>A ランク</th><th>点数帯</th></tr></thead>
+                    <tbody>
+                      <tr><td><span className="badge success" style={{fontSize:'0.75rem'}}>A<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>88.0 〜 89.9点</td></tr>
+                      <tr><td><span className="badge success" style={{fontSize:'0.75rem'}}>A<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>86.0 〜 87.9点</td></tr>
+                      <tr><td><span className="badge success" style={{fontSize:'0.75rem'}}>A</span></td><td>84.0 〜 85.9点</td></tr>
+                      <tr><td><span className="badge success" style={{fontSize:'0.75rem'}}>A<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>82.0 〜 83.9点</td></tr>
+                      <tr><td><span className="badge success" style={{fontSize:'0.75rem'}}>A<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>80.0 〜 81.9点</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="table-container">
+                  <table className="table" style={{ fontSize: '0.8rem' }}>
+                    <thead><tr><th style={{ background: 'var(--warning)', color: 'white' }}>B ランク</th><th>点数帯</th></tr></thead>
+                    <tbody>
+                      <tr><td><span className="badge warning" style={{fontSize:'0.75rem'}}>B<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>78.0 〜 79.9点</td></tr>
+                      <tr><td><span className="badge warning" style={{fontSize:'0.75rem'}}>B<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>76.0 〜 77.9点</td></tr>
+                      <tr><td><span className="badge warning" style={{fontSize:'0.75rem'}}>B</span></td><td>74.0 〜 75.9点</td></tr>
+                      <tr><td><span className="badge warning" style={{fontSize:'0.75rem'}}>B<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>72.0 〜 73.9点</td></tr>
+                      <tr><td><span className="badge warning" style={{fontSize:'0.75rem'}}>B<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>70.0 〜 71.9点</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="table-container">
+                  <table className="table" style={{ fontSize: '0.8rem' }}>
+                    <thead><tr><th style={{ background: 'var(--text-primary)', color: 'white' }}>C ランク</th><th>点数帯</th></tr></thead>
+                    <tbody>
+                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>68.0 〜 69.9点</td></tr>
+                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>66.0 〜 67.9点</td></tr>
+                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C</span></td><td>64.0 〜 65.9点</td></tr>
+                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>62.0 〜 63.9点</td></tr>
+                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>60.0 〜 61.9点</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="table-container">
+                  <table className="table" style={{ fontSize: '0.8rem' }}>
+                    <thead><tr><th style={{ background: 'var(--danger)', color: 'white' }}>D ランク</th><th>点数帯</th></tr></thead>
+                    <tbody>
+                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>48.0 〜 59.9点</td></tr>
+                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>36.0 〜 47.9点</td></tr>
+                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D</span></td><td>24.0 〜 35.9点</td></tr>
+                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>12.0 〜 23.9点</td></tr>
+                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>0.0 〜 11.9点</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                
+              </div>
             </div>
           </>
         ) : null}
