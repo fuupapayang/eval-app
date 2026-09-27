@@ -279,19 +279,19 @@ const SortableCard = ({
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)' }}>
               {/* パネル表示エリア */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--spacing-4)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px' }}>
                 {/* 現在の評価状況（総合点） */}
-                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
+                <div className="stat-panel" style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
                   <div className="stat-content">
-                    <p className="stat-label" style={{ marginBottom: '4px' }}>現在の評価状況 (総合点)</p>
+                    <p className="stat-label" style={{ marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>現在の評価状況 (総合点)</p>
                     <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>{annualScore !== null ? `${annualScore.toFixed(1)}点` : '未確定'}</h3>
                   </div>
                 </div>
 
                 {/* 総合評価ランク */}
-                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
+                <div className="stat-panel" style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
                   <div className="stat-content">
-                    <p className="stat-label" style={{ marginBottom: '4px' }}>総合評価ランク</p>
+                    <p className="stat-label" style={{ marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>総合評価ランク</p>
                     <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
                       {annualScore !== null ? (
                         <span style={{ 
@@ -309,17 +309,17 @@ const SortableCard = ({
                 </div>
 
                 {/* 継続年数 */}
-                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
+                <div className="stat-panel" style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
                   <div className="stat-content">
-                    <p className="stat-label" style={{ marginBottom: '4px' }}>継続年数</p>
+                    <p className="stat-label" style={{ marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>継続年数</p>
                     <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>{getYearsOfService(staff.joinedAt)}年</h3>
                   </div>
                 </div>
 
                 {/* 現在の年収 */}
-                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
+                <div className="stat-panel" style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
                   <div className="stat-content">
-                    <p className="stat-label" style={{ marginBottom: '4px' }}>現在の年収（月額）</p>
+                    <p className="stat-label" style={{ marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>現在の年収（月額）</p>
                     <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
                       {staff.annualSalary 
                         ? `${(staff.annualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
@@ -332,9 +332,9 @@ const SortableCard = ({
                 </div>
 
                 {/* 来期年収予測予定 */}
-                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
+                <div className="stat-panel" style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
                   <div className="stat-content">
-                    <p className="stat-label" style={{ marginBottom: '4px' }}>来期年収予測予定</p>
+                    <p className="stat-label" style={{ marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>来期年収予測予定</p>
                     <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
                       {staff.nextAnnualSalary 
                         ? `${(staff.nextAnnualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
@@ -357,9 +357,9 @@ const SortableCard = ({
                 </div>
 
                 {/* インセンティブ */}
-                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
+                <div className="stat-panel" style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
                   <div className="stat-content">
-                    <p className="stat-label" style={{ marginBottom: '4px' }}>インセンティブ</p>
+                    <p className="stat-label" style={{ marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>インセンティブ</p>
                     <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
                       {staff.incentive ? `${(staff.incentive / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` : '0万円'}
                     </h3>
