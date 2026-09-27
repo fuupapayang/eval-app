@@ -310,7 +310,7 @@ const SortableCard = ({
                 <div className="stat-panel" style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
                   <div className="stat-content">
                     <p className="stat-label" style={{ marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>現在の年収（月額）</p>
-                    <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
+                    <h3 className="stat-value" style={{ fontSize: '1.6rem', color: 'var(--accent-primary)' }}>
                       {staff.annualSalary 
                         ? `${(staff.annualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
                         : '未設定'}
@@ -321,7 +321,7 @@ const SortableCard = ({
                   </div>
                 </div>
 
-                {/* 市場平均年収（マス媒体レポート2025） */}
+                {/* 市場平均年収（マス媒体レポート2025） - 現在の年収と比較 */}
                 {(() => {
                   const getMarketSalary = (s: Staff) => {
                     const isL = s.roleTitle === 'リーダー';
@@ -351,7 +351,7 @@ const SortableCard = ({
                       <div className="stat-content">
                         <p className="stat-label" style={{ marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                           市場平均年収<br/>
-                          <span style={{ fontSize: '0.7rem' }}>({market.title} / ﾏｽﾒﾃﾞｨｱﾝ2025)</span>
+                          <span style={{ fontSize: '0.7rem' }}>({market.title} / 現在と比較)</span>
                         </p>
                         <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
                           {market.amount.toFixed(1)}万円
@@ -370,7 +370,7 @@ const SortableCard = ({
                 <div className="stat-panel" style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
                   <div className="stat-content">
                     <p className="stat-label" style={{ marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>来期年収予測予定</p>
-                    <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
+                    <h3 className="stat-value" style={{ fontSize: '1.6rem', color: 'var(--accent-primary)' }}>
                       {staff.nextAnnualSalary 
                         ? `${(staff.nextAnnualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
                         : (getAutoNextSalary(staff) 
@@ -390,6 +390,52 @@ const SortableCard = ({
                     </p>
                   </div>
                 </div>
+
+                {/* 市場平均年収（マス媒体レポート2025） - 来期予測と比較 */}
+                {(() => {
+                  const getMarketSalary = (s: Staff) => {
+                    const isL = s.roleTitle === 'リーダー';
+                    const isSub = s.roleTitle === 'サブリーダー';
+                    switch(s.role) {
+                      case 'WEBデザイナー': 
+                        if (isL) return { title: 'アートディレクター', amount: 575.4 };
+                        return { title: 'デザイナー', amount: 394.0 };
+                      case 'コーダー':
+                        if (isL) return { title: 'アートディレクター', amount: 575.4 };
+                        return { title: 'コーダー(推定)', amount: 450.0 };
+                      case 'ディレクター': 
+                        if (isL) return { title: 'クリエイティブD', amount: 692.1 };
+                        return { title: '制作ディレクター', amount: 507.2 };
+                      case '映像': 
+                        if (isL) return { title: '映像プロデューサー', amount: 586.8 };
+                        if (isSub) return { title: '映像ディレクター', amount: 494.4 };
+                        return { title: '映像編集', amount: 382.6 };
+                      default: 
+                        return { title: 'アシスタント', amount: 380.2 };
+                    }
+                  };
+                  const market = getMarketSalary(staff);
+                  const nextSalaryVal = staff.nextAnnualSalary ? staff.nextAnnualSalary : getAutoNextSalary(staff);
+                  const diff = nextSalaryVal ? (nextSalaryVal / 10000) - market.amount : null;
+                  return (
+                    <div className="stat-panel" style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
+                      <div className="stat-content">
+                        <p className="stat-label" style={{ marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                          市場平均年収<br/>
+                          <span style={{ fontSize: '0.7rem' }}>({market.title} / 来期予測と比較)</span>
+                        </p>
+                        <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
+                          {market.amount.toFixed(1)}万円
+                        </h3>
+                        {diff !== null && (
+                          <p style={{ fontSize: '0.75rem', color: diff >= 0 ? 'var(--success)' : 'var(--danger)', marginTop: '4px', fontWeight: 'bold' }}>
+                            {diff >= 0 ? '+' : ''}{diff.toFixed(1)}万円
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* インセンティブ */}
                 <div className="stat-panel" style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
