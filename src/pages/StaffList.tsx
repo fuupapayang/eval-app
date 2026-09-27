@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { useStore } from '../store';
-import type { Staff, Role, StaffType } from '../types';
+import type { Staff, Role, StaffType, EvaluationItem, EvaluationForm } from '../types';
 import { getRankData } from '../lib/rankUtils';
+import { 
+  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Cell, Legend 
+} from 'recharts';
 import {
   DndContext,
   closestCenter,
@@ -21,7 +25,10 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Edit2 } from 'lucide-react';
 
-const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCancel, onEdit, availableTypes, getAutoNextSalary, annualScore }: { 
+const SortableCard = ({ 
+  staff, isEditing, editForm, setEditForm, onSave, onCancel, onEdit, 
+  availableTypes, getAutoNextSalary, annualScore, evaluations, masterItems 
+}: { 
   staff: Staff, 
   isEditing: boolean, 
   editForm: Staff | null,
@@ -31,7 +38,9 @@ const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCance
   onEdit: () => void,
   availableTypes: string[],
   getAutoNextSalary: (s: Staff) => number | undefined,
-  annualScore: number | null
+  annualScore: number | null,
+  evaluations: EvaluationForm[],
+  masterItems: EvaluationItem[]
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: staff.id });
   const style = {
@@ -48,6 +57,67 @@ const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCance
     // If editing, keep open. Otherwise toggle.
     if (!isEditing) setIsOpen(!isOpen);
   };
+
+  const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981'];
+
+  const getYearsOfService = (joinedAt?: string) => {
+    if (!joinedAt) return 0;
+    const joinedDate = new Date(joinedAt);
+    const today = new Date();
+    let years = today.getFullYear() - joinedDate.getFullYear();
+    const m = today.getMonth() - joinedDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < joinedDate.getDate())) {
+      years--;
+    }
+    return Math.max(0, years);
+  };
+
+  // Find the latest full year data
+  const year = 2026;
+  const upperEval = evaluations.find(e => e.staffId === staff.id && e.period === '上期' && e.year === year);
+  const lowerEval = evaluations.find(e => e.staffId === staff.id && e.period === '下期' && e.year === year);
+  // Default to lower term if available, otherwise upper term
+  const currentEval = lowerEval || upperEval;
+
+  let performanceData: any[] = [];
+  let themeData: any[] = [];
+  let radarData: any[] = [];
+
+  if (currentEval) {
+    performanceData = [
+      { name: '案件貢献', score: currentEval.performanceDetails?.[0] || 0 },
+      { name: '品質・納期', score: currentEval.performanceDetails?.[1] || 0 },
+      { name: '顧客・社内貢献', score: currentEval.performanceDetails?.[2] || 0 },
+    ];
+
+    themeData = currentEval.themeTexts?.map((text: string, i: number) => ({
+      name: `テーマ${i+1}`,
+      score: currentEval?.themeDetails?.[i] || 0,
+      text: text || '未設定'
+    })) || [];
+  }
+
+  const typeItems = masterItems.filter(m => m.category === '職種・タイプ別評価' && m.type === staff.type);
+  radarData = typeItems.map(item => {
+    let scoreUpper = 0;
+    let scoreLower = 0;
+    
+    if (upperEval) {
+      const entry = upperEval.entries?.find(en => en.itemId === item.id);
+      if (entry) scoreUpper = entry.finalScore;
+    }
+    if (lowerEval) {
+      const entry = lowerEval.entries?.find(en => en.itemId === item.id);
+      if (entry) scoreLower = entry.finalScore;
+    }
+    
+    return {
+      subject: item.name,
+      上期: scoreUpper,
+      下期: scoreLower,
+      fullMark: 5
+    };
+  });
 
   return (
     <div ref={setNodeRef} className={`neu-card ${isDragging ? 'dragging' : ''}`} style={{ ...style, marginBottom: 'var(--spacing-4)', padding: 0, overflow: 'hidden' }}>
@@ -238,6 +308,29 @@ const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCance
                   </div>
                 </div>
 
+                {/* 継続年数 */}
+                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
+                  <div className="stat-content">
+                    <p className="stat-label" style={{ marginBottom: '4px' }}>継続年数</p>
+                    <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>{getYearsOfService(staff.joinedAt)}年</h3>
+                  </div>
+                </div>
+
+                {/* 現在の年収 */}
+                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
+                  <div className="stat-content">
+                    <p className="stat-label" style={{ marginBottom: '4px' }}>現在の年収（月額）</p>
+                    <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
+                      {staff.annualSalary 
+                        ? `${(staff.annualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
+                        : '未設定'}
+                    </h3>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      {staff.annualSalary ? `(月額: ${Math.floor(staff.annualSalary / 12).toLocaleString()}円)` : '-'}
+                    </p>
+                  </div>
+                </div>
+
                 {/* 来期年収予測予定 */}
                 <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
                   <div className="stat-content">
@@ -274,6 +367,78 @@ const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCance
                 </div>
               </div>
 
+              {/* チャート表示エリア */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                {/* 職種・タイプ別評価 */}
+                {radarData.length > 0 && (
+                  <div style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
+                    <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>職種・タイプ別評価（通期比較）</h4>
+                    <div style={{ width: '100%', height: 200 }}>
+                      <ResponsiveContainer>
+                        <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+                          <PolarGrid stroke="rgba(0,0,0,0.1)" />
+                          <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
+                          <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
+                          <Radar name="上期" dataKey="上期" stroke="#94a3b8" fill="#94a3b8" fillOpacity={0.3} />
+                          <Radar name="下期" dataKey="下期" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.5} />
+                          <Legend wrapperStyle={{ fontSize: '11px' }} />
+                          <RechartsTooltip 
+                            contentStyle={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '12px' }}
+                            itemStyle={{ color: 'var(--text-primary)' }}
+                          />
+                        </RadarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                )}
+
+                {/* 業績・案件貢献 */}
+                {performanceData.length > 0 && (
+                  <div style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
+                    <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>業績・案件貢献（{currentEval?.performanceScore || 0}点）</h4>
+                    <div style={{ width: '100%', height: 200 }}>
+                      <ResponsiveContainer>
+                        <BarChart data={performanceData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+                          <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{fontSize: 10}} />
+                          <YAxis domain={[0, 10]} stroke="var(--text-secondary)" tick={{fontSize: 10}} />
+                          <RechartsTooltip 
+                            contentStyle={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '12px' }}
+                            cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                          />
+                          <Bar dataKey="score" name="獲得点数" radius={[4, 4, 0, 0]}>
+                            {performanceData.map((_, index) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                )}
+
+                {/* 個人テーマ */}
+                {themeData.length > 0 && (
+                  <div style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
+                    <h4 style={{ textAlign: 'center', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>個人テーマ（{currentEval?.themeScore || 0}点）</h4>
+                    <div style={{ width: '100%', height: 200 }}>
+                      <ResponsiveContainer>
+                        <BarChart data={themeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+                          <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{fontSize: 10}} />
+                          <YAxis domain={[0, 5]} stroke="var(--text-secondary)" tick={{fontSize: 10}} />
+                          <RechartsTooltip 
+                            contentStyle={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '12px' }}
+                            cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                          />
+                          <Bar dataKey="score" name="獲得点数" radius={[4, 4, 0, 0]} fill="#ec4899" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* その他詳細情報 */}
               <div style={{ display: 'flex', gap: 'var(--spacing-8)', padding: 'var(--spacing-4)', background: 'rgba(0,0,0,0.02)', borderRadius: 'var(--radius-md)' }}>
                 <div>
@@ -283,10 +448,6 @@ const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCance
                 <div>
                   <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>チーム目標権限</p>
                   <p>{staff.canEditTeamGoals ? 'あり' : 'なし'}</p>
-                </div>
-                <div>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>現在の年収（月額）</p>
-                  <p>{staff.annualSalary ? `${(staff.annualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円 (${Math.floor(staff.annualSalary / 12).toLocaleString()}円)` : '未設定'}</p>
                 </div>
                 <div>
                   <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>パスワード</p>
@@ -486,6 +647,8 @@ export const StaffList: React.FC = () => {
                   availableTypes={availableTypes}
                   getAutoNextSalary={getAutoNextSalary}
                   annualScore={annualScore}
+                  evaluations={evaluations}
+                  masterItems={masterItems}
                 />
               );
             })}
