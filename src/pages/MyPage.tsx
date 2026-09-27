@@ -793,8 +793,58 @@ export const MyPage: React.FC = () => {
                           }
                         } else {
                           const newStatuses = [...themeStatuses] as [string, string, string];
-                          newStatuses[i] = newStatuses[i] === status ? '' : status;
+                          const nextStatus = newStatuses[i] === status ? '' : status;
+                          newStatuses[i] = nextStatus;
                           setThemeStatuses(newStatuses);
+                          
+                          // 上期で未達・継続中が選択された場合、即座に下期へコピーする（ユーザー要望）
+                          if ((status === '継続中' || status === '未達') && nextStatus === status && period === '上期' && themeTexts[i]) {
+                            const nextEval = getEvaluation(staff.id, '下期', year);
+                            if (nextEval) {
+                              if (!nextEval.themeTexts || !nextEval.themeTexts[i]) {
+                                const updatedNext = { ...nextEval };
+                                updatedNext.themeTexts = [...(updatedNext.themeTexts || ['', '', ''])] as [string, string, string];
+                                updatedNext.themeTexts[i] = themeTexts[i];
+                                saveEvaluation(updatedNext);
+                                alert(`下期の個人テーマ${i + 1}に目標をコピーしました。`);
+                              }
+                            } else {
+                              const newEval: import('../types').EvaluationForm = {
+                                id: `${staff.id}-${year}-下期`,
+                                staffId: staff.id,
+                                period: '下期',
+                                year,
+                                performanceScore: 0,
+                                performanceDetails: [0, 0, 0],
+                                themeScore: 0,
+                                themeDetails: [0, 0, 0],
+                                teamScore: 0,
+                                teamDetails: [0, 0, 0],
+                                commonScore: 0,
+                                typeScore: 0,
+                                leaderScore: 0,
+                                bonusScore: 0,
+                                totalScore: 0,
+                                entries: [],
+                                themeTexts: ['', '', ''],
+                                themeStatuses: ['', '', ''],
+                                themeReflections: ['', '', ''],
+                                themeHistory: {'0': [], '1': [], '2': []},
+                                teamTexts: ['', '', ''],
+                                teamStatuses: ['', '', ''],
+                                teamReflections: ['', '', ''],
+                                teamHistory: {'0': [], '1': [], '2': []},
+                                selfComment: '',
+                                generalComment: '',
+                                updatedAt: new Date().toISOString()
+                              };
+                              if (newEval.themeTexts) {
+                                newEval.themeTexts[i] = themeTexts[i];
+                              }
+                              saveEvaluation(newEval);
+                              alert(`下期の個人テーマ${i + 1}に目標をコピーしました。`);
+                            }
+                          }
                         }
                       }}
                     >
@@ -941,8 +991,57 @@ export const MyPage: React.FC = () => {
                           }
                         } else {
                           const newStatuses = [...teamStatuses] as [string, string, string];
-                          newStatuses[i] = newStatuses[i] === status ? '' : status;
+                          const nextStatus = newStatuses[i] === status ? '' : status;
+                          newStatuses[i] = nextStatus;
                           setTeamStatuses(newStatuses);
+                          
+                          if ((status === '継続中' || status === '未達') && nextStatus === status && period === '上期' && teamTexts[i]) {
+                            const nextEval = getEvaluation(staff.id, '下期', year);
+                            if (nextEval) {
+                              if (!nextEval.teamTexts || !nextEval.teamTexts[i]) {
+                                const updatedNext = { ...nextEval };
+                                updatedNext.teamTexts = [...(updatedNext.teamTexts || ['', '', ''])] as [string, string, string];
+                                updatedNext.teamTexts[i] = teamTexts[i];
+                                saveEvaluation(updatedNext);
+                                alert(`下期のチーム目標${i + 1}に目標をコピーしました。`);
+                              }
+                            } else {
+                              const newEval: import('../types').EvaluationForm = {
+                                id: `${staff.id}-${year}-下期`,
+                                staffId: staff.id,
+                                period: '下期',
+                                year,
+                                performanceScore: 0,
+                                performanceDetails: [0, 0, 0],
+                                themeScore: 0,
+                                themeDetails: [0, 0, 0],
+                                teamScore: 0,
+                                teamDetails: [0, 0, 0],
+                                commonScore: 0,
+                                typeScore: 0,
+                                leaderScore: 0,
+                                bonusScore: 0,
+                                totalScore: 0,
+                                entries: [],
+                                themeTexts: ['', '', ''],
+                                themeStatuses: ['', '', ''],
+                                themeReflections: ['', '', ''],
+                                themeHistory: {'0': [], '1': [], '2': []},
+                                teamTexts: ['', '', ''],
+                                teamStatuses: ['', '', ''],
+                                teamReflections: ['', '', ''],
+                                teamHistory: {'0': [], '1': [], '2': []},
+                                selfComment: '',
+                                generalComment: '',
+                                updatedAt: new Date().toISOString()
+                              };
+                              if (newEval.teamTexts) {
+                                newEval.teamTexts[i] = teamTexts[i];
+                              }
+                              saveEvaluation(newEval);
+                              alert(`下期のチーム目標${i + 1}に目標をコピーしました。`);
+                            }
+                          }
                         }
                       }}
                       disabled={!canEditTeam}
