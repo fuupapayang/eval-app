@@ -199,7 +199,7 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                   {ev.themeTexts?.map((t, i) => (
                     <li key={i} style={{ marginBottom: '16px' }}>
                       <div style={{ fontWeight: '500' }}>
-                        {t || '（未設定）'}
+                        テーマ{i + 1}: {t || '（未設定）'}
                         {ev.themeStatuses?.[i] && (
                           <span style={{ 
                             marginLeft: '8px', 
@@ -255,7 +255,7 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                     {ev.teamTexts?.map((t, i) => (
                       <li key={i} style={{ marginBottom: '16px' }}>
                         <div style={{ fontWeight: '500' }}>
-                          {t || '（未設定）'}
+                          チーム目標{i + 1}: {t || '（未設定）'}
                           <span style={{fontWeight: 'bold', color: 'var(--accent-primary)', marginLeft: '8px'}}>[ {ev.teamDetails?.[i] || 0}点 ]</span>
                           {ev.teamStatuses?.[i] && (
                             <span style={{ 

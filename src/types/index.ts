@@ -17,6 +17,7 @@ export interface Staff {
   joinedAt?: string;
   monthlySalary?: number; // 月額給与額 (Deprecated)
   annualSalary?: number;  // 年収（インセンティブを含まない）
+  nextAnnualSalary?: number; // 来期年収予定
   incentive?: number;     // インセンティブ
   createdAt: string;
   password?: string;

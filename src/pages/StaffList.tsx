@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../store';
-import type { Staff, Role, StaffType } from '../types';
+import type { Staff, Role, StaffType, EvaluationForm } from '../types';
+import { getRankData, calculateTotalScore } from '../lib/roleModelData';
 import {
   DndContext,
   closestCenter,
@@ -167,6 +168,17 @@ const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCance
                 />
               </div>
               <div className="form-group">
+                <label className="form-label">来期年収予定</label>
+                <input 
+                  type="number" 
+                  className="form-input" 
+                  value={editForm.nextAnnualSalary || ''} 
+                  onChange={e => setEditForm({...editForm, nextAnnualSalary: Number(e.target.value) || undefined})} 
+                  placeholder="例: 5160000"
+                />
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>※自動計算（S/A:+36万, B:+24万, C:+12万）より手動入力が優先されます</p>
+              </div>
+              <div className="form-group">
                 <label className="form-label">インセンティブ（円）</label>
                 <input 
                   type="number" 
@@ -207,6 +219,10 @@ const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCance
                 <p>{staff.annualSalary ? `${(staff.annualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円 (${Math.floor(staff.annualSalary / 12).toLocaleString()}円/月)` : staff.monthlySalary ? `${(staff.monthlySalary * 12 / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円 (${staff.monthlySalary.toLocaleString()}円/月)` : '未設定'}</p>
               </div>
               <div>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>来期年収予定</p>
+                <p>{staff.nextAnnualSalary ? `${(staff.nextAnnualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円 (${Math.floor(staff.nextAnnualSalary / 12).toLocaleString()}円/月)` : (getAutoNextSalary(staff) ? `${(getAutoNextSalary(staff)! / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円 (${Math.floor(getAutoNextSalary(staff)! / 12).toLocaleString()}円/月) [自動計算]` : '-')}</p>
+              </div>
+              <div>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>インセンティブ</p>
                 <p>{staff.incentive ? `${(staff.incentive / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` : '-'}</p>
               </div>
@@ -228,6 +244,7 @@ export const StaffList: React.FC = () => {
   const addStaff = useStore((state) => state.addStaff);
   const reorderStaff = useStore((state) => state.reorderStaff);
   const masterItems = useStore((state) => state.masterItems);
+  const evaluations = useStore((state) => state.evaluations);
   
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Staff | null>(null);
@@ -237,9 +254,37 @@ export const StaffList: React.FC = () => {
     return Array.from(types);
   }, [masterItems]);
 
+  const getAutoNextSalary = (staff: Staff) => {
+    if (!staff.annualSalary) return undefined;
+    
+    // Find rank for 2026 (or latest year)
+    const year = '2026';
+    const evals = evaluations.filter(e => e.staffId === staff.id && e.year === year);
+    const upper = evals.find(e => e.period === '上期');
+    const lower = evals.find(e => e.period === '下期');
+    const upperScore = upper ? calculateTotalScore(upper, masterItems) : null;
+    const lowerScore = lower ? calculateTotalScore(lower, masterItems) : null;
+    const annualScore = (upperScore !== null && lowerScore !== null) ? upperScore + lowerScore : null;
+    
+    if (annualScore === null) return staff.annualSalary;
+    
+    const rank = getRankData(annualScore)?.baseRank;
+    if (rank === 'S' || rank === 'A') {
+      return staff.annualSalary + 360000; // 3万円 * 12ヶ月
+    } else if (rank === 'B') {
+      return staff.annualSalary + 240000; // 2万円 * 12ヶ月
+    } else if (rank === 'C') {
+      return staff.annualSalary + 120000; // 1万円 * 12ヶ月
+    }
+    return staff.annualSalary;
+  };
+
   const handleEdit = (staff: Staff) => {
     setEditingId(staff.id);
-    setEditForm({ ...staff });
+    setEditForm({ 
+      ...staff,
+      nextAnnualSalary: staff.nextAnnualSalary !== undefined ? staff.nextAnnualSalary : getAutoNextSalary(staff)
+    });
   };
 
   const handleAdd = () => {
