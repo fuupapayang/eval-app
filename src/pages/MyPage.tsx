@@ -28,7 +28,7 @@ export const MyPage: React.FC = () => {
   });
   
   const [period, setPeriod] = useState<Period | '通期'>(() => {
-    return '通期';
+    return '上期';
   });
 
   const [themeTexts, setThemeTexts] = useState<[string, string, string]>(['', '', '']);
@@ -360,7 +360,7 @@ export const MyPage: React.FC = () => {
       </div>
 
       {/* Missing Goals Alert */}
-      {(themeTexts.every(t => !t) || (canEditTeam && teamTexts.every(t => !t))) && (
+      {period !== '通期' && (themeTexts.every(t => !t) || (canEditTeam && teamTexts.every(t => !t))) && (
         <div style={{
           backgroundColor: 'rgba(239, 68, 68, 0.1)',
           border: '1px solid var(--accent-primary)',
@@ -631,7 +631,12 @@ export const MyPage: React.FC = () => {
             </div>
           )}
 
-        {period !== '通期' && (
+        {period === '通期' ? (
+          <div style={{ marginTop: 'var(--spacing-8)', padding: 'var(--spacing-6)', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-lg)', textAlign: 'center', color: 'var(--text-secondary)' }}>
+            <p>※「通期」は上期・下期の総合評価を表示する期間です。</p>
+            <p>目標の入力や自己評価を行うには、評価期で「上期」または「下期」を選択してください。</p>
+          </div>
+        ) : (
           <>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-6)', marginTop: 'var(--spacing-8)' }}>
           <div>
