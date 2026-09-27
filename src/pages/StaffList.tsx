@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../store';
 import type { Staff, Role, StaffType, EvaluationItem, EvaluationForm } from '../types';
-import { getRankData } from '../lib/rankUtils';
+import { getRankData, renderRankBadge } from '../lib/rankUtils';
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Cell, Legend 
@@ -293,17 +293,7 @@ const SortableCard = ({
                   <div className="stat-content">
                     <p className="stat-label" style={{ marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>総合評価ランク</p>
                     <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
-                      {annualScore !== null ? (
-                        <span style={{ 
-                          display: 'inline-block', 
-                          padding: '2px 8px', 
-                          borderRadius: '4px', 
-                          backgroundColor: getRankData(annualScore)?.colorStyle + '20', 
-                          color: getRankData(annualScore)?.colorStyle 
-                        }}>
-                          {getRankData(annualScore)?.baseRank || '-'}
-                        </span>
-                      ) : '未確定'}
+                      {annualScore !== null ? renderRankBadge(annualScore) : '未確定'}
                     </h3>
                   </div>
                 </div>
