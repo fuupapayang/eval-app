@@ -36,12 +36,14 @@ export const MyPage: React.FC = () => {
   const [themeStatuses, setThemeStatuses] = useState<[string, string, string]>(['', '', '']);
   const [themeReflections, setThemeReflections] = useState<[string, string, string]>(['', '', '']);
   const [themeHistory, setThemeHistory] = useState<Record<string, import('../types').ThemeHistoryItem[]>>({'0': [], '1': [], '2': []});
+  const [themeAchieved, setThemeAchieved] = useState<[boolean, boolean, boolean]>([false, false, false]);
   
   const [teamTexts, setTeamTexts] = useState<[string, string, string]>(['', '', '']);
   const [initialTeamTexts, setInitialTeamTexts] = useState<[string, string, string]>(['', '', '']);
   const [teamStatuses, setTeamStatuses] = useState<[string, string, string]>(['', '', '']);
   const [teamReflections, setTeamReflections] = useState<[string, string, string]>(['', '', '']);
   const [teamHistory, setTeamHistory] = useState<Record<string, import('../types').ThemeHistoryItem[]>>({'0': [], '1': [], '2': []});
+  const [teamAchieved, setTeamAchieved] = useState<[boolean, boolean, boolean]>([false, false, false]);
   
   const [selfComment, setSelfComment] = useState<string>('');
   
@@ -89,11 +91,13 @@ export const MyPage: React.FC = () => {
       let initialStatuses: [string, string, string] = ['', '', ''];
       let initialReflections: [string, string, string] = ['', '', ''];
       let initialHistory: Record<string, import('../types').ThemeHistoryItem[]> = {'0': [], '1': [], '2': []};
+      let initialAchieved: [boolean, boolean, boolean] = [false, false, false];
       
       let initialTeamTextsArray: [string, string, string] = ['', '', ''];
       let initialTeamStatusesArray: [string, string, string] = ['', '', ''];
       let initialTeamReflectionsArray: [string, string, string] = ['', '', ''];
       let initialTeamHistoryMap: Record<string, import('../types').ThemeHistoryItem[]> = {'0': [], '1': [], '2': []};
+      let initialTeamAchieved: [boolean, boolean, boolean] = [false, false, false];
       
       if (prevEval) {
         if (prevEval.themeTexts && prevEval.themeStatuses) {
@@ -106,6 +110,7 @@ export const MyPage: React.FC = () => {
               initialStatuses[i] = '';
               initialReflections[i] = '';
               initialHistory[String(i)] = [];
+              initialAchieved[i] = true;
             } else if (status === '未達' || status === '継続中') {
               initialTexts[i] = prevEval.themeTexts[i] || '';
               initialStatuses[i] = status;
@@ -130,6 +135,7 @@ export const MyPage: React.FC = () => {
               initialTeamStatusesArray[i] = '';
               initialTeamReflectionsArray[i] = '';
               initialTeamHistoryMap[String(i)] = [];
+              initialTeamAchieved[i] = true;
             } else if (status === '未達' || status === '継続中') {
               initialTeamTextsArray[i] = prevEval.teamTexts[i] || '';
               initialTeamStatusesArray[i] = status;
@@ -150,12 +156,14 @@ export const MyPage: React.FC = () => {
       setThemeStatuses(initialStatuses);
       setThemeReflections(initialReflections);
       setThemeHistory(initialHistory);
+      setThemeAchieved(initialAchieved);
       
       setTeamTexts(initialTeamTextsArray);
       setInitialTeamTexts(initialTeamTextsArray);
       setTeamStatuses(initialTeamStatusesArray);
       setTeamReflections(initialTeamReflectionsArray);
       setTeamHistory(initialTeamHistoryMap);
+      setTeamAchieved(initialTeamAchieved);
       
       setSelfComment('');
     }
@@ -645,6 +653,13 @@ export const MyPage: React.FC = () => {
               <div key={`theme-${i}`} className="form-group" style={{ marginBottom: 'var(--spacing-5)', padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
                 <label className="form-label" style={{ fontWeight: 'bold' }}>個人テーマ {i + 1}</label>
                 
+                {themeAchieved[i] && (
+                  <div style={{ marginBottom: '12px', padding: '8px 12px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--success)', borderRadius: '4px', fontSize: '0.85rem', color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <CheckCircle size={16} />
+                    <span>前回の個人テーマを達成しました。新しい目標を入力してください。</span>
+                  </div>
+                )}
+                
                 {themeHistory[String(i)]?.length > 0 && (
                   <div style={{ marginBottom: '12px', padding: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '4px', fontSize: '0.85rem' }}>
                     <div style={{ fontWeight: 'bold', marginBottom: '4px', color: 'var(--text-secondary)' }}>【過去の未達履歴】</div>
@@ -748,6 +763,13 @@ export const MyPage: React.FC = () => {
                 <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>チーム目標 {i + 1}</span>
                 </label>
+                
+                {teamAchieved[i] && (
+                  <div style={{ marginBottom: '12px', padding: '8px 12px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--success)', borderRadius: '4px', fontSize: '0.85rem', color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <CheckCircle size={16} />
+                    <span>前回のチーム目標を達成しました。新しい目標を入力してください。</span>
+                  </div>
+                )}
                 
                 {/* 履歴の表示 */}
                 {teamHistory && teamHistory[String(i)] && teamHistory[String(i)].length > 0 && (
