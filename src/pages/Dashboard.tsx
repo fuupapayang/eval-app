@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useStore } from '../store';
 import type { Staff } from '../types';
 import { renderRankBadge, getRankData } from '../lib/rankUtils';
-import { Download, Printer } from 'lucide-react';
+import { Download, Printer, AlertTriangle } from 'lucide-react';
 import { EvaluationDetailModal } from '../components/EvaluationDetailModal';
 
 export const Dashboard: React.FC = () => {
@@ -23,7 +23,7 @@ export const Dashboard: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number>(availableYears[0]);
 
   const annualScores = useMemo(() => {
-    const scores: Record<string, { staff: Staff; upper: number | null; lower: number | null; total: number | null }> = {};
+    const scores: Record<string, { staff: Staff; upper: number | null; lower: number | null; total: number | null; upperEval?: import('../types').EvaluationForm; lowerEval?: import('../types').EvaluationForm }> = {};
     
     staffList.forEach(staff => {
       scores[staff.id] = { staff, upper: null, lower: null, total: null };
@@ -31,8 +31,14 @@ export const Dashboard: React.FC = () => {
 
     evaluations.forEach(ev => {
       if (ev.year === selectedYear && scores[ev.staffId]) {
-        if (ev.period === '上期') scores[ev.staffId].upper = ev.totalScore;
-        if (ev.period === '下期') scores[ev.staffId].lower = ev.totalScore;
+        if (ev.period === '上期') {
+          scores[ev.staffId].upper = ev.totalScore;
+          scores[ev.staffId].upperEval = ev;
+        }
+        if (ev.period === '下期') {
+          scores[ev.staffId].lower = ev.totalScore;
+          scores[ev.staffId].lowerEval = ev;
+        }
       }
     });
 
@@ -98,6 +104,19 @@ export const Dashboard: React.FC = () => {
     window.print();
   };
 
+  const hasMissingGoals = (staff: Staff, evalUpper?: import('../types').EvaluationForm, evalLower?: import('../types').EvaluationForm) => {
+    const isThemeMissing = (ev?: import('../types').EvaluationForm) => ev ? (!ev.themeTexts || ev.themeTexts.every(t => !t)) : false;
+    const isTeamMissing = (ev?: import('../types').EvaluationForm) => ev ? ((staff.isLeader || staff.canEditTeamGoals) && (!ev.teamTexts || ev.teamTexts.every(t => !t))) : false;
+    
+    // Check missing for upper if it exists, lower if it exists.
+    // If they have NO evaluations yet, we probably don't alert? Or do we?
+    // Let's alert if EITHER upper or lower has an evaluation but missing goals.
+    const missingUpper = evalUpper ? (isThemeMissing(evalUpper) || isTeamMissing(evalUpper)) : false;
+    const missingLower = evalLower ? (isThemeMissing(evalLower) || isTeamMissing(evalLower)) : false;
+    
+    return missingUpper || missingLower;
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -126,7 +145,13 @@ export const Dashboard: React.FC = () => {
       </div>
 
       <div className="glass-panel" style={{ padding: 'var(--spacing-6)' }}>
-        <h2 style={{ marginBottom: 'var(--spacing-4)' }}>{selectedYear}年度 評価一覧</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 'var(--spacing-4)' }}>
+          <h2 style={{ margin: 0 }}>{selectedYear}年度 評価一覧</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+            <AlertTriangle size={14} color="var(--accent-primary)" />
+            <span>: 目標未設定（個人テーマ、またはチーム目標）</span>
+          </div>
+        </div>
         <div className="table-container">
           <table className="table">
             <thead>
@@ -143,7 +168,16 @@ export const Dashboard: React.FC = () => {
             <tbody>
               {annualScores.map((row) => (
                 <tr key={row.staff.id}>
-                  <td style={{ fontWeight: 600 }}>{row.staff.name}</td>
+                  <td style={{ fontWeight: 600 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {row.staff.name}
+                      {hasMissingGoals(row.staff, row.upperEval, row.lowerEval) && (
+                        <span title="目標が未設定です" style={{ color: 'var(--accent-primary)', display: 'flex' }}>
+                          <AlertTriangle size={16} />
+                        </span>
+                      )}
+                    </div>
+                  </td>
                   <td>{row.staff.role} / <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>{row.staff.type}</span></td>
                   <td>
                     {row.upper !== null ? (

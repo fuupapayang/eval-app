@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useStore } from '../store';
 import type { Period, EvaluationForm } from '../types';
 import { EvaluationDetailModal } from '../components/EvaluationDetailModal';
-import { CheckCircle, Circle, Target, ChevronRight } from 'lucide-react';
+import { CheckCircle, Circle, Target, ChevronRight, AlertTriangle } from 'lucide-react';
 import { useRoleQuest } from '../hooks/useRoleQuest';
 import { renderRankBadge } from '../lib/rankUtils';
 import { 
@@ -358,6 +358,33 @@ export const MyPage: React.FC = () => {
         <h1 className="page-title">マイページ</h1>
         <p className="page-subtitle">{staff.name} さんの目標設定・評価履歴</p>
       </div>
+
+      {/* Missing Goals Alert */}
+      {(themeTexts.every(t => !t) || (canEditTeam && teamTexts.every(t => !t))) && (
+        <div style={{
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          border: '1px solid var(--accent-primary)',
+          borderRadius: 'var(--radius-md)',
+          padding: 'var(--spacing-4)',
+          marginBottom: 'var(--spacing-6)',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '12px'
+        }}>
+          <AlertTriangle color="var(--accent-primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
+          <div>
+            <p style={{ fontWeight: 'bold', color: 'var(--accent-primary)', margin: 0, marginBottom: '4px' }}>目標が未設定です</p>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0 }}>
+              {themeTexts.every(t => !t) && canEditTeam && teamTexts.every(t => !t) 
+                ? '個人テーマとチーム目標が設定されていません。目標設定を入力して保存してください。' 
+                : themeTexts.every(t => !t) 
+                  ? '個人テーマが設定されていません。目標設定を入力して保存してください。' 
+                  : 'チーム目標が設定されていません。目標設定を入力して保存してください。'
+              }
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="glass-panel" style={{ padding: 'var(--spacing-6)', marginBottom: 'var(--spacing-8)' }}>
         <h2 style={{ marginBottom: 'var(--spacing-4)' }}>目標設定</h2>
