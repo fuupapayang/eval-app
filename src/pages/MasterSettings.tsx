@@ -169,8 +169,8 @@ export const MasterSettings: React.FC = () => {
                       <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>68.0 〜 69.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>10万円</span></td></tr>
                       <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>66.0 〜 67.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>5万円</span></td></tr>
                       <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C</span></td><td>64.0 〜 65.9点</td><td><span style={{color:'var(--text-muted)'}}>0万円</span></td></tr>
-                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>62.0 〜 63.9点</td><td><span style={{color:'var(--text-muted)'}}>0万円</span></td></tr>
-                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>60.0 〜 61.9点</td><td><span style={{color:'var(--text-muted)'}}>0万円</span></td></tr>
+                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>62.0 〜 63.9点</td><td><span style={{color:'var(--text-muted)'}}>-</span></td></tr>
+                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>60.0 〜 61.9点</td><td><span style={{color:'var(--text-muted)'}}>-</span></td></tr>
                     </tbody>
                   </table>
                 </div>
@@ -179,11 +179,11 @@ export const MasterSettings: React.FC = () => {
                   <table className="table" style={{ fontSize: '0.8rem' }}>
                     <thead><tr><th style={{ background: 'var(--danger)', color: 'white' }}>D ランク</th><th>点数帯</th><th>インセンティブ目安</th></tr></thead>
                     <tbody>
-                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>48.0 〜 59.9点</td><td><span style={{color:'var(--text-muted)'}}>0万円</span></td></tr>
-                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>36.0 〜 47.9点</td><td><span style={{color:'var(--text-muted)'}}>0万円</span></td></tr>
-                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D</span></td><td>24.0 〜 35.9点</td><td><span style={{color:'var(--text-muted)'}}>0万円</span></td></tr>
-                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>12.0 〜 23.9点</td><td><span style={{color:'var(--text-muted)'}}>0万円</span></td></tr>
-                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>0.0 〜 11.9点</td><td><span style={{color:'var(--text-muted)'}}>0万円</span></td></tr>
+                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>48.0 〜 59.9点</td><td><span style={{color:'var(--text-muted)'}}>-</span></td></tr>
+                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>36.0 〜 47.9点</td><td><span style={{color:'var(--text-muted)'}}>-</span></td></tr>
+                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D</span></td><td>24.0 〜 35.9点</td><td><span style={{color:'var(--text-muted)'}}>-</span></td></tr>
+                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>12.0 〜 23.9点</td><td><span style={{color:'var(--text-muted)'}}>-</span></td></tr>
+                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>0.0 〜 11.9点</td><td><span style={{color:'var(--text-muted)'}}>-</span></td></tr>
                     </tbody>
                   </table>
                 </div>
