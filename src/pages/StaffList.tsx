@@ -21,7 +21,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Edit2 } from 'lucide-react';
 
-const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCancel, onEdit, availableTypes, getAutoNextSalary }: { 
+const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCancel, onEdit, availableTypes, getAutoNextSalary, annualScore }: { 
   staff: Staff, 
   isEditing: boolean, 
   editForm: Staff | null,
@@ -30,7 +30,8 @@ const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCance
   onCancel: () => void,
   onEdit: () => void,
   availableTypes: string[],
-  getAutoNextSalary: (s: Staff) => number | undefined
+  getAutoNextSalary: (s: Staff) => number | undefined,
+  annualScore: number | null
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: staff.id });
   const style = {
@@ -206,30 +207,91 @@ const SortableCard = ({ staff, isEditing, editForm, setEditForm, onSave, onCance
               </div>
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: 'var(--spacing-8)' }}>
-              <div>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>入社日</p>
-                <p>{staff.joinedAt ? new Date(staff.joinedAt).toLocaleDateString() : '未設定'}</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)' }}>
+              {/* パネル表示エリア */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--spacing-4)' }}>
+                {/* 現在の評価状況（総合点） */}
+                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
+                  <div className="stat-content">
+                    <p className="stat-label" style={{ marginBottom: '4px' }}>現在の評価状況 (総合点)</p>
+                    <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>{annualScore !== null ? `${annualScore.toFixed(1)}点` : '未確定'}</h3>
+                  </div>
+                </div>
+
+                {/* 総合評価ランク */}
+                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
+                  <div className="stat-content">
+                    <p className="stat-label" style={{ marginBottom: '4px' }}>総合評価ランク</p>
+                    <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
+                      {annualScore !== null ? (
+                        <span style={{ 
+                          display: 'inline-block', 
+                          padding: '2px 8px', 
+                          borderRadius: '4px', 
+                          backgroundColor: getRankData(annualScore)?.colorStyle + '20', 
+                          color: getRankData(annualScore)?.colorStyle 
+                        }}>
+                          {getRankData(annualScore)?.baseRank || '-'}
+                        </span>
+                      ) : '未確定'}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* 来期年収予測予定 */}
+                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
+                  <div className="stat-content">
+                    <p className="stat-label" style={{ marginBottom: '4px' }}>来期年収予測予定</p>
+                    <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
+                      {staff.nextAnnualSalary 
+                        ? `${(staff.nextAnnualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
+                        : (getAutoNextSalary(staff) 
+                            ? `${(getAutoNextSalary(staff)! / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
+                            : '未確定'
+                          )
+                      }
+                    </h3>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      {staff.nextAnnualSalary 
+                        ? `(月額: ${Math.floor(staff.nextAnnualSalary / 12).toLocaleString()}円)`
+                        : (getAutoNextSalary(staff) 
+                            ? `(月額: ${Math.floor(getAutoNextSalary(staff)! / 12).toLocaleString()}円) [自動]` 
+                            : '-'
+                          )
+                      }
+                    </p>
+                  </div>
+                </div>
+
+                {/* インセンティブ */}
+                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
+                  <div className="stat-content">
+                    <p className="stat-label" style={{ marginBottom: '4px' }}>インセンティブ</p>
+                    <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
+                      {staff.incentive ? `${(staff.incentive / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` : '0万円'}
+                    </h3>
+                  </div>
+                </div>
               </div>
-              <div>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>チーム目標権限</p>
-                <p>{staff.canEditTeamGoals ? 'あり' : 'なし'}</p>
-              </div>
-              <div>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>年収（月額給与）</p>
-                <p>{staff.annualSalary ? `${(staff.annualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円 (${Math.floor(staff.annualSalary / 12).toLocaleString()}円/月)` : staff.monthlySalary ? `${(staff.monthlySalary * 12 / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円 (${staff.monthlySalary.toLocaleString()}円/月)` : '未設定'}</p>
-              </div>
-              <div>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>来期年収予定</p>
-                <p>{staff.nextAnnualSalary ? `${(staff.nextAnnualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円 (${Math.floor(staff.nextAnnualSalary / 12).toLocaleString()}円/月)` : (getAutoNextSalary(staff) ? `${(getAutoNextSalary(staff)! / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円 (${Math.floor(getAutoNextSalary(staff)! / 12).toLocaleString()}円/月) [自動計算]` : '-')}</p>
-              </div>
-              <div>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>インセンティブ</p>
-                <p>{staff.incentive ? `${(staff.incentive / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` : '-'}</p>
-              </div>
-              <div>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>パスワード</p>
-                <p>{staff.password || staff.id.replace('staff-', '').padStart(4, '0')}</p>
+
+              {/* その他詳細情報 */}
+              <div style={{ display: 'flex', gap: 'var(--spacing-8)', padding: 'var(--spacing-4)', background: 'rgba(0,0,0,0.02)', borderRadius: 'var(--radius-md)' }}>
+                <div>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>入社日</p>
+                  <p>{staff.joinedAt ? new Date(staff.joinedAt).toLocaleDateString() : '未設定'}</p>
+                </div>
+                <div>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>チーム目標権限</p>
+                  <p>{staff.canEditTeamGoals ? 'あり' : 'なし'}</p>
+                </div>
+                <div>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>現在の年収（月額）</p>
+                  <p>{staff.annualSalary ? `${(staff.annualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円 (${Math.floor(staff.annualSalary / 12).toLocaleString()}円)` : '未設定'}</p>
+                </div>
+                <div>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>パスワード</p>
+                  <p>{staff.password || staff.id.replace('staff-', '').padStart(4, '0')}</p>
+                </div>
               </div>
             </div>
           )}
@@ -395,20 +457,38 @@ export const StaffList: React.FC = () => {
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <div className="neu-card-list">
           <SortableContext items={staffList.map(s => s.id)} strategy={verticalListSortingStrategy}>
-            {staffList.map((staff: Staff) => (
-              <SortableCard 
-                key={staff.id} 
-                staff={staff} 
-                isEditing={editingId === staff.id}
-                editForm={editForm}
-                setEditForm={setEditForm}
-                onSave={handleSave}
-                onCancel={handleCancel}
-                onEdit={() => handleEdit(staff)}
-                availableTypes={availableTypes}
-                getAutoNextSalary={getAutoNextSalary}
-              />
-            ))}
+            {staffList.map((staff: Staff) => {
+              const year = 2026;
+              const evals = evaluations.filter(e => e.staffId === staff.id && e.year === year);
+              const upper = evals.find(e => e.period === '上期');
+              const lower = evals.find(e => e.period === '下期');
+              const upperScore = upper ? upper.totalScore : null;
+              const lowerScore = lower ? lower.totalScore : null;
+              let annualScore = null;
+              if (upperScore !== null && lowerScore !== null) {
+                annualScore = (upperScore + lowerScore) / 2;
+              } else if (upperScore !== null) {
+                annualScore = upperScore;
+              } else if (lowerScore !== null) {
+                annualScore = lowerScore;
+              }
+
+              return (
+                <SortableCard 
+                  key={staff.id} 
+                  staff={staff} 
+                  isEditing={editingId === staff.id}
+                  editForm={editForm}
+                  setEditForm={setEditForm}
+                  onSave={handleSave}
+                  onCancel={handleCancel}
+                  onEdit={() => handleEdit(staff)}
+                  availableTypes={availableTypes}
+                  getAutoNextSalary={getAutoNextSalary}
+                  annualScore={annualScore}
+                />
+              );
+            })}
           </SortableContext>
         </div>
       </DndContext>
