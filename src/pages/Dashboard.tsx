@@ -10,7 +10,7 @@ export const Dashboard: React.FC = () => {
   const evaluations = useStore(state => state.evaluations);
   
   const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
-  const [detailPeriod, setDetailPeriod] = useState<'上期' | '下期'>('上期');
+  const [detailPeriod, setDetailPeriod] = useState<import('../types').Period>('上期');
 
   // Year filter state
   const availableYears = useMemo(() => {
@@ -169,7 +169,7 @@ export const Dashboard: React.FC = () => {
                       style={{ padding: '4px 8px', fontSize: '0.75rem' }} 
                       onClick={() => {
                         setSelectedStaff(row.staff);
-                        setDetailPeriod(row.upper !== null && row.lower === null ? '上期' : '下期');
+                        setDetailPeriod(row.upper !== null && row.lower !== null ? '通期' : (row.upper !== null && row.lower === null ? '上期' : '下期'));
                       }}
                     >
                       詳細

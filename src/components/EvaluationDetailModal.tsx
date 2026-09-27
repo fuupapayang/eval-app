@@ -24,6 +24,49 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
   }, [initialPeriod]);
 
   const getDetailEval = (staffId: string, period: string) => {
+    if (period === '通期') {
+      const upper = evaluations.find(e => e.staffId === staffId && e.period === '上期');
+      const lower = evaluations.find(e => e.staffId === staffId && e.period === '下期');
+      
+      if (!upper && !lower) return undefined;
+      
+      const calcAvg = (u: number, l: number) => Math.round((u + l) / 2 * 10) / 10;
+      const calcAvgArray = (u: number[], l: number[]) => u.map((v, i) => calcAvg(v, l[i] || 0));
+      
+      const u = upper || lower!;
+      const l = lower || upper!;
+      
+      const mergeTexts = (uTexts?: string[], lTexts?: string[]) => {
+        return [0, 1, 2].map(i => {
+          const ut = uTexts?.[i] || '';
+          const lt = lTexts?.[i] || '';
+          if (ut === lt) return ut;
+          if (ut && lt) return `上期: ${ut} / 下期: ${lt}`;
+          return ut || lt || '';
+        }) as [string, string, string];
+      };
+
+      return {
+        ...u,
+        period: '通期',
+        totalScore: calcAvg(u.totalScore, l.totalScore),
+        performanceScore: calcAvg(u.performanceScore, l.performanceScore),
+        performanceDetails: calcAvgArray(u.performanceDetails, l.performanceDetails) as [number, number, number],
+        themeScore: calcAvg(u.themeScore, l.themeScore),
+        themeDetails: calcAvgArray(u.themeDetails, l.themeDetails) as [number, number, number],
+        teamScore: calcAvg(u.teamScore, l.teamScore),
+        teamDetails: calcAvgArray(u.teamDetails, l.teamDetails) as [number, number, number],
+        commonScore: calcAvg(u.commonScore, l.commonScore),
+        typeScore: calcAvg(u.typeScore, l.typeScore),
+        leaderScore: calcAvg(u.leaderScore, l.leaderScore),
+        themeTexts: mergeTexts(u.themeTexts, l.themeTexts),
+        teamTexts: mergeTexts(u.teamTexts, l.teamTexts),
+        selfComment: `【上期】\n${u.selfComment || '-'}\n\n【下期】\n${l.selfComment || '-'}`,
+        generalComment: `【上期】\n${u.generalComment || '-'}\n\n【下期】\n${l.generalComment || '-'}`,
+        leaderComment: `【上期】\n${u.leaderComment || '-'}\n\n【下期】\n${l.leaderComment || '-'}`,
+        bonusComment: `【上期】\n${u.bonusComment || '-'}\n\n【下期】\n${l.bonusComment || '-'}`,
+      } as EvaluationForm;
+    }
     return evaluations.find(e => e.staffId === staffId && e.period === period);
   };
 
@@ -68,6 +111,12 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
             onClick={() => setDetailPeriod('下期')}
           >
             下期
+          </button>
+          <button 
+            className={`btn ${detailPeriod === '通期' ? 'btn-primary' : 'btn-outline'}`}
+            onClick={() => setDetailPeriod('通期')}
+          >
+            通期
           </button>
         </div>
 
