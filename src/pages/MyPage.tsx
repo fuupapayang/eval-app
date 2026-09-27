@@ -161,7 +161,7 @@ export const MyPage: React.FC = () => {
     }
   }, [staff.id, period, year, getEvaluation]);
 
-  const canEditTeam = staff.isLeader || staff.isSubLeader || staff.canEditTeamGoals;
+  const canEditTeam = staff.isLeader || staff.canEditTeamGoals;
 
   const handleSaveGoals = () => {
     if (period === '通期') return;

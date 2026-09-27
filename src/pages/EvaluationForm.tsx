@@ -45,7 +45,8 @@ export const EvaluationForm: React.FC = () => {
 
   const performanceScore = performanceDetails.reduce((a, b) => a + b, 0);
   const themeScore = themeDetails.reduce((a, b) => a + b, 0);
-  const teamScore = teamDetails.reduce((a, b) => a + b, 0);
+  const isTeamGoalEnabled = selectedStaff?.isLeader || selectedStaff?.canEditTeamGoals;
+  const teamScore = isTeamGoalEnabled ? teamDetails.reduce((a, b) => a + b, 0) : 0;
 
   const getEvaluation = useStore(state => state.getEvaluation);
   const roleStages = useStore(state => state.roleStages);
@@ -435,7 +436,7 @@ export const EvaluationForm: React.FC = () => {
                 <div style={{textAlign: 'right', fontWeight: 600, color: 'var(--accent-primary)', marginTop: '8px'}}>小計: {themeScore} 点</div>
               </div>
 
-              {(selectedStaff.isLeader || selectedStaff.isSubLeader || selectedStaff.canEditTeamGoals) && (
+              {(selectedStaff.isLeader || selectedStaff.canEditTeamGoals) && (
                 <>
                   <h3 style={{ marginBottom: 'var(--spacing-3)', marginTop: 'var(--spacing-6)' }}>③ チーム目標達成度（最大15点）</h3>
                   <div style={{ background: 'rgba(0,0,0,0.1)', padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)' }}>
