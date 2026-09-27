@@ -268,9 +268,11 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                     const isSub = s.roleTitle === 'サブリーダー';
                     switch(s.role) {
                       case 'WEBデザイナー': 
-                      case 'コーダー':
                         if (isL) return { title: 'アートディレクター', amount: 575.4 };
                         return { title: 'デザイナー', amount: 394.0 };
+                      case 'コーダー':
+                        if (isL) return { title: 'アートディレクター', amount: 575.4 };
+                        return { title: 'コーダー(推定)', amount: 450.0 };
                       case 'ディレクター': 
                         if (isL) return { title: 'クリエイティブD', amount: 692.1 };
                         return { title: '制作ディレクター', amount: 507.2 };
