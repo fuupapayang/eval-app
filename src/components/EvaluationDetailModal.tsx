@@ -204,42 +204,47 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
             if (!s.annualSalary) return undefined;
             if (annualScore === null) return s.annualSalary;
             
-            const rankData = getRankData(annualScore);
-            if (!rankData) return s.annualSalary;
+            const rank = getRankData(annualScore)?.baseRank;
+            if (rank === 'S' || rank === 'A') {
+              return s.annualSalary + 360000;
+            } else if (rank === 'B') {
+              return s.annualSalary + 240000;
+            } else if (rank === 'C') {
+              return s.annualSalary + 120000;
+            }
+            return s.annualSalary;
+          };
 
-            let raise = 0;
+          const getAutoIncentive = (_s: Staff) => {
+            if (annualScore === null) return 0;
+            
+            const rankData = getRankData(annualScore);
+            if (!rankData) return 0;
+            let incentive = 0;
             const { baseRank, subRank } = rankData;
             const fullRank = `${baseRank}${subRank}`;
             
             switch (fullRank) {
-              case 'S++': raise = 1000000; break;
-              case 'S+':  raise = 900000; break;
-              case 'S':   raise = 800000; break;
-              case 'S-':  raise = 700000; break;
-              case 'S--': raise = 650000; break;
-              case 'A++': raise = 600000; break;
-              case 'A+':  raise = 550000; break;
-              case 'A':   raise = 500000; break;
-              case 'A-':  raise = 450000; break;
-              case 'A--': raise = 400000; break;
-              case 'B++': raise = 350000; break;
-              case 'B+':  raise = 300000; break;
-              case 'B':   raise = 250000; break;
-              case 'B-':  raise = 200000; break;
-              case 'B--': raise = 150000; break;
-              case 'C++': raise = 100000; break;
-              case 'C+':  raise = 50000; break;
-              case 'C':   raise = 0; break;
-              case 'C-':  raise = -50000; break;
-              case 'C--': raise = -100000; break;
-              case 'D++': raise = -150000; break;
-              case 'D+':  raise = -200000; break;
-              case 'D':   raise = -250000; break;
-              case 'D-':  raise = -300000; break;
-              case 'D--': raise = -350000; break;
-              default: raise = 0;
+              case 'S++': incentive = 1000000; break;
+              case 'S+':  incentive = 900000; break;
+              case 'S':   incentive = 800000; break;
+              case 'S-':  incentive = 700000; break;
+              case 'S--': incentive = 650000; break;
+              case 'A++': incentive = 600000; break;
+              case 'A+':  incentive = 550000; break;
+              case 'A':   incentive = 500000; break;
+              case 'A-':  incentive = 450000; break;
+              case 'A--': incentive = 400000; break;
+              case 'B++': incentive = 350000; break;
+              case 'B+':  incentive = 300000; break;
+              case 'B':   incentive = 250000; break;
+              case 'B-':  incentive = 200000; break;
+              case 'B--': incentive = 150000; break;
+              case 'C++': incentive = 100000; break;
+              case 'C+':  incentive = 50000; break;
+              default: incentive = 0;
             }
-            return s.annualSalary + raise;
+            return incentive;
           };
 
           return (
@@ -408,9 +413,18 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                 <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)', background: 'var(--bg-surface)' }}>
                   <div className="stat-content">
                     <p className="stat-label" style={{ marginBottom: '4px' }}>インセンティブ</p>
-                    <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
-                      {staff.incentive ? `${(staff.incentive / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` : '0万円'}
+                    <h3 className="stat-value" style={{ fontSize: '1.6rem', color: 'var(--accent-primary)' }}>
+                      {staff.incentive 
+                        ? `${(staff.incentive / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
+                        : (getAutoIncentive(staff) > 0 
+                            ? `${(getAutoIncentive(staff) / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
+                            : '0万円'
+                          )
+                      }
                     </h3>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      {!staff.incentive && getAutoIncentive(staff) > 0 ? '[自動目安]' : '-'}
+                    </p>
                   </div>
                 </div>
               </div>

@@ -27,7 +27,7 @@ import { GripVertical, Edit2 } from 'lucide-react';
 
 const SortableCard = ({ 
   staff, isEditing, editForm, setEditForm, onSave, onCancel, onEdit, 
-  availableTypes, getAutoNextSalary, annualScore, evaluations, masterItems 
+  availableTypes, getAutoNextSalary, getAutoIncentive, annualScore, evaluations, masterItems 
 }: { 
   staff: Staff, 
   isEditing: boolean, 
@@ -38,6 +38,7 @@ const SortableCard = ({
   onEdit: () => void,
   availableTypes: string[],
   getAutoNextSalary: (s: Staff) => number | undefined,
+  getAutoIncentive: (s: Staff) => number,
   annualScore: number | null,
   evaluations: EvaluationForm[],
   masterItems: EvaluationItem[]
@@ -441,9 +442,18 @@ const SortableCard = ({
                 <div className="stat-panel" style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
                   <div className="stat-content">
                     <p className="stat-label" style={{ marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>インセンティブ</p>
-                    <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
-                      {staff.incentive ? `${(staff.incentive / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` : '0万円'}
+                    <h3 className="stat-value" style={{ fontSize: '1.6rem', color: 'var(--accent-primary)' }}>
+                      {staff.incentive 
+                        ? `${(staff.incentive / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
+                        : (getAutoIncentive(staff) > 0 
+                            ? `${(getAutoIncentive(staff) / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
+                            : '0万円'
+                          )
+                      }
                     </h3>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      {!staff.incentive && getAutoIncentive(staff) > 0 ? '[自動目安]' : '-'}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -580,43 +590,62 @@ export const StaffList: React.FC = () => {
     
     if (annualScore === null) return staff.annualSalary;
     
-    const rankData = getRankData(annualScore);
-    if (!rankData) return staff.annualSalary;
+    const rank = getRankData(annualScore)?.baseRank;
+    if (rank === 'S' || rank === 'A') {
+      return staff.annualSalary + 360000; // 3万円 * 12ヶ月
+    } else if (rank === 'B') {
+      return staff.annualSalary + 240000; // 2万円 * 12ヶ月
+    } else if (rank === 'C') {
+      return staff.annualSalary + 120000; // 1万円 * 12ヶ月
+    }
 
-    let raise = 0;
+    return staff.annualSalary;
+  };
+
+  const getAutoIncentive = (staff: Staff) => {
+    const year = 2026;
+    const evals = evaluations.filter(e => e.staffId === staff.id && e.year === year);
+    const upper = evals.find(e => e.period === '上期');
+    const lower = evals.find(e => e.period === '下期');
+    const upperScore = upper ? upper.totalScore : null;
+    const lowerScore = lower ? lower.totalScore : null;
+    let annualScore = null;
+    if (upperScore !== null && lowerScore !== null) {
+      annualScore = (upperScore + lowerScore) / 2;
+    } else if (upperScore !== null) {
+      annualScore = upperScore;
+    } else if (lowerScore !== null) {
+      annualScore = lowerScore;
+    }
+    if (annualScore === null) return 0;
+    
+    const rankData = getRankData(annualScore);
+    if (!rankData) return 0;
+    let incentive = 0;
     const { baseRank, subRank } = rankData;
     const fullRank = `${baseRank}${subRank}`;
     
     switch (fullRank) {
-      case 'S++': raise = 1000000; break;
-      case 'S+':  raise = 900000; break;
-      case 'S':   raise = 800000; break;
-      case 'S-':  raise = 700000; break;
-      case 'S--': raise = 650000; break;
-      case 'A++': raise = 600000; break;
-      case 'A+':  raise = 550000; break;
-      case 'A':   raise = 500000; break;
-      case 'A-':  raise = 450000; break;
-      case 'A--': raise = 400000; break;
-      case 'B++': raise = 350000; break;
-      case 'B+':  raise = 300000; break;
-      case 'B':   raise = 250000; break;
-      case 'B-':  raise = 200000; break;
-      case 'B--': raise = 150000; break;
-      case 'C++': raise = 100000; break;
-      case 'C+':  raise = 50000; break;
-      case 'C':   raise = 0; break;
-      case 'C-':  raise = -50000; break;
-      case 'C--': raise = -100000; break;
-      case 'D++': raise = -150000; break;
-      case 'D+':  raise = -200000; break;
-      case 'D':   raise = -250000; break;
-      case 'D-':  raise = -300000; break;
-      case 'D--': raise = -350000; break;
-      default: raise = 0;
+      case 'S++': incentive = 1000000; break;
+      case 'S+':  incentive = 900000; break;
+      case 'S':   incentive = 800000; break;
+      case 'S-':  incentive = 700000; break;
+      case 'S--': incentive = 650000; break;
+      case 'A++': incentive = 600000; break;
+      case 'A+':  incentive = 550000; break;
+      case 'A':   incentive = 500000; break;
+      case 'A-':  incentive = 450000; break;
+      case 'A--': incentive = 400000; break;
+      case 'B++': incentive = 350000; break;
+      case 'B+':  incentive = 300000; break;
+      case 'B':   incentive = 250000; break;
+      case 'B-':  incentive = 200000; break;
+      case 'B--': incentive = 150000; break;
+      case 'C++': incentive = 100000; break;
+      case 'C+':  incentive = 50000; break;
+      default: incentive = 0;
     }
-
-    return staff.annualSalary + raise;
+    return incentive;
   };
 
   const handleEdit = (staff: Staff) => {
@@ -755,6 +784,7 @@ export const StaffList: React.FC = () => {
                   onEdit={() => handleEdit(staff)}
                   availableTypes={availableTypes}
                   getAutoNextSalary={getAutoNextSalary}
+                  getAutoIncentive={getAutoIncentive}
                   annualScore={annualScore}
                   evaluations={evaluations}
                   masterItems={masterItems}
