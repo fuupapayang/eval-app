@@ -121,69 +121,69 @@ export const MasterSettings: React.FC = () => {
               <h3 style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>詳細な評価ランクと点数配分（S++ 〜 D--）</h3>
               <p style={{ marginBottom: '16px', color: 'var(--text-secondary)' }}>各基本ランク（S〜D）は、合計点数に応じてさらに5段階に細分化されます。</p>
               
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px' }}>
                 
                 <div className="table-container">
                   <table className="table" style={{ fontSize: '0.8rem' }}>
-                    <thead><tr><th style={{ background: 'var(--accent-primary)', color: 'white' }}>S ランク</th><th>点数帯</th></tr></thead>
+                    <thead><tr><th style={{ background: 'var(--accent-primary)', color: 'white' }}>S ランク</th><th>点数帯</th><th>昇給額目安</th></tr></thead>
                     <tbody>
-                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>98.0 〜 100点</td></tr>
-                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>96.0 〜 97.9点</td></tr>
-                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S</span></td><td>94.0 〜 95.9点</td></tr>
-                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>92.0 〜 93.9点</td></tr>
-                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>90.0 〜 91.9点</td></tr>
+                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>98.0 〜 100点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+100万円</span></td></tr>
+                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>96.0 〜 97.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+90万円</span></td></tr>
+                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S</span></td><td>94.0 〜 95.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+80万円</span></td></tr>
+                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>92.0 〜 93.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+70万円</span></td></tr>
+                      <tr><td><span className="badge primary" style={{fontSize:'0.75rem'}}>S<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>90.0 〜 91.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+65万円</span></td></tr>
                     </tbody>
                   </table>
                 </div>
 
                 <div className="table-container">
                   <table className="table" style={{ fontSize: '0.8rem' }}>
-                    <thead><tr><th style={{ background: 'var(--success)', color: 'white' }}>A ランク</th><th>点数帯</th></tr></thead>
+                    <thead><tr><th style={{ background: 'var(--success)', color: 'white' }}>A ランク</th><th>点数帯</th><th>昇給額目安</th></tr></thead>
                     <tbody>
-                      <tr><td><span className="badge success" style={{fontSize:'0.75rem'}}>A<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>88.0 〜 89.9点</td></tr>
-                      <tr><td><span className="badge success" style={{fontSize:'0.75rem'}}>A<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>86.0 〜 87.9点</td></tr>
-                      <tr><td><span className="badge success" style={{fontSize:'0.75rem'}}>A</span></td><td>84.0 〜 85.9点</td></tr>
-                      <tr><td><span className="badge success" style={{fontSize:'0.75rem'}}>A<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>82.0 〜 83.9点</td></tr>
-                      <tr><td><span className="badge success" style={{fontSize:'0.75rem'}}>A<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>80.0 〜 81.9点</td></tr>
+                      <tr><td><span className="badge success" style={{fontSize:'0.75rem'}}>A<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>88.0 〜 89.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+60万円</span></td></tr>
+                      <tr><td><span className="badge success" style={{fontSize:'0.75rem'}}>A<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>86.0 〜 87.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+55万円</span></td></tr>
+                      <tr><td><span className="badge success" style={{fontSize:'0.75rem'}}>A</span></td><td>84.0 〜 85.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+50万円</span></td></tr>
+                      <tr><td><span className="badge success" style={{fontSize:'0.75rem'}}>A<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>82.0 〜 83.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+45万円</span></td></tr>
+                      <tr><td><span className="badge success" style={{fontSize:'0.75rem'}}>A<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>80.0 〜 81.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+40万円</span></td></tr>
                     </tbody>
                   </table>
                 </div>
 
                 <div className="table-container">
                   <table className="table" style={{ fontSize: '0.8rem' }}>
-                    <thead><tr><th style={{ background: 'var(--warning)', color: 'white' }}>B ランク</th><th>点数帯</th></tr></thead>
+                    <thead><tr><th style={{ background: 'var(--warning)', color: 'white' }}>B ランク</th><th>点数帯</th><th>昇給額目安</th></tr></thead>
                     <tbody>
-                      <tr><td><span className="badge warning" style={{fontSize:'0.75rem'}}>B<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>78.0 〜 79.9点</td></tr>
-                      <tr><td><span className="badge warning" style={{fontSize:'0.75rem'}}>B<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>76.0 〜 77.9点</td></tr>
-                      <tr><td><span className="badge warning" style={{fontSize:'0.75rem'}}>B</span></td><td>74.0 〜 75.9点</td></tr>
-                      <tr><td><span className="badge warning" style={{fontSize:'0.75rem'}}>B<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>72.0 〜 73.9点</td></tr>
-                      <tr><td><span className="badge warning" style={{fontSize:'0.75rem'}}>B<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>70.0 〜 71.9点</td></tr>
+                      <tr><td><span className="badge warning" style={{fontSize:'0.75rem'}}>B<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>78.0 〜 79.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+35万円</span></td></tr>
+                      <tr><td><span className="badge warning" style={{fontSize:'0.75rem'}}>B<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>76.0 〜 77.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+30万円</span></td></tr>
+                      <tr><td><span className="badge warning" style={{fontSize:'0.75rem'}}>B</span></td><td>74.0 〜 75.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+25万円</span></td></tr>
+                      <tr><td><span className="badge warning" style={{fontSize:'0.75rem'}}>B<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>72.0 〜 73.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+20万円</span></td></tr>
+                      <tr><td><span className="badge warning" style={{fontSize:'0.75rem'}}>B<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>70.0 〜 71.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+15万円</span></td></tr>
                     </tbody>
                   </table>
                 </div>
 
                 <div className="table-container">
                   <table className="table" style={{ fontSize: '0.8rem' }}>
-                    <thead><tr><th style={{ background: 'var(--text-primary)', color: 'white' }}>C ランク</th><th>点数帯</th></tr></thead>
+                    <thead><tr><th style={{ background: 'var(--text-primary)', color: 'white' }}>C ランク</th><th>点数帯</th><th>昇給額目安</th></tr></thead>
                     <tbody>
-                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>68.0 〜 69.9点</td></tr>
-                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>66.0 〜 67.9点</td></tr>
-                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C</span></td><td>64.0 〜 65.9点</td></tr>
-                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>62.0 〜 63.9点</td></tr>
-                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>60.0 〜 61.9点</td></tr>
+                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>68.0 〜 69.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+10万円</span></td></tr>
+                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>66.0 〜 67.9点</td><td><span style={{color:'var(--success)', fontWeight:'bold'}}>+5万円</span></td></tr>
+                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C</span></td><td>64.0 〜 65.9点</td><td><span style={{color:'var(--text-muted)'}}>0万円 (基準)</span></td></tr>
+                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>62.0 〜 63.9点</td><td><span style={{color:'var(--danger)'}}>-5万円</span></td></tr>
+                      <tr><td><span className="badge" style={{fontSize:'0.75rem'}}>C<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>60.0 〜 61.9点</td><td><span style={{color:'var(--danger)'}}>-10万円</span></td></tr>
                     </tbody>
                   </table>
                 </div>
 
                 <div className="table-container">
                   <table className="table" style={{ fontSize: '0.8rem' }}>
-                    <thead><tr><th style={{ background: 'var(--danger)', color: 'white' }}>D ランク</th><th>点数帯</th></tr></thead>
+                    <thead><tr><th style={{ background: 'var(--danger)', color: 'white' }}>D ランク</th><th>点数帯</th><th>昇給額目安</th></tr></thead>
                     <tbody>
-                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>48.0 〜 59.9点</td></tr>
-                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>36.0 〜 47.9点</td></tr>
-                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D</span></td><td>24.0 〜 35.9点</td></tr>
-                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>12.0 〜 23.9点</td></tr>
-                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>0.0 〜 11.9点</td></tr>
+                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'super'}}>++</span></span></td><td>48.0 〜 59.9点</td><td><span style={{color:'var(--danger)'}}>-15万円</span></td></tr>
+                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'super'}}>+</span></span></td><td>36.0 〜 47.9点</td><td><span style={{color:'var(--danger)'}}>-20万円</span></td></tr>
+                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D</span></td><td>24.0 〜 35.9点</td><td><span style={{color:'var(--danger)'}}>-25万円</span></td></tr>
+                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>-</span></span></td><td>12.0 〜 23.9点</td><td><span style={{color:'var(--danger)'}}>-30万円</span></td></tr>
+                      <tr><td><span className="badge" style={{color: 'var(--danger)', fontSize:'0.75rem'}}>D<span style={{fontSize:'0.65em',verticalAlign:'baseline'}}>--</span></span></td><td>0.0 〜 11.9点</td><td><span style={{color:'var(--danger)'}}>-35万円</span></td></tr>
                     </tbody>
                   </table>
                 </div>

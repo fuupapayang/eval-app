@@ -204,15 +204,42 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
             if (!s.annualSalary) return undefined;
             if (annualScore === null) return s.annualSalary;
             
-            const rank = getRankData(annualScore)?.baseRank;
-            if (rank === 'S' || rank === 'A') {
-              return s.annualSalary + 360000;
-            } else if (rank === 'B') {
-              return s.annualSalary + 240000;
-            } else if (rank === 'C') {
-              return s.annualSalary + 120000;
+            const rankData = getRankData(annualScore);
+            if (!rankData) return s.annualSalary;
+
+            let raise = 0;
+            const { baseRank, subRank } = rankData;
+            const fullRank = `${baseRank}${subRank}`;
+            
+            switch (fullRank) {
+              case 'S++': raise = 1000000; break;
+              case 'S+':  raise = 900000; break;
+              case 'S':   raise = 800000; break;
+              case 'S-':  raise = 700000; break;
+              case 'S--': raise = 650000; break;
+              case 'A++': raise = 600000; break;
+              case 'A+':  raise = 550000; break;
+              case 'A':   raise = 500000; break;
+              case 'A-':  raise = 450000; break;
+              case 'A--': raise = 400000; break;
+              case 'B++': raise = 350000; break;
+              case 'B+':  raise = 300000; break;
+              case 'B':   raise = 250000; break;
+              case 'B-':  raise = 200000; break;
+              case 'B--': raise = 150000; break;
+              case 'C++': raise = 100000; break;
+              case 'C+':  raise = 50000; break;
+              case 'C':   raise = 0; break;
+              case 'C-':  raise = -50000; break;
+              case 'C--': raise = -100000; break;
+              case 'D++': raise = -150000; break;
+              case 'D+':  raise = -200000; break;
+              case 'D':   raise = -250000; break;
+              case 'D-':  raise = -300000; break;
+              case 'D--': raise = -350000; break;
+              default: raise = 0;
             }
-            return s.annualSalary;
+            return s.annualSalary + raise;
           };
 
           return (
