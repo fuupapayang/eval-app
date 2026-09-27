@@ -261,6 +261,39 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                   </div>
                 </div>
 
+                {/* 市場平均年収（マス媒体レポート2025） */}
+                {(() => {
+                  const getMarketSalary = (role: string) => {
+                    switch(role) {
+                      case 'WEBデザイナー': return { title: 'デザイナー', amount: 394.0 };
+                      case 'ディレクター': return { title: '制作ディレクター', amount: 507.2 };
+                      case '映像': return { title: '映像ディレクター', amount: 494.4 };
+                      case 'コーダー': return { title: 'デザイナー', amount: 394.0 };
+                      default: return { title: 'アシスタント', amount: 380.2 };
+                    }
+                  };
+                  const market = getMarketSalary(staff.role);
+                  const diff = staff.annualSalary ? (staff.annualSalary / 10000) - market.amount : 0;
+                  return (
+                    <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)', background: 'var(--bg-surface)' }}>
+                      <div className="stat-content">
+                        <p className="stat-label" style={{ marginBottom: '4px' }}>
+                          市場平均年収<br/>
+                          <span style={{ fontSize: '0.7rem' }}>({market.title} / ﾏｽﾒﾃﾞｨｱﾝ2025)</span>
+                        </p>
+                        <h3 className="stat-value" style={{ fontSize: '1.2rem' }}>
+                          {market.amount.toFixed(1)}万円
+                        </h3>
+                        {staff.annualSalary && (
+                          <p style={{ fontSize: '0.75rem', color: diff >= 0 ? 'var(--success)' : 'var(--danger)', marginTop: '4px', fontWeight: 'bold' }}>
+                            {diff >= 0 ? '+' : ''}{diff.toFixed(1)}万円
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {/* 来期年収予測予定 */}
                 <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)', background: 'var(--bg-surface)' }}>
                   <div className="stat-content">
