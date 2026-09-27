@@ -678,11 +678,11 @@ export const MyPage: React.FC = () => {
                 
                 {themeHistory[String(i)]?.length > 0 && (
                   <div style={{ marginBottom: '12px', padding: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '4px', fontSize: '0.85rem' }}>
-                    <div style={{ fontWeight: 'bold', marginBottom: '4px', color: 'var(--text-secondary)' }}>【過去の未達履歴】</div>
+                    <div style={{ fontWeight: 'bold', marginBottom: '4px', color: 'var(--text-secondary)' }}>【過去の履歴（未達・継続・断念）】</div>
                     <ul style={{ paddingLeft: '20px', margin: 0, color: 'var(--text-secondary)' }}>
                       {themeHistory[String(i)].map((h, hi) => (
                         <li key={hi} style={{ marginBottom: '4px' }}>
-                          <span style={{ color: '#ef4444', marginRight: '4px' }}>[未達]</span>
+                          <span style={{ color: h.status === '断念' ? 'var(--text-muted)' : '#ef4444', marginRight: '4px' }}>[{h.status}]</span>
                           {h.text} 
                           {h.reflection && <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>理由: {h.reflection}</div>}
                         </li>
@@ -752,16 +752,50 @@ export const MyPage: React.FC = () => {
                 
                 {/* Status Buttons */}
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  {['達成', '未達', '継続中'].map(status => (
+                  {['達成', '未達', '継続中', '断念'].map(status => (
                     <button
                       key={status}
                       type="button"
                       className={`btn ${themeStatuses[i] === status ? 'btn-primary' : 'btn-outline'}`}
                       style={{ padding: '4px 12px', fontSize: '0.85rem' }}
                       onClick={() => {
-                        const newStatuses = [...themeStatuses] as [string, string, string];
-                        newStatuses[i] = newStatuses[i] === status ? '' : status;
-                        setThemeStatuses(newStatuses);
+                        if (status === '断念') {
+                          if (themeTexts[i] === '') return; // 何も入力されていない場合は何もしない
+                          if (window.confirm('この個人テーマを「断念」として履歴に追加し、入力欄をクリアします。よろしいですか？')) {
+                            const newHistory = { ...themeHistory };
+                            const currentHistory = newHistory[String(i)] || [];
+                            newHistory[String(i)] = [
+                              ...currentHistory,
+                              {
+                                text: themeTexts[i],
+                                status: '断念',
+                                reflection: themeReflections[i] || '',
+                                updatedAt: new Date().toISOString()
+                              }
+                            ];
+                            setThemeHistory(newHistory);
+                            
+                            const newTexts = [...themeTexts] as [string, string, string];
+                            newTexts[i] = '';
+                            setThemeTexts(newTexts);
+                            
+                            const newInitialTexts = [...initialThemeTexts] as [string, string, string];
+                            newInitialTexts[i] = '';
+                            setInitialThemeTexts(newInitialTexts);
+                            
+                            const newReflections = [...themeReflections] as [string, string, string];
+                            newReflections[i] = '';
+                            setThemeReflections(newReflections);
+                            
+                            const newStatuses = [...themeStatuses] as [string, string, string];
+                            newStatuses[i] = '';
+                            setThemeStatuses(newStatuses);
+                          }
+                        } else {
+                          const newStatuses = [...themeStatuses] as [string, string, string];
+                          newStatuses[i] = newStatuses[i] === status ? '' : status;
+                          setThemeStatuses(newStatuses);
+                        }
                       }}
                     >
                       {status}
@@ -790,23 +824,15 @@ export const MyPage: React.FC = () => {
                 {/* 履歴の表示 */}
                 {teamHistory && teamHistory[String(i)] && teamHistory[String(i)].length > 0 && (
                   <div style={{ marginBottom: '12px', padding: '12px', background: 'rgba(0,0,0,0.02)', borderRadius: '4px', fontSize: '0.85rem' }}>
-                    <div style={{ fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '8px' }}>過去の未達・継続履歴</div>
+                    <div style={{ fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '8px' }}>過去の履歴（未達・継続・断念）</div>
                     <ul style={{ margin: 0, paddingLeft: '20px', color: 'var(--text-secondary)' }}>
                       {teamHistory[String(i)].map((hist, hIdx) => (
                         <li key={hIdx} style={{ marginBottom: '4px' }}>
+                          <span style={{ color: hist.status === '断念' ? 'var(--text-muted)' : '#ef4444', marginRight: '4px' }}>[{hist.status}]</span>
                           <span style={{ color: 'var(--text-primary)' }}>{hist.text}</span>
-                          <span style={{ 
-                            marginLeft: '8px', 
-                            fontSize: '0.75rem', 
-                            padding: '2px 6px', 
-                            background: 'rgba(0,0,0,0.1)', 
-                            borderRadius: '12px' 
-                          }}>
-                            {hist.status}
-                          </span>
                           {hist.reflection && (
-                            <div style={{ marginTop: '2px', fontStyle: 'italic', opacity: 0.8 }}>
-                              振り返り: {hist.reflection}
+                            <div style={{ marginTop: '2px', fontSize: '0.8rem', opacity: 0.8 }}>
+                              理由: {hist.reflection}
                             </div>
                           )}
                         </li>
@@ -873,7 +899,7 @@ export const MyPage: React.FC = () => {
                 
                 {/* Status Buttons */}
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  {['達成', '未達', '継続中'].map(status => (
+                  {['達成', '未達', '継続中', '断念'].map(status => (
                     <button
                       key={status}
                       type="button"
@@ -881,9 +907,43 @@ export const MyPage: React.FC = () => {
                       style={{ padding: '4px 12px', fontSize: '0.85rem' }}
                       onClick={() => {
                         if (!canEditTeam) return;
-                        const newStatuses = [...teamStatuses] as [string, string, string];
-                        newStatuses[i] = newStatuses[i] === status ? '' : status;
-                        setTeamStatuses(newStatuses);
+                        if (status === '断念') {
+                          if (teamTexts[i] === '') return;
+                          if (window.confirm('このチーム目標を「断念」として履歴に追加し、入力欄をクリアします。よろしいですか？')) {
+                            const newHistory = { ...teamHistory };
+                            const currentHistory = newHistory[String(i)] || [];
+                            newHistory[String(i)] = [
+                              ...currentHistory,
+                              {
+                                text: teamTexts[i],
+                                status: '断念',
+                                reflection: teamReflections[i] || '',
+                                updatedAt: new Date().toISOString()
+                              }
+                            ];
+                            setTeamHistory(newHistory);
+                            
+                            const newTexts = [...teamTexts] as [string, string, string];
+                            newTexts[i] = '';
+                            setTeamTexts(newTexts);
+                            
+                            const newInitialTexts = [...initialTeamTexts] as [string, string, string];
+                            newInitialTexts[i] = '';
+                            setInitialTeamTexts(newInitialTexts);
+                            
+                            const newReflections = [...teamReflections] as [string, string, string];
+                            newReflections[i] = '';
+                            setTeamReflections(newReflections);
+                            
+                            const newStatuses = [...teamStatuses] as [string, string, string];
+                            newStatuses[i] = '';
+                            setTeamStatuses(newStatuses);
+                          }
+                        } else {
+                          const newStatuses = [...teamStatuses] as [string, string, string];
+                          newStatuses[i] = newStatuses[i] === status ? '' : status;
+                          setTeamStatuses(newStatuses);
+                        }
                       }}
                       disabled={!canEditTeam}
                     >
