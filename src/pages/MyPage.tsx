@@ -319,7 +319,7 @@ export const MyPage: React.FC = () => {
       name: `テーマ${i+1}`,
       score: currentEval?.themeDetails?.[i] || 0,
       text: text || '未設定'
-    })).filter((d: {name: string, score: number, text: string}) => d.text !== '未設定') || [];
+    })) || [];
   }
 
   // Always build radar data for the staff's type, even if not yet evaluated

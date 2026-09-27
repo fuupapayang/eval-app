@@ -86,7 +86,7 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
             name: `テーマ${i+1}`,
             score: ev.themeDetails[i],
             text: text || '未設定'
-          })).filter(d => d.text !== '未設定') || [];
+          })) || [];
 
           const typeItems = masterItems.filter(m => m.category === '職種・タイプ別評価' && m.type === staff.type);
           
@@ -196,10 +196,10 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
               <div>
                 <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', marginBottom: '16px' }}>2. 個人テーマ 詳細</h3>
                 <ul style={{ paddingLeft: '20px', marginBottom: '16px', fontSize: '0.875rem' }}>
-                  {ev.themeTexts?.map((t, i) => t ? (
+                  {ev.themeTexts?.map((t, i) => (
                     <li key={i} style={{ marginBottom: '16px' }}>
                       <div style={{ fontWeight: '500' }}>
-                        {t}
+                        {t || '（未設定）'}
                         {ev.themeStatuses?.[i] && (
                           <span style={{ 
                             marginLeft: '8px', 
@@ -244,7 +244,7 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                         </div>
                       )}
                     </li>
-                  ) : null)}
+                  ))}
                 </ul>
               </div>
 
@@ -252,11 +252,11 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                 <div>
                   <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', marginBottom: '16px' }}>3. チーム目標達成度（{ev.teamScore}点）</h3>
                   <ul style={{ paddingLeft: '20px', marginBottom: '16px', fontSize: '0.875rem' }}>
-                    {ev.teamTexts?.map((t, i) => t ? (
+                    {ev.teamTexts?.map((t, i) => (
                       <li key={i} style={{ marginBottom: '16px' }}>
                         <div style={{ fontWeight: '500' }}>
-                          {t}
-                          <span style={{fontWeight: 'bold', color: 'var(--accent-primary)', marginLeft: '8px'}}>[ {ev.teamDetails[i]}点 ]</span>
+                          {t || '（未設定）'}
+                          <span style={{fontWeight: 'bold', color: 'var(--accent-primary)', marginLeft: '8px'}}>[ {ev.teamDetails?.[i] || 0}点 ]</span>
                           {ev.teamStatuses?.[i] && (
                             <span style={{ 
                               marginLeft: '8px', 
@@ -301,7 +301,7 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                           </div>
                         )}
                       </li>
-                    ) : null)}
+                    ))}
                   </ul>
                 </div>
               )}
