@@ -235,13 +235,13 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
               case 'A':   incentive = 650000; break;
               case 'A-':  incentive = 600000; break;
               case 'A--': incentive = 550000; break;
-              case 'B++': incentive = 350000; break;
-              case 'B+':  incentive = 300000; break;
-              case 'B':   incentive = 250000; break;
-              case 'B-':  incentive = 200000; break;
-              case 'B--': incentive = 150000; break;
-              case 'C++': incentive = 100000; break;
-              case 'C+':  incentive = 50000; break;
+              case 'B++': incentive = 500000; break;
+              case 'B+':  incentive = 450000; break;
+              case 'B':   incentive = 400000; break;
+              case 'B-':  incentive = 350000; break;
+              case 'B--': incentive = 300000; break;
+              case 'C++': incentive = 250000; break;
+              case 'C+':  incentive = 200000; break;
               default: incentive = 0;
             }
             return incentive;
