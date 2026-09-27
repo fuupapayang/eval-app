@@ -6,6 +6,9 @@ import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Cell, Legend 
 } from 'recharts';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import PdfReport from '../components/PdfReport';
 import {
   DndContext,
   closestCenter,
@@ -23,7 +26,7 @@ import {
   useSortable
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Edit2 } from 'lucide-react';
+import { GripVertical, Edit2, Download } from 'lucide-react';
 
 const SortableCard = ({ 
   staff, isEditing, editForm, setEditForm, onSave, onCancel, onEdit, 
@@ -563,6 +566,51 @@ export const StaffList: React.FC = () => {
   
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Staff | null>(null);
+  
+  const pdfRef = React.useRef<HTMLDivElement>(null);
+  const [isPdfGenerating, setIsPdfGenerating] = useState(false);
+
+  const handleDownloadPDF = async () => {
+    const element = pdfRef.current;
+    if (!element) return;
+    
+    setIsPdfGenerating(true);
+    element.style.left = '0';
+    element.style.zIndex = '9999';
+    
+    try {
+      const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+      const imgData = canvas.toDataURL('image/png');
+      
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+      heightLeft -= pdfHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+      }
+      
+      pdf.save('staff_list_report.pdf');
+    } catch (error) {
+      console.error('PDF generation failed', error);
+      alert('PDFの生成に失敗しました');
+    } finally {
+      element.style.left = '-9999px';
+      element.style.zIndex = '-1';
+      setIsPdfGenerating(false);
+    }
+  };
 
   const availableTypes = React.useMemo(() => {
     const types = new Set(masterItems.map(item => item.type));
@@ -710,9 +758,26 @@ export const StaffList: React.FC = () => {
           <h1 className="page-title" style={{ fontSize: '2rem', marginBottom: 'var(--spacing-2)' }}>スタッフ一覧</h1>
           <p className="page-subtitle" style={{ fontSize: '1rem' }}>評価対象のスタッフを管理します</p>
         </div>
-        <button className="btn btn-primary" onClick={handleAdd} disabled={editingId !== null}>
-          ＋ スタッフ追加
-        </button>
+        <div style={{ display: 'flex', gap: 'var(--spacing-4)' }}>
+          <button 
+            className="btn btn-secondary" 
+            onClick={handleDownloadPDF} 
+            disabled={isPdfGenerating}
+            style={{ 
+              backgroundColor: 'white',
+              border: '1px solid var(--border-color)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <Download size={16} />
+            {isPdfGenerating ? '生成中...' : 'PDFを出力'}
+          </button>
+          <button className="btn btn-primary" onClick={handleAdd} disabled={editingId !== null}>
+            ＋ スタッフ追加
+          </button>
+        </div>
       </div>
 
       {editingId === 'NEW' && editForm && (
@@ -794,6 +859,13 @@ export const StaffList: React.FC = () => {
           </SortableContext>
         </div>
       </DndContext>
+      <PdfReport 
+        ref={pdfRef} 
+        staffList={staffList} 
+        evaluations={evaluations} 
+        getAutoNextSalary={getAutoNextSalary} 
+        getAutoIncentive={getAutoIncentive} 
+      />
     </div>
   );
 };
