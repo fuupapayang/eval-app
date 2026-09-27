@@ -323,16 +323,26 @@ const SortableCard = ({
 
                 {/* 市場平均年収（マス媒体レポート2025） */}
                 {(() => {
-                  const getMarketSalary = (role: string) => {
-                    switch(role) {
-                      case 'WEBデザイナー': return { title: 'デザイナー', amount: 394.0 };
-                      case 'ディレクター': return { title: '制作ディレクター', amount: 507.2 };
-                      case '映像': return { title: '映像ディレクター', amount: 494.4 };
-                      case 'コーダー': return { title: 'デザイナー', amount: 394.0 };
-                      default: return { title: 'アシスタント', amount: 380.2 };
+                  const getMarketSalary = (s: Staff) => {
+                    const isL = s.roleTitle === 'リーダー';
+                    const isSub = s.roleTitle === 'サブリーダー';
+                    switch(s.role) {
+                      case 'WEBデザイナー': 
+                      case 'コーダー':
+                        if (isL) return { title: 'アートディレクター', amount: 575.4 };
+                        return { title: 'デザイナー', amount: 394.0 };
+                      case 'ディレクター': 
+                        if (isL) return { title: 'クリエイティブD', amount: 692.1 };
+                        return { title: '制作ディレクター', amount: 507.2 };
+                      case '映像': 
+                        if (isL) return { title: '映像プロデューサー', amount: 586.8 };
+                        if (isSub) return { title: '映像ディレクター', amount: 494.4 };
+                        return { title: '映像編集', amount: 382.6 };
+                      default: 
+                        return { title: 'アシスタント', amount: 380.2 };
                     }
                   };
-                  const market = getMarketSalary(staff.role);
+                  const market = getMarketSalary(staff);
                   const diff = staff.annualSalary ? (staff.annualSalary / 10000) - market.amount : 0;
                   return (
                     <div className="stat-panel" style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
