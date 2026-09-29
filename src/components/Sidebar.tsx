@@ -45,7 +45,7 @@ export const Sidebar: React.FC = () => {
         </div>
         
         <nav className="nav-links">
-          {currentUser?.type === 'MASTER' ? (
+          {(currentUser?.type === 'MASTER' || currentUser?.type === 'VIEWER') ? (
             <>
               <NavLink to="/" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end title="スタッフ一覧">
                 <Users className="w-5 h-5" />
@@ -65,7 +65,7 @@ export const Sidebar: React.FC = () => {
         </nav>
 
         <div className="nav-primary-bottom">
-          {currentUser?.type === 'MASTER' && (
+          {(currentUser?.type === 'MASTER' || currentUser?.type === 'VIEWER') && (
             <NavLink to="/master" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="評価マスタ">
               <Settings className="w-5 h-5" />
             </NavLink>
@@ -87,13 +87,13 @@ export const Sidebar: React.FC = () => {
           </div>
           <div className="user-info">
             <span className="user-name">{currentUser?.type === 'STAFF' ? currentUser.staff.name : 'Administrator'}</span>
-            <span className="user-email">{currentUser?.type === 'MASTER' ? 'System Management' : currentUser?.type === 'STAFF' ? currentUser.staff.roleTitle : 'Guest'}</span>
+            <span className="user-email">{(currentUser?.type === 'MASTER' || currentUser?.type === 'VIEWER') ? 'System Management' : currentUser?.type === 'STAFF' ? currentUser.staff.roleTitle : 'Guest'}</span>
           </div>
         </div>
 
         <div className="nav-secondary-section">
           <h3 className="nav-secondary-title">Menus</h3>
-          {currentUser?.type === 'MASTER' ? (
+          {(currentUser?.type === 'MASTER' || currentUser?.type === 'VIEWER') ? (
             <>
               <NavLink to="/" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end>
                 <span>スタッフ一覧</span>
@@ -143,7 +143,7 @@ export const Sidebar: React.FC = () => {
           )}
         </div>
 
-        {currentUser?.type === 'MASTER' && (
+        {(currentUser?.type === 'MASTER' || currentUser?.type === 'VIEWER') && (
           <div className="nav-secondary-section">
             <h3 className="nav-secondary-title">Settings</h3>
             <NavLink to="/master" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
