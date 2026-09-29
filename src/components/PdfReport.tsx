@@ -64,6 +64,7 @@ const PdfReport = forwardRef<HTMLDivElement, PdfReportProps>(
               <th style={{ padding: '8px', border: '1px solid #ddd' }}>評価点</th>
               <th style={{ padding: '8px', border: '1px solid #ddd' }}>ランク</th>
               <th style={{ padding: '8px', border: '1px solid #ddd' }}>現在の年収</th>
+              <th style={{ padding: '8px', border: '1px solid #ddd' }}>役職手当</th>
               <th style={{ padding: '8px', border: '1px solid #ddd' }}>来期予測</th>
               <th style={{ padding: '8px', border: '1px solid #ddd' }}>ｲﾝｾﾝﾃｨﾌﾞ</th>
               <th style={{ padding: '8px', border: '1px solid #ddd' }}>市場平均(参考)</th>
@@ -104,6 +105,10 @@ const PdfReport = forwardRef<HTMLDivElement, PdfReportProps>(
                 ? `${(staff.annualSalary / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
                 : '-';
               
+              const roleAllowanceStr = staff.roleAllowance
+                ? `${(staff.roleAllowance / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円`
+                : '-';
+
               const nextSalaryVal = staff.nextAnnualSalary !== undefined ? staff.nextAnnualSalary : getAutoNextSalary(staff);
               const nextSalaryStr = nextSalaryVal 
                 ? `${(nextSalaryVal / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
@@ -130,6 +135,7 @@ const PdfReport = forwardRef<HTMLDivElement, PdfReportProps>(
                   </td>
                   <td style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'center', fontWeight: 'bold' }}>{rankStr}</td>
                   <td style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'right' }}>{currentSalary}</td>
+                  <td style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'right' }}>{roleAllowanceStr}</td>
                   <td style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'right', color: '#0066cc' }}>{nextSalaryStr}</td>
                   <td style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'right', color: '#cc3300' }}>{incentiveStr}</td>
                   <td style={{ padding: '8px', border: '1px solid #ddd', fontSize: '9px', textAlign: 'right' }}>{marketStr}</td>

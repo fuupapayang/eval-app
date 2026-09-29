@@ -244,6 +244,16 @@ const SortableCard = ({
                 />
               </div>
               <div className="form-group">
+                <label className="form-label">役職手当（リーダー・マネジメント）</label>
+                <input 
+                  type="number" 
+                  className="form-input" 
+                  value={editForm.roleAllowance || ''} 
+                  onChange={e => setEditForm({...editForm, roleAllowance: Number(e.target.value) || undefined})} 
+                  placeholder="例: 360000"
+                />
+              </div>
+              <div className="form-group">
                 <label className="form-label">来期年収予定</label>
                 <input 
                   type="number" 
@@ -321,6 +331,21 @@ const SortableCard = ({
                     </h3>
                     <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                       {staff.annualSalary ? `(月額: ${Math.floor(staff.annualSalary / 12).toLocaleString()}円)` : '-'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* 役職手当（リーダー手当 / マネジメント手当） */}
+                <div className="stat-panel" style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
+                  <div className="stat-content">
+                    <p className="stat-label" style={{ marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>役職手当（リーダー / マネジメント）</p>
+                    <h3 className="stat-value" style={{ fontSize: '1.6rem', color: 'var(--accent-primary)' }}>
+                      {staff.roleAllowance 
+                        ? `${(staff.roleAllowance / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
+                        : '未設定'}
+                    </h3>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      {staff.roleAllowance ? `(月額: ${Math.floor(staff.roleAllowance / 12).toLocaleString()}円)` : '-'}
                     </p>
                   </div>
                 </div>
