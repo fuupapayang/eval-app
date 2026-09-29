@@ -264,7 +264,7 @@ export const EvaluationForm: React.FC = () => {
         <div style={{ display: 'flex', gap: 'var(--spacing-4)', flexWrap: 'wrap' }}>
           <div className="form-group">
             <label className="form-label">対象スタッフ</label>
-            <select className="form-select" value={selectedStaffId} onChange={e => setSelectedStaffId(e.target.value)}>
+            <select disabled={isViewer} className="form-select" value={selectedStaffId} onChange={e => setSelectedStaffId(e.target.value)}>
               <option value="">-- 選択してください --</option>
               {staffList.map(staff => (
                 <option key={staff.id} value={staff.id}>{staff.name} ({staff.role})</option>
@@ -273,22 +273,22 @@ export const EvaluationForm: React.FC = () => {
           </div>
           <div className="form-group">
             <label className="form-label">対象年度</label>
-            <input type="number" className="form-input" value={year} onChange={e => setYear(Number(e.target.value))} />
+            <input disabled={isViewer} type="number" className="form-input" value={year} onChange={e => setYear(Number(e.target.value))} />
           </div>
           <div className="form-group">
             <label className="form-label">評価期</label>
-            <select className="form-select" value={period} onChange={e => setPeriod(e.target.value as Period)}>
+            <select disabled={isViewer} className="form-select" value={period} onChange={e => setPeriod(e.target.value as Period)}>
               <option value="上期">上期</option>
               <option value="下期">下期</option>
             </select>
           </div>
           <div className="form-group">
             <label className="form-label">評価日</label>
-            <input type="date" className="form-input" value={evaluationDate} onChange={e => setEvaluationDate(e.target.value)} />
+            <input disabled={isViewer} type="date" className="form-input" value={evaluationDate} onChange={e => setEvaluationDate(e.target.value)} />
           </div>
           <div className="form-group">
             <label className="form-label">面談対応者</label>
-            <input type="text" className="form-input" value={reviewer} onChange={e => setReviewer(e.target.value)} placeholder="対応者の名前" />
+            <input disabled={isViewer} type="text" className="form-input" value={reviewer} onChange={e => setReviewer(e.target.value)} placeholder="対応者の名前" />
           </div>
         </div>
         
@@ -325,7 +325,7 @@ export const EvaluationForm: React.FC = () => {
                 <div className="form-group">
                   <label className="form-label">1. 案件貢献</label>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px', marginTop: '-4px' }}>担当案件の売上・利益・継続受注への貢献</p>
-                  <select className="form-select" value={performanceDetails[0]} onChange={e => setPerformanceDetails([Number(e.target.value), performanceDetails[1], performanceDetails[2]])}>
+                  <select disabled={isViewer} className="form-select" value={performanceDetails[0]} onChange={e => setPerformanceDetails([Number(e.target.value), performanceDetails[1], performanceDetails[2]])}>
                     <option value={10}>10: 大きく貢献した</option>
                     <option value={8}>8: 十分に貢献した</option>
                     <option value={6}>6: 標準的に貢献した</option>
@@ -337,7 +337,7 @@ export const EvaluationForm: React.FC = () => {
                 <div className="form-group">
                   <label className="form-label">2. 品質・納期</label>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px', marginTop: '-4px' }}>納期遵守、手戻りの少なさ、クライアントに迷惑をかけない進行</p>
-                  <select className="form-select" value={performanceDetails[1]} onChange={e => setPerformanceDetails([performanceDetails[0], Number(e.target.value), performanceDetails[2]])}>
+                  <select disabled={isViewer} className="form-select" value={performanceDetails[1]} onChange={e => setPerformanceDetails([performanceDetails[0], Number(e.target.value), performanceDetails[2]])}>
                     <option value={10}>10: 非常に安心して任せられた</option>
                     <option value={8}>8: 安心して任せられた</option>
                     <option value={6}>6: 概ね問題なく進行できた</option>
@@ -349,7 +349,7 @@ export const EvaluationForm: React.FC = () => {
                 <div className="form-group">
                   <label className="form-label">3. 顧客・社内貢献</label>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px', marginTop: '-4px' }}>営業・ディレクター・クライアントの期待に応えた貢献</p>
-                  <select className="form-select" value={performanceDetails[2]} onChange={e => setPerformanceDetails([performanceDetails[0], performanceDetails[1], Number(e.target.value)])}>
+                  <select disabled={isViewer} className="form-select" value={performanceDetails[2]} onChange={e => setPerformanceDetails([performanceDetails[0], performanceDetails[1], Number(e.target.value)])}>
                     <option value={10}>10: 期待を大きく上回る</option>
                     <option value={8}>8: 期待を上回る</option>
                     <option value={6}>6: 期待どおり</option>
@@ -387,7 +387,7 @@ export const EvaluationForm: React.FC = () => {
                                 borderColor: status === '達成' ? '#10b981' : status === '未達' ? '#ef4444' : '#f59e0b',
                                 color: themeStatuses?.[i] === status ? '#fff' : (status === '達成' ? '#10b981' : status === '未達' ? '#ef4444' : '#f59e0b')
                               }}
-                              onClick={() => {
+                              disabled={isViewer} onClick={() => {
                                 const newStatuses = [...themeStatuses] as [string, string, string];
                                 newStatuses[i] = newStatuses[i] === status ? '' : status;
                                 setThemeStatuses(newStatuses);
@@ -422,7 +422,7 @@ export const EvaluationForm: React.FC = () => {
                     ) : (
                       <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px' }}>（未設定）</p>
                     )}
-                    <select className="form-select" value={themeDetails[i]} onChange={e => {
+                    <select disabled={isViewer} className="form-select" value={themeDetails[i]} onChange={e => {
                       const newDetails = [...themeDetails] as [number, number, number];
                       newDetails[i] = Number(e.target.value);
                       setThemeDetails(newDetails);
@@ -467,7 +467,7 @@ export const EvaluationForm: React.FC = () => {
                                 borderColor: status === '達成' ? '#10b981' : status === '未達' ? '#ef4444' : '#f59e0b',
                                 color: teamStatuses?.[i] === status ? '#fff' : (status === '達成' ? '#10b981' : status === '未達' ? '#ef4444' : '#f59e0b')
                               }}
-                              onClick={() => {
+                              disabled={isViewer} onClick={() => {
                                 const newStatuses = [...teamStatuses] as [string, string, string];
                                 newStatuses[i] = newStatuses[i] === status ? '' : status;
                                 setTeamStatuses(newStatuses);
@@ -502,7 +502,7 @@ export const EvaluationForm: React.FC = () => {
                     ) : (
                       <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px' }}>（未設定）</p>
                     )}
-                    <select className="form-select" value={teamDetails[i]} onChange={e => {
+                    <select disabled={isViewer} className="form-select" value={teamDetails[i]} onChange={e => {
                       const newDetails = [...teamDetails] as [number, number, number];
                       newDetails[i] = Number(e.target.value);
                       setTeamDetails(newDetails);
@@ -530,7 +530,7 @@ export const EvaluationForm: React.FC = () => {
                   <div key={item.id} className="form-group">
                     <label className="form-label">{item.no}. {item.name}</label>
                     <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>{item.description}</p>
-                    <select className="form-select" value={typeScores[item.id] || 0} onChange={e => setTypeScores({...typeScores, [item.id]: Number(e.target.value)})}>
+                    <select disabled={isViewer} className="form-select" value={typeScores[item.id] || 0} onChange={e => setTypeScores({...typeScores, [item.id]: Number(e.target.value)})}>
                       <option value={0}>0: 該当なし</option>
                       <option value={1}>1: 大きな改善が必要</option>
                       <option value={2}>2: 一部改善が必要</option>
@@ -548,7 +548,7 @@ export const EvaluationForm: React.FC = () => {
                   <div key={item.no} className="form-group">
                     <label className="form-label">{item.no}. {item.name}</label>
                     <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>{item.description}</p>
-                    <select className="form-select" value={commonScores[item.no] || 0} onChange={e => setCommonScores({...commonScores, [item.no]: Number(e.target.value)})}>
+                    <select disabled={isViewer} className="form-select" value={commonScores[item.no] || 0} onChange={e => setCommonScores({...commonScores, [item.no]: Number(e.target.value)})}>
                       <option value={0}>0: 該当なし</option>
                       <option value={1}>1: 大きな改善が必要</option>
                       <option value={2}>2: 一部改善が必要</option>
@@ -563,13 +563,13 @@ export const EvaluationForm: React.FC = () => {
               <h3 style={{ marginBottom: 'var(--spacing-3)', marginTop: 'var(--spacing-6)' }}>⑥ その他評価（最大20点）</h3>
               <div className="form-group">
                 <label className="form-label">リーダー評価（最大10点）</label>
-                <input type="number" max="10" min="0" className="form-input" value={leaderScore || ''} onChange={e => setLeaderScore(Number(e.target.value))} />
-                <textarea className="form-textarea" rows={2} placeholder="評価点の理由" value={leaderComment} onChange={e => setLeaderComment(e.target.value)} style={{ marginTop: 'var(--spacing-2)' }}></textarea>
+                <input disabled={isViewer} type="number" max="10" min="0" className="form-input" value={leaderScore || ''} onChange={e => setLeaderScore(Number(e.target.value))} />
+                <textarea disabled={isViewer} className="form-textarea" rows={2} placeholder="評価点の理由" value={leaderComment} onChange={e => setLeaderComment(e.target.value)} style={{ marginTop: 'var(--spacing-2)' }}></textarea>
               </div>
               <div className="form-group">
                 <label className="form-label">加点評価（最大10点）</label>
-                <input type="number" max="10" min="0" className="form-input" value={bonusScore || ''} onChange={e => setBonusScore(Number(e.target.value))} />
-                <textarea className="form-textarea" rows={2} placeholder="評価点の理由" value={bonusComment} onChange={e => setBonusComment(e.target.value)} style={{ marginTop: 'var(--spacing-2)' }}></textarea>
+                <input disabled={isViewer} type="number" max="10" min="0" className="form-input" value={bonusScore || ''} onChange={e => setBonusScore(Number(e.target.value))} />
+                <textarea disabled={isViewer} className="form-textarea" rows={2} placeholder="評価点の理由" value={bonusComment} onChange={e => setBonusComment(e.target.value)} style={{ marginTop: 'var(--spacing-2)' }}></textarea>
               </div>
             </div>
           </div>
@@ -584,7 +584,7 @@ export const EvaluationForm: React.FC = () => {
                 {checkboxRequirements.map(req => (
                   <div 
                     key={req.id} 
-                    onClick={() => setCustomChecks({ ...customChecks, [req.id]: !customChecks[req.id] })}
+                    onClick={() => !isViewer && setCustomChecks({ ...customChecks, [req.id]: !customChecks[req.id] })}
                     style={{ 
                       display: 'flex', 
                       alignItems: 'flex-start', 
@@ -611,7 +611,7 @@ export const EvaluationForm: React.FC = () => {
 
           <div className="form-group" style={{ marginTop: 'var(--spacing-8)' }}>
             <label className="form-label">総合コメント</label>
-            <textarea className="form-textarea" rows={4} placeholder="評価に対するフィードバックやコメントを記入" value={generalComment} onChange={e => setGeneralComment(e.target.value)}></textarea>
+            <textarea disabled={isViewer} className="form-textarea" rows={4} placeholder="評価に対するフィードバックやコメントを記入" value={generalComment} onChange={e => setGeneralComment(e.target.value)}></textarea>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'var(--spacing-6)' }}>

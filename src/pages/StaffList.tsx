@@ -853,7 +853,7 @@ export const StaffList: React.FC = () => {
         </div>
       )}
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={isViewer ? undefined : handleDragEnd}>
         <div className="neu-card-list">
           <SortableContext items={staffList.map(s => s.id)} strategy={verticalListSortingStrategy}>
             {staffList.map((staff: Staff) => {
