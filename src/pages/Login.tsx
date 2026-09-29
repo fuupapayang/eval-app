@@ -16,6 +16,9 @@ export const Login: React.FC = () => {
     if (masterPassword === 'blackwork5963') {
       login({ type: 'MASTER' });
       navigate('/dashboard');
+    } else if (masterPassword === 'Mastermasterqlea') {
+      login({ type: 'VIEWER' });
+      navigate('/dashboard');
     } else {
       setError('Masterパスワードが間違っています。');
     }

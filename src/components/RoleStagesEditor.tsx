@@ -5,6 +5,9 @@ import { Plus, Trash2, Edit2, Save, RefreshCw } from 'lucide-react';
 import { ROLE_STAGES } from '../lib/roleModelData';
 
 export const RoleStagesEditor: React.FC = () => {
+  const currentUser = useStore(state => state.currentUser);
+  const isViewer = currentUser?.type === 'VIEWER';
+  
   const roleStages = useStore(state => state.roleStages);
   const addRoleStage = useStore(state => state.addRoleStage);
   const updateRoleStage = useStore(state => state.updateRoleStage);
@@ -110,16 +113,18 @@ export const RoleStagesEditor: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 style={{ margin: 0 }}>給与レンジ・昇格条件（ロールモデル）設定</h2>
-        <div style={{ display: 'flex', gap: 'var(--spacing-3)' }}>
-          <button className="btn outline" onClick={handleResetToDefaults} disabled={isResetting}>
-            <RefreshCw size={16} style={{ marginRight: '8px' }} />
-            {isResetting ? 'リセット中...' : '初期データにリセット'}
-          </button>
-          <button className="btn primary" onClick={handleAddStage}>
-            <Plus size={16} style={{ marginRight: '8px' }} />
-            新規ステージ追加
-          </button>
-        </div>
+        {!isViewer && (
+          <div style={{ display: 'flex', gap: 'var(--spacing-3)' }}>
+            <button className="btn outline" onClick={handleResetToDefaults} disabled={isResetting}>
+              <RefreshCw size={16} style={{ marginRight: '8px' }} />
+              {isResetting ? 'リセット中...' : '初期データにリセット'}
+            </button>
+            <button className="btn primary" onClick={handleAddStage}>
+              <Plus size={16} style={{ marginRight: '8px' }} />
+              新規ステージ追加
+            </button>
+          </div>
+        )}
       </div>
       
       {roleStages.length === 0 && (
@@ -225,15 +230,17 @@ export const RoleStagesEditor: React.FC = () => {
                     目標レンジ: <strong>{stage.salaryRange}</strong>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button className="btn outline" onClick={() => handleEditStage(stage)}>
-                    <Edit2 size={16} style={{ marginRight: '8px' }} />
-                    編集
-                  </button>
-                  <button className="btn outline" style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }} onClick={() => handleDeleteStage(stage.id)}>
-                    <Trash2 size={16} />
-                  </button>
-                </div>
+                {!isViewer && (
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button className="btn outline" onClick={() => handleEditStage(stage)}>
+                      <Edit2 size={16} style={{ marginRight: '8px' }} />
+                      編集
+                    </button>
+                    <button className="btn outline" style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }} onClick={() => handleDeleteStage(stage.id)}>
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                )}
               </div>
 
               {stage.requirements.length > 0 && (

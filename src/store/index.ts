@@ -92,6 +92,11 @@ export const useStore = create<AppState>()((set, get) => ({
   },
 
   saveEvaluation: async (evalForm) => {
+    set(state => ({
+      evaluations: state.evaluations.some(e => e.id === evalForm.id)
+        ? state.evaluations.map(e => e.id === evalForm.id ? evalForm : e)
+        : [...state.evaluations, evalForm]
+    }));
     await setDoc(doc(db, 'evaluations', evalForm.id), evalForm);
   },
   
@@ -109,10 +114,16 @@ export const useStore = create<AppState>()((set, get) => ({
   logout: () => set({ currentUser: null }),
   
   updateStaff: async (staff) => {
+    set(state => ({
+      staffList: state.staffList.map(s => s.id === staff.id ? staff : s)
+    }));
     await setDoc(doc(db, 'staff', staff.id), staff);
   },
 
   addStaff: async (staff) => {
+    set(state => ({
+      staffList: [...state.staffList, staff]
+    }));
     await setDoc(doc(db, 'staff', staff.id), staff);
   },
 
@@ -121,6 +132,9 @@ export const useStore = create<AppState>()((set, get) => ({
   },
 
   updateMasterItem: async (item) => {
+    set(state => ({
+      masterItems: state.masterItems.map(i => i.id === item.id ? item : i)
+    }));
     await setDoc(doc(db, 'masterItems', item.id), item);
   },
 
@@ -133,6 +147,9 @@ export const useStore = create<AppState>()((set, get) => ({
   },
   
   updateRoleStage: async (stage) => {
+    set(state => ({
+      roleStages: state.roleStages.map(s => s.id === stage.id ? stage : s)
+    }));
     await setDoc(doc(db, 'roleStages', stage.id), stage);
   },
   

@@ -4,6 +4,9 @@ import type { EvaluationItem } from '../types';
 import { RoleStagesEditor } from '../components/RoleStagesEditor';
 
 export const MasterSettings: React.FC = () => {
+  const currentUser = useStore(state => state.currentUser);
+  const isViewer = currentUser?.type === 'VIEWER';
+
   const masterItems = useStore(state => state.masterItems);
   const addMasterItem = useStore(state => state.addMasterItem);
   const updateMasterItem = useStore(state => state.updateMasterItem);
@@ -198,9 +201,11 @@ export const MasterSettings: React.FC = () => {
         <div className="glass-panel" style={{ padding: 'var(--spacing-6)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-4)' }}>
             <h2>職種・タイプ別評価項目</h2>
-            <button className="btn btn-primary" onClick={handleAddNewType} disabled={editingId !== null}>
-              ＋ 新しいタイプを追加
-            </button>
+            {!isViewer && (
+              <button className="btn btn-primary" onClick={handleAddNewType} disabled={editingId !== null}>
+                ＋ 新しいタイプを追加
+              </button>
+            )}
           </div>
           {Object.entries(groupedItems).map(([type, items]) => (
             <details key={type} className="neu-accordion" open={false}>
@@ -213,9 +218,11 @@ export const MasterSettings: React.FC = () => {
               
               <div className="accordion-body">
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--spacing-4)' }}>
-                  <button className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => handleAdd(type)} disabled={editingId !== null}>
-                    ＋ {type}に項目追加
-                  </button>
+                  {!isViewer && (
+                    <button className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => handleAdd(type)} disabled={editingId !== null}>
+                      ＋ {type}に項目追加
+                    </button>
+                  )}
                 </div>
                 <div className="table-container">
                   <table className="table">
@@ -252,8 +259,12 @@ export const MasterSettings: React.FC = () => {
                               <td style={{ color: 'var(--text-secondary)' }}>{item.achievementLevel}</td>
                               <td>
                                 <div style={{display: 'flex', gap: '8px', flexDirection: 'column'}}>
-                                  <button className="btn btn-outline" style={{padding: '6px 12px', fontSize: '0.75rem'}} onClick={() => handleEdit(item)}>編集</button>
-                                  <button className="btn btn-outline" style={{padding: '6px 12px', fontSize: '0.75rem', borderColor: 'var(--danger)', color: 'var(--danger)'}} onClick={() => handleDelete(item.id)}>削除</button>
+                                  {!isViewer && (
+                                    <>
+                                      <button className="btn btn-outline" style={{padding: '6px 12px', fontSize: '0.75rem'}} onClick={() => handleEdit(item)}>編集</button>
+                                      <button className="btn btn-outline" style={{padding: '6px 12px', fontSize: '0.75rem', borderColor: 'var(--danger)', color: 'var(--danger)'}} onClick={() => handleDelete(item.id)}>削除</button>
+                                    </>
+                                  )}
                                 </div>
                               </td>
                             </>

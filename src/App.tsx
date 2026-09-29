@@ -13,8 +13,8 @@ const ProtectedRoute = ({ children, requireMaster = false }: { children: React.R
   const currentUser = useStore(state => state.currentUser);
   
   if (!currentUser) return <Navigate to="/login" replace />;
-  if (requireMaster && currentUser.type !== 'MASTER') return <Navigate to="/mypage" replace />;
-  if (!requireMaster && currentUser.type === 'MASTER') return <Navigate to="/" replace />; // Master doesn't use mypage
+  if (requireMaster && currentUser.type === 'STAFF') return <Navigate to="/mypage" replace />;
+  if (!requireMaster && (currentUser.type === 'MASTER' || currentUser.type === 'VIEWER')) return <Navigate to="/" replace />; // Master/Viewer don't use mypage
   
   return <>{children}</>;
 };
@@ -30,7 +30,7 @@ function App() {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/login" element={currentUser ? <Navigate to={currentUser.type === 'MASTER' ? "/" : "/mypage"} replace /> : <Login />} />
+        <Route path="/login" element={currentUser ? <Navigate to={currentUser.type === 'STAFF' ? "/mypage" : "/"} replace /> : <Login />} />
         
         <Route path="/" element={<Layout />}>
           <Route index element={<ProtectedRoute requireMaster><StaffList /></ProtectedRoute>} />

@@ -293,21 +293,6 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                   </div>
                 </div>
 
-                {/* 役職手当（リーダー手当 / マネジメント手当） */}
-                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)', background: 'var(--bg-surface)' }}>
-                  <div className="stat-content">
-                    <p className="stat-label" style={{ marginBottom: '4px' }}>役職手当（リーダー / マネジメント）</p>
-                    <h3 className="stat-value" style={{ fontSize: '1.6rem', color: 'var(--accent-primary)' }}>
-                      {staff.roleAllowance 
-                        ? `${(staff.roleAllowance / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
-                        : '未設定'}
-                    </h3>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                      {staff.roleAllowance ? `(月額: ${Math.floor(staff.roleAllowance / 12).toLocaleString()}円)` : '-'}
-                    </p>
-                  </div>
-                </div>
-
                 {/* 市場平均年収（マス媒体レポート2025） - 現在の年収と比較 */}
                 {(() => {
                   const getMarketSalary = (s: Staff) => {
@@ -439,6 +424,21 @@ export const EvaluationDetailModal: React.FC<Props> = ({ staff, evaluations, ini
                     </h3>
                     <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                       {!staff.incentive && getAutoIncentive(staff) > 0 ? '[自動目安]' : '-'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* 役職手当（リーダー手当 / マネジメント手当） */}
+                <div className="stat-panel" style={{ padding: 'var(--spacing-4)', borderRadius: 'var(--radius-md)', background: 'var(--bg-surface)' }}>
+                  <div className="stat-content">
+                    <p className="stat-label" style={{ marginBottom: '4px' }}>役職手当（リーダー / マネジメント）</p>
+                    <h3 className="stat-value" style={{ fontSize: '1.6rem', color: 'var(--accent-primary)' }}>
+                      {staff.roleAllowance 
+                        ? `${(staff.roleAllowance / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
+                        : '未設定'}
+                    </h3>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      {staff.roleAllowance ? `(月額: ${Math.floor(staff.roleAllowance / 12).toLocaleString()}円)` : '-'}
                     </p>
                   </div>
                 </div>

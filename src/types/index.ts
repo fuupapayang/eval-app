@@ -2,7 +2,7 @@ export type Role = 'WEBデザイナー' | 'コーダー' | '映像' | 'ディレ
 export type StaffType = string;
 export type Period = '上期' | '下期' | '通期';
 
-export type AuthUser = { type: 'MASTER' } | { type: 'STAFF'; staff: Staff };
+export type AuthUser = { type: 'MASTER' } | { type: 'VIEWER' } | { type: 'STAFF'; staff: Staff };
 
 export interface Staff {
   id: string;

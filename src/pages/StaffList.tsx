@@ -30,7 +30,7 @@ import { GripVertical, Edit2, Download } from 'lucide-react';
 
 const SortableCard = ({ 
   staff, isEditing, editForm, setEditForm, onSave, onCancel, onEdit, 
-  availableTypes, getAutoNextSalary, getAutoIncentive, annualScore, evaluations, masterItems 
+  availableTypes, getAutoNextSalary, getAutoIncentive, annualScore, evaluations, masterItems, isViewer 
 }: { 
   staff: Staff, 
   isEditing: boolean, 
@@ -44,7 +44,8 @@ const SortableCard = ({
   getAutoIncentive: (s: Staff) => number,
   annualScore: number | null,
   evaluations: EvaluationForm[],
-  masterItems: EvaluationItem[]
+  masterItems: EvaluationItem[],
+  isViewer?: boolean
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: staff.id });
   const style = {
@@ -137,9 +138,11 @@ const SortableCard = ({
         }}
         onClick={toggleAccordion}
       >
-        <div {...attributes} {...listeners} className="drag-handle" style={{ marginRight: 'var(--spacing-4)' }} onClick={(e) => e.stopPropagation()}>
-          <GripVertical size={20} />
-        </div>
+        {!isViewer && (
+          <div {...attributes} {...listeners} className="drag-handle" style={{ marginRight: 'var(--spacing-4)' }} onClick={(e) => e.stopPropagation()}>
+            <GripVertical size={20} />
+          </div>
+        )}
         
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 'var(--spacing-6)' }}>
           <div style={{ minWidth: '150px' }}>
@@ -153,11 +156,13 @@ const SortableCard = ({
             <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{staff.roleTitle || '一般'}</span>
           </div>
           
-          <div style={{ display: 'flex', gap: 'var(--spacing-3)' }} onClick={e => e.stopPropagation()}>
-            <button className="btn btn-outline" style={{ padding: '6px' }} onClick={onEdit}>
-              <Edit2 size={16} />
-            </button>
-          </div>
+          {!isViewer && (
+            <div style={{ display: 'flex', gap: 'var(--spacing-3)' }} onClick={e => e.stopPropagation()}>
+              <button className="btn btn-outline" style={{ padding: '6px' }} onClick={onEdit}>
+                <Edit2 size={16} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -335,21 +340,6 @@ const SortableCard = ({
                   </div>
                 </div>
 
-                {/* 役職手当（リーダー手当 / マネジメント手当） */}
-                <div className="stat-panel" style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
-                  <div className="stat-content">
-                    <p className="stat-label" style={{ marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>役職手当（リーダー / マネジメント）</p>
-                    <h3 className="stat-value" style={{ fontSize: '1.6rem', color: 'var(--accent-primary)' }}>
-                      {staff.roleAllowance 
-                        ? `${(staff.roleAllowance / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
-                        : '未設定'}
-                    </h3>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                      {staff.roleAllowance ? `(月額: ${Math.floor(staff.roleAllowance / 12).toLocaleString()}円)` : '-'}
-                    </p>
-                  </div>
-                </div>
-
                 {/* 市場平均年収（マス媒体レポート2025） - 現在の年収と比較 */}
                 {(() => {
                   const getMarketSalary = (s: Staff) => {
@@ -484,6 +474,21 @@ const SortableCard = ({
                     </p>
                   </div>
                 </div>
+
+                {/* 役職手当（リーダー手当 / マネジメント手当） */}
+                <div className="stat-panel" style={{ background: 'rgba(0,0,0,0.03)', padding: '16px', borderRadius: 'var(--radius-xl)' }}>
+                  <div className="stat-content">
+                    <p className="stat-label" style={{ marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>役職手当（リーダー / マネジメント）</p>
+                    <h3 className="stat-value" style={{ fontSize: '1.6rem', color: 'var(--accent-primary)' }}>
+                      {staff.roleAllowance 
+                        ? `${(staff.roleAllowance / 10000).toLocaleString(undefined, { maximumFractionDigits: 1 })}万円` 
+                        : '未設定'}
+                    </h3>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      {staff.roleAllowance ? `(月額: ${Math.floor(staff.roleAllowance / 12).toLocaleString()}円)` : '-'}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* チャート表示エリア */}
@@ -582,6 +587,9 @@ const SortableCard = ({
 };
 
 export const StaffList: React.FC = () => {
+  const currentUser = useStore((state) => state.currentUser);
+  const isViewer = currentUser?.type === 'VIEWER';
+  
   const staffList = useStore((state) => state.staffList);
   const updateStaff = useStore((state) => state.updateStaff);
   const addStaff = useStore((state) => state.addStaff);
@@ -799,9 +807,11 @@ export const StaffList: React.FC = () => {
             <Download size={16} />
             {isPdfGenerating ? '生成中...' : 'PDFを出力'}
           </button>
-          <button className="btn btn-primary" onClick={handleAdd} disabled={editingId !== null}>
-            ＋ スタッフ追加
-          </button>
+          {!isViewer && (
+            <button className="btn btn-primary" onClick={handleAdd} disabled={editingId !== null}>
+              ＋ スタッフ追加
+            </button>
+          )}
         </div>
       </div>
 

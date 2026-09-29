@@ -6,6 +6,9 @@ import { useRoleQuest } from '../hooks/useRoleQuest';
 import { CheckSquare, Square } from 'lucide-react';
 
 export const EvaluationForm: React.FC = () => {
+  const currentUser = useStore(state => state.currentUser);
+  const isViewer = currentUser?.type === 'VIEWER';
+  
   const staffList = useStore(state => state.staffList);
   const masterItems = useStore(state => state.masterItems);
   const saveEvaluation = useStore(state => state.saveEvaluation);
@@ -612,7 +615,9 @@ export const EvaluationForm: React.FC = () => {
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'var(--spacing-6)' }}>
-            <button className="btn btn-primary" onClick={handleSave}>評価を保存する</button>
+            {!isViewer && (
+              <button className="btn btn-primary" onClick={handleSave}>評価を保存する</button>
+            )}
           </div>
         </div>
       )}
