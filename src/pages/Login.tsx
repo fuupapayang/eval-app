@@ -13,10 +13,10 @@ export const Login: React.FC = () => {
   const [error, setError] = useState('');
 
   const handleMasterLogin = () => {
-    if (masterPassword === 'blackwork5963') {
+    if (masterPassword.trim() === 'blackwork5963') {
       login({ type: 'MASTER' });
       navigate('/dashboard');
-    } else if (masterPassword === 'Mastermasterqlea') {
+    } else if (masterPassword.trim() === 'Mastermasterqlea') {
       login({ type: 'VIEWER' });
       navigate('/dashboard');
     } else {
