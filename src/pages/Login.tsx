@@ -13,14 +13,15 @@ export const Login: React.FC = () => {
   const [error, setError] = useState('');
 
   const handleMasterLogin = () => {
-    if (masterPassword.trim() === 'blackwork5963') {
+    const pw = masterPassword.trim();
+    if (pw === 'blackwork5963') {
       login({ type: 'MASTER' });
       navigate('/dashboard');
-    } else if (masterPassword.trim() === 'Mastermasterqlea') {
+    } else if (pw.toLowerCase() === 'mastermasterqlea') {
       login({ type: 'VIEWER' });
       navigate('/dashboard');
     } else {
-      setError('Masterパスワードが間違っています。');
+      setError('入力されたMasterパスワードが正しくありません。');
     }
   };
 
