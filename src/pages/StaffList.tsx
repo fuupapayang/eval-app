@@ -887,7 +887,7 @@ export const StaffList: React.FC = () => {
                   getAutoIncentive={getAutoIncentive}
                   annualScore={annualScore}
                   evaluations={evaluations}
-                  masterItems={masterItems}
+                  masterItems={masterItems} isViewer={isViewer}
                 />
               );
             })}
